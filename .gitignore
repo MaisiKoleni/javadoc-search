@@ -1,0 +1,10 @@
+/.idea
+/target/
+/.settings/*
+/reports
+!/.settings/org.eclipse.*
+!/.settings/eclipse*rules*
+/.jqwik-database
+/build
+/.gradle
+/database
