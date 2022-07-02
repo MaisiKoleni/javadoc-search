@@ -1,0 +1,7 @@
+content-types/enabled=true
+content-types/org.jboss.tools.quarkus.lsp4e.qute.html/file-extensions=htm,html
+content-types/org.jboss.tools.quarkus.lsp4e.qute.json/file-extensions=json
+content-types/org.jboss.tools.quarkus.lsp4e.qute.txt/file-extensions=txt,text
+content-types/org.jboss.tools.quarkus.lsp4e.qute.yaml/file-extensions=yml,yaml
+eclipse.preferences.version=1
+line.separator=\n

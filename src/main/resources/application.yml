@@ -1,0 +1,21 @@
+quarkus:
+  locales: en-US
+  default-locale: en-US
+  http:
+    port: 8080
+    cors: true
+  log:
+    category:
+      "net.maisikoleni":
+        level: DEBUG
+  live-reload:
+  qute:
+    #suffixes: qute
+    #instrumentation: true
+net:
+  maisikoleni:
+    javadoc:
+      search:
+        server:
+          html:
+            suggestion-count: 10

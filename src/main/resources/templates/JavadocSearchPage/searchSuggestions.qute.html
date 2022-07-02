@@ -1,0 +1,8 @@
+{#for suggestion in suggestions}
+<!-- spacer -->
+<tr>
+	<td class="text-break font-monospace">{suggestion_count}</td>
+	<td class="text-break"><a href="{suggestion.url(baseUrl)}">{suggestion.qualifiedName}</a></td>
+</tr>
+<!-- spacer -->
+{/for}
