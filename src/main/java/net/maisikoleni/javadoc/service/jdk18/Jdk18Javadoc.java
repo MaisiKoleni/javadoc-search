@@ -29,10 +29,18 @@ public class Jdk18Javadoc implements Javadoc {
 	@Inject
 	public Jdk18Javadoc(JavadocIndexes javadocIndexes) {
 		long startTime = System.currentTimeMillis();
-		index = javadocIndexes.getIndexByBaseUrl(JAVADOC_BASE_URL,
-				() -> JavadocIndex.loadAsResources(Jdk18Javadoc.class));
+		index = javadocIndexes.getIndexByBaseUrl(JAVADOC_BASE_URL, Jdk18Javadoc::fetchIndex);
 		long endTime = System.currentTimeMillis();
 		LOG.info("Creating Jdk18Javadoc took {} ms.", endTime - startTime);
+	}
+
+	private static JavadocIndex fetchIndex() {
+		try {
+			return JavadocIndex.loadAsResources(Jdk18Javadoc.class);
+		} catch (Exception e) {
+			LOG.warn("Fetching JavadocIndex as resource failed, loading it from the website.", e);
+			return JavadocIndex.loadFromUrl(JAVADOC_BASE_URL);
+		}
 	}
 
 	@Override
