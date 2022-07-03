@@ -99,8 +99,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 			}
 			if (transitions == EMPTY_MAP)
 				return hasMatch;
-			boolean childrenMatched = transitions.stepAllAndAdvanceWithContext(matcher, result,
-					(m, stateAfterTransition, node, context) -> node.search(m, stateAfterTransition, context),
+			boolean childrenMatched = transitions.stepAllAndAdvanceWithContext(matcher, result, N::search,
 					resultConsumer);
 			return hasMatch || childrenMatched;
 		}

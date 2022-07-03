@@ -237,7 +237,7 @@ public class CharObjectHashMap<V> implements CharMap<V> {
 				var key = keys[i];
 				long stateAfterKey = matcher.step(key, state);
 				if (matcher.isOk(stateAfterKey))
-					result |= operation.apply(matcher, stateAfterKey, value, context);
+					result |= operation.apply(value, matcher, stateAfterKey, context);
 			}
 		}
 		return result;

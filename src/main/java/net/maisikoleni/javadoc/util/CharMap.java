@@ -66,7 +66,7 @@ public interface CharMap<V> {
 		for (var transition : entrySet()) {
 			long stateAfterKey = matcher.step(transition.getKey(), state);
 			if (matcher.isOk(stateAfterKey))
-				result |= operation.apply(matcher, stateAfterKey, transition.getValue(), context);
+				result |= operation.apply(transition.getValue(), matcher, stateAfterKey, context);
 		}
 		return result;
 	}
@@ -86,7 +86,7 @@ public interface CharMap<V> {
 	@FunctionalInterface
 	interface MatchOperationWithContext<V, C> {
 
-		boolean apply(GradingLongStepMatcher matcher, long state, V value, C context);
+		boolean apply(V value, GradingLongStepMatcher matcher, long state, C context);
 	}
 
 	class JdkCharHashMap<V> extends HashMap<Character, V> implements CharMap<V> {
