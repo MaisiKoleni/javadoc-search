@@ -20,7 +20,7 @@ public record Star(Regex regex) implements Regex {
 
 	@Override
 	public String toString() {
-		return "(?:" + regex + ")*+";
+		return "(" + regex + ")*+";
 	}
 
 	@Override
