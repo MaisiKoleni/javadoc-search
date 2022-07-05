@@ -24,8 +24,8 @@ public record JavadocIndex(List<Module> modules, List<Package> packages, List<Ty
 
 	@SuppressWarnings("unchecked")
 	public Stream<SearchableEntity> stream() {
-		return (Stream<SearchableEntity>) Stream.of(modules, packages, types, members, tags).map(List::stream)
-				.reduce(Stream::concat).get();
+		return (Stream<SearchableEntity>) Stream.of(modules, packages, types, members, tags).map(List::stream) // $NOSONAR$
+				.reduce(Stream::concat).get(); // this is never empty, it consists of exactly 5 concatenated streams
 	}
 
 	public static JavadocIndex loadFromUrl(URI javadocLocation) {
@@ -50,17 +50,21 @@ public record JavadocIndex(List<Module> modules, List<Package> packages, List<Ty
 			var jsonIndex = JavaScriptIndexParser.parseJavaScriptIndexes(moduleSearchIndex.get(),
 					packageSearchIndex.get(), typeSearchIndex.get(), memberSearchIndex.get(), tagSearchIndex.get());
 			return jsonIndex.toJavadocIndex();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new JavadocIndexLoadException("JavadocIndex load interrupted", e);
+		} catch (JavadocIndexLoadException jole) {
+			throw jole;
+		} catch (RuntimeException e) {
+			throw new JavadocIndexLoadException(e);
 		} catch (ExecutionException e) {
 			if (e.getCause() instanceof JavadocIndexLoadException jole)
 				throw jole;
 			throw new JavadocIndexLoadException(e.getCause());
-		} catch (JavadocIndexLoadException e) {
-			throw e;
-		} catch (RuntimeException e) {
-			throw new JavadocIndexLoadException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new JavadocIndexLoadException("JavadocIndex load interrupted", e);
+		} finally {
+			// if we exit exceptionally and the executor is running, interrupt it
+			if (!executor.isTerminated())
+				executor.shutdownNow();
 		}
 	}
 
