@@ -1,12 +1,9 @@
 package net.maisikoleni.javadoc.util;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public interface Cache<T> {
 
@@ -32,10 +29,6 @@ public interface Cache<T> {
 
 	public static <T> Cache<T> newConcurrent() {
 		return new DelegateMapCache<>(new ConcurrentHashMap<>());
-	}
-
-	public static <T> Cache<T> newConcurrentWeak() {
-		return new ConcurrentWeakCache<>();
 	}
 
 	public static <T> Cache<T> newMapBased(Map<T, T> map) {
@@ -89,99 +82,6 @@ public interface Cache<T> {
 		@Override
 		public void clear() {
 			map.clear();
-		}
-	}
-
-	public static final class ConcurrentWeakCache<T> implements Cache<T> {
-
-		private final WeakHashMap<T, WeakReference<T>> map = new WeakHashMap<>();
-		private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
-		@Override
-		public int size() {
-			lock.readLock().lock();
-			try {
-				return map.size();
-			} finally {
-				lock.readLock().unlock();
-			}
-		}
-
-		@Override
-		public boolean isEmpty() {
-			lock.readLock().lock();
-			try {
-				return map.isEmpty();
-			} finally {
-				lock.readLock().unlock();
-			}
-		}
-
-		@Override
-		public boolean contains(T value) {
-			lock.readLock().lock();
-			try {
-				return map.containsKey(value);
-			} finally {
-				lock.readLock().unlock();
-			}
-		}
-
-		@Override
-		public T getCached(T value) {
-			lock.readLock().lock();
-			try {
-				return tryGet(map.get(value));
-			} finally {
-				lock.readLock().unlock();
-			}
-		}
-
-		@Override
-		public T put(T value) {
-			lock.writeLock().lock();
-			try {
-				return tryGet(map.put(value, new WeakReference<>(value)));
-			} finally {
-				lock.writeLock().unlock();
-			}
-		}
-
-		@Override
-		public T getOrCache(T value) {
-			var cachedValue = getCached(value);
-			if (cachedValue != null)
-				return cachedValue;
-			lock.writeLock().lock();
-			try {
-				return tryGet(map.computeIfAbsent(value, WeakReference::new));
-			} finally {
-				lock.writeLock().unlock();
-			}
-		}
-
-		@Override
-		public T remove(T value) {
-			lock.writeLock().lock();
-			try {
-				return tryGet(map.remove(value));
-			} finally {
-				lock.writeLock().unlock();
-			}
-		}
-
-		@Override
-		public void clear() {
-			lock.writeLock().lock();
-			try {
-				map.clear();
-			} finally {
-				lock.writeLock().unlock();
-			}
-		}
-
-		private static <T> T tryGet(WeakReference<T> ref) {
-			return ref == null ? null : ref.get();
 		}
 	}
 }

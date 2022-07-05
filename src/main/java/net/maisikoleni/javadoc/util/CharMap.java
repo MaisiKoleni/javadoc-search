@@ -3,7 +3,6 @@ package net.maisikoleni.javadoc.util;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -105,18 +104,6 @@ public interface CharMap<V> {
 		@Override
 		public V put(char c, V value) {
 			return super.put(c, value);
-		}
-	}
-
-	class NettyCharObjectHashMap<V> extends io.netty.util.collection.CharObjectHashMap<V> implements CharMap<V> {
-
-		@Override
-		public int hashCode() {
-			// This is overridden to include the value again, like HashMap
-			int hash = 0;
-			for (PrimitiveEntry<V> entry : entries())
-				hash += Objects.hashCode(entry.value()) * 31 ^ entry.key();
-			return hash;
 		}
 	}
 
