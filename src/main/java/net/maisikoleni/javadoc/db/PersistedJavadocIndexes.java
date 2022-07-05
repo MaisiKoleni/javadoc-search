@@ -20,7 +20,7 @@ public final class PersistedJavadocIndexes implements JavadocIndexes {
 
 	private Map<URI, JavadocIndexEntry> indexesByUri = Map.of();
 
-	private transient Persister persister;
+	private transient Persister persister; // $NOSONAR$ - needed for MicroStream
 
 	void setPersister(Persister persister) {
 		this.persister = Objects.requireNonNull(persister);

@@ -17,7 +17,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 		implements Trie<T> {
 
 	@SuppressWarnings("rawtypes")
-	protected static final Set EMPTY_SET = Collections.EMPTY_SET;
+	protected static final Set EMPTY_SET = Collections.EMPTY_SET; // $NOSONAR$ - raw type anyways
 	@SuppressWarnings("rawtypes")
 	protected static final CharMap EMPTY_MAP = CharMap.EMPTY_MAP;
 
@@ -32,7 +32,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 
 	protected abstract N newNode();
 
-	protected static abstract class AbstractNode<T, N extends AbstractNode<T, N, C>, C extends AbstractTrie<T, N, C>> {
+	protected abstract static class AbstractNode<T, N extends AbstractNode<T, N, C>, C extends AbstractTrie<T, N, C>> {
 
 		protected CharSequence chars = "";
 		protected Set<T> values = EMPTY_SET;

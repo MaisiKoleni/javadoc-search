@@ -48,7 +48,7 @@ public interface CharMap<V> {
 
 	V put(char c, V value);
 
-	@Deprecated()
+	@Deprecated
 	Set<Entry<Character, V>> entrySet();
 
 	default void forEach(CharEntryConsumer<V> entryConsumer) {
