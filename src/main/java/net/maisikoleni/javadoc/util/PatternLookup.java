@@ -1,4 +1,4 @@
-package net.maisikoleni.javadoc.search;
+package net.maisikoleni.javadoc.util;
 
 import java.util.stream.Stream;
 

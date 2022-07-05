@@ -2,8 +2,6 @@ package net.maisikoleni.javadoc.util;
 
 import java.util.Set;
 
-import net.maisikoleni.javadoc.search.PatternLookup;
-
 public interface Trie<T> extends PatternLookup<T> {
 
 	void compress(CommonCompressionCache compressionCache);
