@@ -2,7 +2,6 @@ package net.maisikoleni.javadoc.entities;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -47,15 +46,21 @@ public record JavadocIndex(List<Module> modules, List<Package> packages, List<Ty
 		try {
 			executor.shutdown();
 			if (!executor.awaitTermination(10, TimeUnit.SECONDS))
-				throw new UncheckedIOException(new IOException("serach index loading/reading timed out"));
+				throw new JavadocIndexLoadException("JavadocIndex loading/reading timed out");
 			var jsonIndex = JavaScriptIndexParser.parseJavaScriptIndexes(moduleSearchIndex.get(),
 					packageSearchIndex.get(), typeSearchIndex.get(), memberSearchIndex.get(), tagSearchIndex.get());
 			return jsonIndex.toJavadocIndex();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new RuntimeException(e);
+			throw new JavadocIndexLoadException("JavadocIndex load interrupted", e);
 		} catch (ExecutionException e) {
-			throw new RuntimeException(e.getCause());
+			if (e.getCause() instanceof JavadocIndexLoadException jole)
+				throw jole;
+			throw new JavadocIndexLoadException(e.getCause());
+		} catch (JavadocIndexLoadException e) {
+			throw e;
+		} catch (RuntimeException e) {
+			throw new JavadocIndexLoadException(e);
 		}
 	}
 
@@ -68,7 +73,24 @@ public record JavadocIndex(List<Module> modules, List<Package> packages, List<Ty
 		try (var resourceStream = resolver.resolve(name)) {
 			return new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			throw new JavadocIndexLoadException(e);
+		}
+	}
+
+	public static final class JavadocIndexLoadException extends RuntimeException {
+
+		private static final long serialVersionUID = 1L;
+
+		JavadocIndexLoadException(String message, Throwable cause) {
+			super(message, cause);
+		}
+
+		JavadocIndexLoadException(String message) {
+			super(message);
+		}
+
+		JavadocIndexLoadException(Throwable cause) {
+			super(cause);
 		}
 	}
 }
