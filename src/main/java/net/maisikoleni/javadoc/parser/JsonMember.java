@@ -1,6 +1,7 @@
 package net.maisikoleni.javadoc.parser;
 
 import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNonEmpty;
+import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNonNull;
 import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNullOrNonEmpty;
 
 record JsonMember( //
@@ -27,8 +28,9 @@ record JsonMember( //
 
 	JsonMember {
 		requireNullOrNonEmpty(m, "Module 'm'");
-		requireNonEmpty(p, "Package 'p'");
-		requireNonEmpty(c, "Class/type 'c'");
+		// FIXME p and c must not be empty, this is due to a JDK Javadoc bug
+		requireNonNull(p, "Package 'p'");
+		requireNonNull(c, "Class/type 'c'");
 		requireNonEmpty(l, "Label 'l'");
 		requireNullOrNonEmpty(u, "URL 'u'");
 	}
