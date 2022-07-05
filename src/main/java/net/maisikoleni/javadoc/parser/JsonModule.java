@@ -1,5 +1,14 @@
 package net.maisikoleni.javadoc.parser;
 
-record JsonModule(String l) implements JsonSearchableEntity {
-	// just record
+import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNonEmpty;
+
+record JsonModule( //
+		/**
+		 * Label.
+		 */
+		String l) implements JsonSearchableEntity {
+
+	JsonModule {
+		requireNonEmpty(l, "Label 'l'");
+	}
 }
