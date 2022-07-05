@@ -64,17 +64,17 @@ public record JavadocIndex(List<Module> modules, List<Package> packages, List<Ty
 		}
 	}
 
-	@FunctionalInterface
-	interface IndexResourceResolver {
-		InputStream resolve(String indexName) throws IOException;
-	}
-
 	static String getIndexAsString(IndexResourceResolver resolver, String name) {
 		try (var resourceStream = resolver.resolve(name)) {
 			return new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			throw new JavadocIndexLoadException(e);
 		}
+	}
+
+	@FunctionalInterface
+	public interface IndexResourceResolver {
+		InputStream resolve(String indexName) throws IOException;
 	}
 
 	public static final class JavadocIndexLoadException extends RuntimeException {
