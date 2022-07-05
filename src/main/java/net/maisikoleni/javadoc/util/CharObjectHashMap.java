@@ -12,7 +12,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  *
- * Modified 2022 by Christian Femers
+ * Modified 2022 by Christian Femers:
+ * - removed many unused methods and attributes to save space
+ * - added specialized methods for matching and parallel computation
+ * - include values in hash code calculation
+ * - other small changes
  */
 
 package net.maisikoleni.javadoc.util;
