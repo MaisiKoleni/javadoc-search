@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
@@ -41,23 +40,23 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 
 		protected abstract C trie();
 
-		public CharSequence chars() {
+		public final CharSequence chars() {
 			return chars;
 		}
 
-		public int charCount() {
+		public final int charCount() {
 			return chars.length();
 		}
 
-		public Set<T> values() {
+		public final Set<T> values() {
 			return values;
 		}
 
-		public Stream<T> valueStream() {
+		public final Stream<T> valueStream() {
 			return values.stream();
 		}
 
-		public CharMap<N> transitions() {
+		public final CharMap<N> transitions() {
 			return transitions;
 		}
 
@@ -135,6 +134,11 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 			});
 		}
 
+		protected void compressTransitions() {
+			transitions = FixKeyedCharMap.copyOf(transitions);
+			forEachTransition((c, node) -> node.compressTransitions());
+		}
+
 		protected abstract void cacheSelf(Cache<N> nodeCache);
 
 		protected void forEachTransition(CharEntryConsumer<N> action) {
@@ -181,15 +185,19 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
-		public String toString() {
+		public final String toString() {
 			startRead();
 			try {
-				return getClass().getSimpleName() + "[\"" + chars + "\"] values: " + values + "\n"
-						+ transitions
-								.entrySet().stream().map(e -> e.getValue().toString().indent(8)
-										.replaceFirst(" ".repeat(7), " '" + e.getKey() + "' ->"))
-								.collect(Collectors.joining());
+				var result = new StringBuilder();
+				result.append(getClass().getSimpleName());
+				result.append("[\"");
+				result.append(chars);
+				result.append("\"] values: ");
+				result.append(values);
+				result.append('\n');
+				transitions.forEach((c, node) -> result
+						.append(node.toString().indent(8).replaceFirst(" ".repeat(7), " '" + c + "' ->")));
+				return result.toString();
 			} finally {
 				endRead();
 			}
@@ -267,13 +275,14 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 		findNode(cs, true).insert(cs, value);
 	}
 
-	public void compress() {
+	public final void compress() {
 		compress(new CommonCompressionCache(factory::newCache));
 	}
 
 	@Override
-	public void compress(CommonCompressionCache compressionCache) {
+	public final void compress(CommonCompressionCache compressionCache) {
 		mutable = false;
+		root.compressTransitions();
 		root.compress(compressionCache);
 	}
 
@@ -290,7 +299,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return getClass().getSimpleName() + ": " + root.toString();
 	}
 }

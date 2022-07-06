@@ -3,7 +3,7 @@ package net.maisikoleni.javadoc.service.jdk18;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -31,18 +31,18 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testSearchSet() {
 		var results = searchAsList("Set");
-		assertThat(results).startsWith(linesToArray("""
+		assertThat(results).startsWith(expectedSearchResults("""
 				java.base/java.util.Set
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int[][])
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(String)
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax
-				jdk.jfr/jdk.jfr.SettingControl
+				jdk.management.jfr/jdk.management.jfr.SettingDescriptorInfo
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(String)
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int)
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int[][])
+				jdk.jfr/jdk.jfr.SettingControl
 				jdk.jfr/jdk.jfr.SettingControl.SettingControl()
 				jdk.jfr/jdk.jfr.SettingDefinition
 				jdk.jfr/jdk.jfr.SettingDescriptor
-				jdk.management.jfr/jdk.management.jfr.SettingDescriptorInfo
 				java.base/java.lang.constant.ConstantDescs.CD_Set
 				java.base/java.util.AbstractSet
 				java.base/java.util.BitSet
@@ -94,13 +94,13 @@ class Jdk18SearchSerivceTest {
 				java.sql/java.sql.ResultSet
 				java.sql/javax.sql.RowSet
 				jdk.jdi/com.sun.jdi.event.EventSet
-				""")).hasSize(760);
+				""")).hasLineCount(760);
 	}
 
 	@Test
 	void testSearchComparableCompareTo() {
 		var results = searchAsList("java.base/java.lang.Comparable.compareTo(T)");
-		assertThat(results).containsExactly(linesToArray("""
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.lang.Comparable.compareTo(T)
 				"""));
 	}
@@ -108,7 +108,7 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testSearchDotCollector() {
 		var results = searchAsList(".Collector");
-		assertThat(results).containsExactly(linesToArray("""
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.util.stream.Collector
 				java.base/java.util.stream.Collectors
 				"""));
@@ -117,22 +117,22 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testSearchLowersMathSpaceMax() {
 		var results = searchAsList("math max");
-		assertThat(results).containsExactly(linesToArray("""
-				java.base/java.lang.Math.max(int, int)
-				java.base/java.lang.Math.max(float, float)
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.lang.Math.max(double, double)
 				java.base/java.lang.Math.max(long, long)
-				java.base/java.lang.StrictMath.max(double, double)
-				java.base/java.lang.StrictMath.max(long, long)
+				java.base/java.lang.Math.max(float, float)
+				java.base/java.lang.Math.max(int, int)
 				java.base/java.lang.StrictMath.max(float, float)
 				java.base/java.lang.StrictMath.max(int, int)
+				java.base/java.lang.StrictMath.max(long, long)
+				java.base/java.lang.StrictMath.max(double, double)
 				"""));
 	}
 
 	@Test
 	void testSearchLowersAbstractSetTildes() {
 		var results = searchAsList("a~s~set");
-		assertThat(results).containsExactly(linesToArray("""
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.util.AbstractSet
 				java.base/java.util.AbstractSet.AbstractSet()
 				"""));
@@ -141,7 +141,7 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testSearchLowersDotAttributeSetTildes() {
 		var results = searchAsList(".a~set");
-		assertThat(results).containsExactly(linesToArray("""
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.desktop/javax.print.attribute.AttributeSet
 				java.desktop/javax.swing.text.AttributeSet
 				java.desktop/javax.print.attribute.AttributeSetUtilities
@@ -151,27 +151,38 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testSearchIOOBE() {
 		var results = searchAsList("IOOBE");
-		assertThat(results).containsExactly(linesToArray("""
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.lang.IndexOutOfBoundsException
 				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException(long)
+				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException()
 				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException(int)
 				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException(String)
-				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException()
+				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(int)
+				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(String)
+				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException(int)
+				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException(String)
+				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException()
+				java.base/java.lang.ArrayIndexOutOfBoundsException
+				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException()
+				java.base/java.lang.StringIndexOutOfBoundsException
+				"""));
+	}
+
+	@Test
+	void testSearchAIOOBE() {
+		var results = searchAsList("aioobe^^");
+		assertThat(results).isEqualTo(expectedSearchResults("""
+				java.base/java.lang.ArrayIndexOutOfBoundsException
+				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(int)
 				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(String)
 				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException()
-				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException(String)
-				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException()
-				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(int)
-				java.base/java.lang.ArrayIndexOutOfBoundsException
-				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException(int)
-				java.base/java.lang.StringIndexOutOfBoundsException
 				"""));
 	}
 
 	@Test
 	void testSearchAwaitNoArgs() {
 		var results = searchAsList("aw()");
-		assertThat(results).containsExactly(linesToArray("""
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.util.concurrent.CountDownLatch.await()
 				java.base/java.util.concurrent.CyclicBarrier.await()
 				java.base/java.util.concurrent.locks.AbstractQueuedLongSynchronizer.ConditionObject.await()
@@ -183,16 +194,17 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testSearchFilesWithModule() {
 		var results = searchAsList("java.base/...Files");
-		assertThat(results).containsExactly(linesToArray("""
+		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.nio.file.Files
 				"""));
 	}
 
-	List<CharSequence> searchAsList(String query) {
-		return searchService.searchEngine().search(query).map(SearchableEntity::qualifiedName).toList();
+	String searchAsList(String query) {
+		return searchService.searchEngine().search(query).map(SearchableEntity::qualifiedName)
+				.collect(Collectors.joining("\n"));
 	}
 
-	static String[] linesToArray(String text) {
-		return text.lines().toArray(String[]::new);
+	static String expectedSearchResults(String text) {
+		return text.strip();
 	}
 }

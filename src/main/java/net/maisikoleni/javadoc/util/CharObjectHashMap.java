@@ -23,18 +23,11 @@ package net.maisikoleni.javadoc.util;
 
 import static io.netty.util.internal.MathUtil.safeFindNextPositivePowerOfTwo;
 
-import java.util.AbstractSet;
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 import io.netty.util.collection.CharObjectMap;
-import io.netty.util.collection.CharObjectMap.PrimitiveEntry;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 
 /**
@@ -152,13 +145,9 @@ public class CharObjectHashMap<V> implements CharMap<V> {
 		return indexOf(key) >= 0;
 	}
 
-	public Iterable<PrimitiveEntry<V>> entries() {
-		return new PrimitiveIterable();
-	}
-
 	@Override
 	public int hashCode() {
-		int hash = size;
+		int hash = 0;
 		for (int i = 0; i < values.length; i++) {
 			V value = values[i];
 			if (value != null)
@@ -169,7 +158,7 @@ public class CharObjectHashMap<V> implements CharMap<V> {
 
 	@Override
 	public int hashCodeParallel() {
-		return size + IntStream.range(0, values.length).parallel().map(i -> {
+		return IntStream.range(0, values.length).parallel().map(i -> {
 			V value = values[i];
 			if (value == null)
 				return 0;
@@ -182,11 +171,9 @@ public class CharObjectHashMap<V> implements CharMap<V> {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof CharObjectHashMap<?>)) {
+		if (!(obj instanceof CharMap<?> other)) {
 			return false;
 		}
-		@SuppressWarnings("rawtypes")
-		CharObjectHashMap other = (CharObjectHashMap) obj;
 		if (size != other.size()) {
 			return false;
 		}
@@ -201,12 +188,6 @@ public class CharObjectHashMap<V> implements CharMap<V> {
 			}
 		}
 		return true;
-	}
-
-	@Deprecated
-	@Override
-	public Set<Entry<Character, V>> entrySet() {
-		return new EntrySet();
 	}
 
 	@Override
@@ -387,151 +368,5 @@ public class CharObjectHashMap<V> implements CharMap<V> {
 	 */
 	protected static String keyToString(char key) {
 		return Character.toString(key);
-	}
-
-	private final class PrimitiveIterable implements Iterable<PrimitiveEntry<V>> {
-		@Override
-		public Iterator<PrimitiveEntry<V>> iterator() {
-			return new PrimitiveIterator();
-		}
-	}
-
-	/**
-	 * Set implementation for iterating over the entries of the map.
-	 */
-	private final class EntrySet extends AbstractSet<Entry<Character, V>> {
-		@Override
-		public Iterator<Entry<Character, V>> iterator() {
-			return new MapIterator();
-		}
-
-		@Override
-		public int size() {
-			return CharObjectHashMap.this.size();
-		}
-	}
-
-	/**
-	 * Iterator over primitive entries. Entry key/values are overwritten by each
-	 * call to {@link #next()}.
-	 */
-	private final class PrimitiveIterator implements Iterator<PrimitiveEntry<V>>, PrimitiveEntry<V> {
-		private int nextIndex = -1;
-		private int entryIndex = -1;
-
-		private void scanNext() {
-			while (++nextIndex != values.length && values[nextIndex] == null) {
-				// increment nextIndex until a value is found or the end is hit
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			if (nextIndex == -1) {
-				scanNext();
-			}
-			return nextIndex != values.length;
-		}
-
-		@Override
-		public PrimitiveEntry<V> next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-
-			scanNext();
-
-			// Always return the same Entry object, just change its index each time.
-			return this;
-		}
-
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-
-		// Entry implementation. Since this implementation uses a single Entry, we
-		// coalesce that
-		// into the Iterator object (potentially making loop optimization much easier).
-
-		@Override
-		public char key() {
-			return keys[entryIndex];
-		}
-
-		@Override
-		public V value() {
-			return values[entryIndex];
-		}
-
-		@Override
-		public void setValue(V value) {
-			values[entryIndex] = value;
-		}
-	}
-
-	/**
-	 * Iterator used by the {@link Map} interface.
-	 */
-	private final class MapIterator implements Iterator<Entry<Character, V>> {
-		private final PrimitiveIterator iter = new PrimitiveIterator();
-
-		@Override
-		public boolean hasNext() {
-			return iter.hasNext();
-		}
-
-		@Override
-		public Entry<Character, V> next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-
-			iter.next();
-
-			return new MapEntry(iter.entryIndex);
-		}
-
-		@Override
-		public void remove() {
-			iter.remove();
-		}
-	}
-
-	/**
-	 * A single entry in the map.
-	 */
-	final class MapEntry implements Entry<Character, V> {
-		private final int entryIndex;
-
-		MapEntry(int entryIndex) {
-			this.entryIndex = entryIndex;
-		}
-
-		@Override
-		public Character getKey() {
-			verifyExists();
-			return keys[entryIndex];
-		}
-
-		@Override
-		public V getValue() {
-			verifyExists();
-			return values[entryIndex];
-		}
-
-		@Override
-		public V setValue(V value) {
-			verifyExists();
-			V prevValue = values[entryIndex];
-			values[entryIndex] = value;
-			return prevValue;
-		}
-
-		private void verifyExists() {
-			if (values[entryIndex] == null) {
-				throw new IllegalStateException("The map entry has been removed");
-			}
-		}
 	}
 }

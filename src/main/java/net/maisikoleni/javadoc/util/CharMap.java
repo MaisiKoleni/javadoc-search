@@ -1,9 +1,6 @@
 package net.maisikoleni.javadoc.util;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
@@ -33,10 +30,37 @@ public interface CharMap<V> {
 			throw new UnsupportedOperationException("Cannot put into EMPTY_MAP");
 		}
 
-		@Deprecated
 		@Override
-		public Set<Entry<Character, Object>> entrySet() {
-			return Collections.EMPTY_SET;
+		public void forEach(CharEntryConsumer<Object> entryConsumer) {
+			// do nothing
+		}
+
+		@Override
+		public void forEachParallel(CharEntryConsumer<Object> entryConsumer) {
+			// do nothing
+		}
+
+		@Override
+		public <C> boolean stepAllAndAdvanceWithContext(GradingLongStepMatcher matcher, long state,
+				MatchOperationWithContext<Object, C> operation, C context) {
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
+		@Override
+		public int hashCodeParallel() {
+			return 0;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this)
+				return true;
+			return obj instanceof CharMap cm && cm.size() == 0;
 		}
 	};
 
@@ -48,33 +72,14 @@ public interface CharMap<V> {
 
 	V put(char c, V value);
 
-	@Deprecated
-	Set<Entry<Character, V>> entrySet();
+	void forEach(CharEntryConsumer<V> entryConsumer);
 
-	default void forEach(CharEntryConsumer<V> entryConsumer) {
-		entrySet().forEach(e -> entryConsumer.accept(e.getKey(), e.getValue()));
-	}
+	void forEachParallel(CharEntryConsumer<V> entryConsumer);
 
-	default void forEachParallel(CharEntryConsumer<V> entryConsumer) {
-		entrySet().stream().parallel().forEach(e -> entryConsumer.accept(e.getKey(), e.getValue()));
-	}
+	<C> boolean stepAllAndAdvanceWithContext(GradingLongStepMatcher matcher, long state,
+			MatchOperationWithContext<V, C> operation, C context);
 
-	default <C> boolean stepAllAndAdvanceWithContext(GradingLongStepMatcher matcher, long state,
-			MatchOperationWithContext<V, C> operation, C context) {
-		var result = false;
-		for (var transition : entrySet()) {
-			long stateAfterKey = matcher.step(transition.getKey(), state);
-			if (matcher.isOk(stateAfterKey))
-				result |= operation.apply(transition.getValue(), matcher, stateAfterKey, context);
-		}
-		return result;
-	}
-
-	default int hashCodeParallel() {
-		var hash = new AtomicInteger(size());
-		forEachParallel((c, node) -> hash.addAndGet(node.hashCode() * 31 + c));
-		return hash.get();
-	}
+	int hashCodeParallel();
 
 	@FunctionalInterface
 	interface CharEntryConsumer<V> {
@@ -104,6 +109,35 @@ public interface CharMap<V> {
 		@Override
 		public V put(char c, V value) {
 			return super.put(c, value);
+		}
+
+		@Override
+		public void forEach(CharEntryConsumer<V> entryConsumer) {
+			super.entrySet().forEach(e -> entryConsumer.accept(e.getKey(), e.getValue()));
+		}
+
+		@Override
+		public void forEachParallel(CharEntryConsumer<V> entryConsumer) {
+			super.entrySet().stream().parallel().forEach(e -> entryConsumer.accept(e.getKey(), e.getValue()));
+		}
+
+		@Override
+		public <C> boolean stepAllAndAdvanceWithContext(GradingLongStepMatcher matcher, long state,
+				MatchOperationWithContext<V, C> operation, C context) {
+			var result = false;
+			for (var transition : super.entrySet()) {
+				long stateAfterKey = matcher.step(transition.getKey(), state);
+				if (matcher.isOk(stateAfterKey))
+					result |= operation.apply(transition.getValue(), matcher, stateAfterKey, context);
+			}
+			return result;
+		}
+
+		@Override
+		public int hashCodeParallel() {
+			var hash = new AtomicInteger(super.size());
+			forEachParallel((c, node) -> hash.addAndGet(node.hashCode() * 31 + c));
+			return hash.get();
 		}
 	}
 
