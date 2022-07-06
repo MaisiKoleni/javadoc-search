@@ -18,7 +18,8 @@ public final class TrieSearchEngineUtils {
 	private static final String SKIP_CHAR = "~";
 	private static final String SEPARATOR_CHAR_CLASS = ".,()<>/\\[\\]";
 	private static final Pattern SEPARATORS = Pattern.compile("[" + SEPARATOR_CHAR_CLASS + "]");
-	private static final Pattern QUERY_SPLIT = Pattern.compile("(?= )|(?<=[" + SEPARATOR_CHAR_CLASS + " ])");
+	private static final Pattern QUERY_SPLIT = Pattern
+			.compile("(?=[" + SEPARATOR_CHAR_CLASS + " ])|(?<=[" + SEPARATOR_CHAR_CLASS + " ])");
 	private static final Pattern IDENTIFIER_SPLIT = Pattern.compile("(?=[\\p{javaUpperCase}_])");
 	private static final Pattern SKIP_TO_CHAR = Pattern.compile(SKIP_CHAR + "++");
 
