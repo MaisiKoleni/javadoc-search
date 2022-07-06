@@ -10,7 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is for resetting the own common pool forcefully and have it GC'ed
+ * This is for resetting a custom common pool forcefully and have it GC'ed
+ * (especially for Quarkus reloads)
  */
 public final class WeakCommonPool {
 
