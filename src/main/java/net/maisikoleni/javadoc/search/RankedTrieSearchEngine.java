@@ -15,7 +15,7 @@ import net.maisikoleni.javadoc.entities.Tag;
 import net.maisikoleni.javadoc.entities.Type;
 import net.maisikoleni.javadoc.search.TrieSearchEngineUtils.SubdividedEntityConsumer;
 import net.maisikoleni.javadoc.util.Cache;
-import net.maisikoleni.javadoc.util.RankedConcurrentTrie;
+import net.maisikoleni.javadoc.util.RankedTrie.RankedConcurrentTrie;
 import net.maisikoleni.javadoc.util.Trie;
 import net.maisikoleni.javadoc.util.WeakCommonPool;
 import net.maisikoleni.javadoc.util.regex.CompiledRegex;

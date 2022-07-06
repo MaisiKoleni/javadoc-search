@@ -12,6 +12,10 @@ public class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie<T>.Node, SimpleTri
 		super(new TypeFactory<>());
 	}
 
+	public SimpleTrie(AbstractTypeFactory<T> factory) {
+		super(factory);
+	}
+
 	@Override
 	protected Node newNode() {
 		return new Node();

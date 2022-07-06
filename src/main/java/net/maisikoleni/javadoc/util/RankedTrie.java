@@ -11,18 +11,21 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import net.maisikoleni.javadoc.util.AbstractTrie.GradedValueSet;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 
-public final class RankedConcurrentTrie<T extends Comparable<T>> extends ConcurrentTrie<T> {
+public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 
+	private final AbstractTrie<T, ?, ?> trie;
 	private final RankingFunction<T> rankingFunction;
 
-	public RankedConcurrentTrie(RankingFunction<T> rankingFunction) {
-		super(new TypeFactory<>());
+	public RankedTrie(AbstractTrie<T, ?, ?> trie, RankingFunction<T> rankingFunction) {
+		this.trie = Objects.requireNonNull(trie);
 		this.rankingFunction = Objects.requireNonNull(rankingFunction);
 	}
 
-	static class TypeFactory<T extends Comparable<T>> extends ConcurrentTrie.TypeFactory<T> {
+	public abstract static class AbstractTypeFactory<T extends Comparable<T>>
+			extends AbstractTrie.AbstractTypeFactory<T> {
 
 		@Override
 		protected Set<T> newValueSet() {
@@ -30,14 +33,59 @@ public final class RankedConcurrentTrie<T extends Comparable<T>> extends Concurr
 		}
 	}
 
+	public static final class RankedSimpleTrie<T extends Comparable<T>> extends RankedTrie<T> {
+
+		public RankedSimpleTrie(RankingFunction<T> rankingFunction) {
+			super(new SimpleTrie<>(new TypeFactory<T>()), rankingFunction);
+		}
+
+		private static class TypeFactory<T extends Comparable<T>> extends SimpleTrie.TypeFactory<T> {
+
+			@Override
+			protected Set<T> newValueSet() {
+				return new TreeSet<>();
+			}
+		}
+	}
+
+	public static final class RankedConcurrentTrie<T extends Comparable<T>> extends RankedTrie<T> {
+
+		public RankedConcurrentTrie(RankingFunction<T> rankingFunction) {
+			super(new ConcurrentTrie<>(new TypeFactory<T>()), rankingFunction);
+		}
+
+		private static class TypeFactory<T extends Comparable<T>> extends ConcurrentTrie.TypeFactory<T> {
+
+			@Override
+			protected Set<T> newValueSet() {
+				return new TreeSet<>();
+			}
+		}
+	}
+
+	@Override
+	public void insert(CharSequence cs, T value) {
+		trie.insert(cs, value);
+	}
+
+	@Override
+	public Stream<T> search(CharSequence cs) {
+		return trie.search(cs);
+	}
+
+	@Override
+	public void compress(CommonCompressionCache compressionCache) {
+		trie.compress(compressionCache);
+	}
+
 	@Override
 	public Stream<T> search(GradingLongStepMatcher matcher) {
 		var rankedMerger = new RankedMerger();
-		root.search(matcher, matcher.getStartState(), rankedMerger::add);
+		trie.root.search(matcher, matcher.getStartState(), rankedMerger::add);
 		return rankedMerger.stream().distinct();
 	}
 
-	private class RankedMerger implements Spliterator<T> {
+	private final class RankedMerger implements Spliterator<T> {
 
 		private final PriorityQueue<Entry> sets = new PriorityQueue<>();
 		private int size;
@@ -74,7 +122,7 @@ public final class RankedConcurrentTrie<T extends Comparable<T>> extends Concurr
 			return StreamSupport.stream(this, false);
 		}
 
-		private class Entry implements Comparable<Entry> {
+		private final class Entry implements Comparable<Entry> {
 
 			private final double searchGrade;
 			private final Iterator<T> values;
@@ -127,4 +175,5 @@ public final class RankedConcurrentTrie<T extends Comparable<T>> extends Concurr
 		 */
 		double applyAsDouble(T entry, double searchGrade);
 	}
+
 }
