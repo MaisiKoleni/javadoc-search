@@ -37,12 +37,12 @@ class Jdk18SearchSerivceTest {
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(String)
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax
+				jdk.jfr/jdk.jfr.SettingControl
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int)
+				jdk.jfr/jdk.jfr.SettingControl.SettingControl()
 				jdk.jfr/jdk.jfr.SettingDefinition
 				jdk.jfr/jdk.jfr.SettingDescriptor
 				jdk.management.jfr/jdk.management.jfr.SettingDescriptorInfo
-				jdk.jfr/jdk.jfr.SettingControl
-				jdk.jfr/jdk.jfr.SettingControl.SettingControl()
 				java.base/java.lang.constant.ConstantDescs.CD_Set
 				java.base/java.util.AbstractSet
 				java.base/java.util.BitSet
