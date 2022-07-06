@@ -1,6 +1,7 @@
 package net.maisikoleni.javadoc.util.regex;
 
-import static java.lang.Long.*;
+import static java.lang.Long.rotateLeft;
+import static java.lang.Long.rotateRight;
 
 import java.util.HexFormat;
 import java.util.LinkedHashMap;

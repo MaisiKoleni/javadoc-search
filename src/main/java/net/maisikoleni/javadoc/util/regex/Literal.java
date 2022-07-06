@@ -10,14 +10,14 @@ public record Literal(CharSequence chars) implements Regex {
 	}
 
 	@Override
-	@SuppressWarnings("all")
 	public int matches(CharSequence s, int start) {
 		int length = s.length();
-		for (int i = 0; i < chars.length(); i++, start++) {
-			if (length == start || s.charAt(start) != chars.charAt(i))
+		int pos = start;
+		for (int i = 0; i < chars.length(); i++, pos++) {
+			if (length == pos || s.charAt(pos) != chars.charAt(i))
 				return -1;
 		}
-		return start;
+		return pos;
 	}
 
 	@Override

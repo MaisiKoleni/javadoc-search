@@ -9,13 +9,13 @@ public record Star(Regex regex) implements Regex {
 	}
 
 	@Override
-	@SuppressWarnings("all")
 	public int matches(CharSequence s, int start) {
-		int newStart;
-		while ((newStart = regex.matches(s, start)) >= 0) {
-			start = newStart;
+		int pos = start;
+		int newPos;
+		while ((newPos = regex.matches(s, pos)) >= 0) {
+			pos = newPos;
 		}
-		return start;
+		return pos;
 	}
 
 	@Override

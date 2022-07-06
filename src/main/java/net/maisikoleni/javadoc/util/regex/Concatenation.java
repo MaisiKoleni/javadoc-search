@@ -25,14 +25,14 @@ public record Concatenation(List<Regex> parts) implements Regex {
 	}
 
 	@Override
-	@SuppressWarnings("all")
 	public int matches(CharSequence s, int start) {
+		int pos = start;
 		for (Regex regex : parts) {
-			start = regex.matches(s, start);
-			if (start == -1)
+			pos = regex.matches(s, pos);
+			if (pos == -1)
 				return -1;
 		}
-		return start;
+		return pos;
 	}
 
 	@Override
