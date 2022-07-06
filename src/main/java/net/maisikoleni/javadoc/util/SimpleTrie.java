@@ -30,7 +30,7 @@ public class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie<T>.Node, SimpleTri
 
 		@Override
 		protected <N> CharMap<N> newTransitionMap() {
-			return new CharObjectHashMap<>(2, 0.5f);
+			return new JdkCharHashMap<>(2, 0.5f);
 		}
 
 		@Override

@@ -34,7 +34,7 @@ public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, C
 
 		@Override
 		protected <N> CharMap<N> newTransitionMap() {
-			return new CharObjectHashMap<>(2, 0.5f);
+			return new JdkCharHashMap<>(2, 0.5f);
 		}
 
 		@Override
