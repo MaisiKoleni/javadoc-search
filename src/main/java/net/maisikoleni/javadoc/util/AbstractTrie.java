@@ -81,7 +81,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 				valueNode.values = Set.of(value);
 				// add node transition to this node (after potential split)
 				if (transitions == CharMap.EMPTY_MAP)
-					transitions = CharMap.newEmpty();
+					transitions = trie().factory.newTransitionMap();
 				transitions.put(transitionChar, valueNode);
 			}
 		}
