@@ -51,8 +51,8 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		}
 		private static final PrimitiveReentrantReadWriteLock<Node<?>> LOCK = new PrimitiveReentrantReadWriteLock<>(
 				LOCK_VAR_HANDLE);
-		private static final int LOCK_DEACTIVATED = Integer.MIN_VALUE;
 
+		@SuppressWarnings("unused") // used in VarHandle
 		private int intLock;
 
 		@Override
@@ -62,26 +62,22 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 
 		@Override
 		protected void startRead() {
-			if (intLock != LOCK_DEACTIVATED)
-				LOCK.startRead(this);
+			LOCK.startRead(this);
 		}
 
 		@Override
 		protected void endRead() {
-			if (intLock != LOCK_DEACTIVATED)
-				LOCK.endRead(this);
+			LOCK.endRead(this);
 		}
 
 		@Override
 		protected void startWrite() {
-			if (intLock != LOCK_DEACTIVATED)
-				LOCK.startWrite(this);
+			LOCK.startWrite(this);
 		}
 
 		@Override
 		protected void endWrite() {
-			if (intLock != LOCK_DEACTIVATED)
-				LOCK.endWrite(this);
+			LOCK.endWrite(this);
 		}
 
 		@Override
@@ -104,7 +100,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		@Override
 		protected void compress(CommonCompressionCache cache) {
 			super.compress(cache);
-			intLock = LOCK_DEACTIVATED;
+			LOCK.setInactive(this, true);
 		}
 
 		@Override

@@ -1,10 +1,11 @@
 package net.maisikoleni.javadoc.util;
 
-import static java.lang.invoke.VarHandle.AccessMode.COMPARE_AND_EXCHANGE_ACQUIRE;
-import static java.lang.invoke.VarHandle.AccessMode.GET_AND_ADD_ACQUIRE;
-import static java.lang.invoke.VarHandle.AccessMode.GET_AND_ADD_RELEASE;
+import static java.lang.invoke.VarHandle.AccessMode.COMPARE_AND_EXCHANGE;
+import static java.lang.invoke.VarHandle.AccessMode.COMPARE_AND_SET;
+import static java.lang.invoke.VarHandle.AccessMode.GET_AND_ADD;
 import static java.lang.invoke.VarHandle.AccessMode.GET_AND_BITWISE_OR;
-import static java.lang.invoke.VarHandle.AccessMode.GET_AND_SET_RELEASE;
+import static java.lang.invoke.VarHandle.AccessMode.GET_AND_SET;
+import static java.lang.invoke.VarHandle.AccessMode.GET_VOLATILE;
 import static java.lang.invoke.VarHandle.AccessMode.SET_VOLATILE;
 
 import java.lang.invoke.VarHandle;
@@ -29,15 +30,17 @@ public final class PrimitiveReentrantReadWriteLock<T> {
 	private static final Logger LOG = LoggerFactory.getLogger(PrimitiveReentrantReadWriteLock.class);
 
 	private static final int LOCK_UNUSED = 0;
+	private static final int LOCK_INACTIVE_OFFSET = 31;
+	private static final int LOCK_INACTIVE = 1 << LOCK_INACTIVE_OFFSET;
 	private static final int LOCK_WRITE_OFFSET = 30;
 	private static final int LOCK_WRITE = 1 << LOCK_WRITE_OFFSET;
 	private static final int LOCK_COORD_OFFSET = 29;
 	private static final int LOCK_COORD = 1 << LOCK_COORD_OFFSET;
-	private static final int READ_COORD_RESET_THRESHOLD = 1 << (LOCK_COORD_OFFSET - 2);
+	private static final int READ_COORD_RESET_THRESHOLD = 1 << (LOCK_COORD_OFFSET - 3);
 	private static final int LOCK_READS_MASK = LOCK_COORD - 1;
 
-	private static final AccessMode[] REQUIREMENTS = { GET_AND_ADD_ACQUIRE, GET_AND_BITWISE_OR, SET_VOLATILE,
-			GET_AND_ADD_RELEASE, COMPARE_AND_EXCHANGE_ACQUIRE, GET_AND_SET_RELEASE };
+	private static final AccessMode[] REQUIREMENTS = { GET_VOLATILE, COMPARE_AND_SET, GET_AND_ADD, GET_AND_BITWISE_OR,
+			SET_VOLATILE, COMPARE_AND_EXCHANGE, GET_AND_SET };
 
 	private final VarHandle intLock;
 
@@ -50,11 +53,27 @@ public final class PrimitiveReentrantReadWriteLock<T> {
 				throw new IllegalArgumentException("VarHandle intLock must support " + requirement);
 	}
 
+	private boolean lockInactive(T holder) {
+		return (int) intLock.getVolatile(holder) == LOCK_INACTIVE;
+	}
+
+	public void setInactive(T holder, boolean value) {
+		if (value) {
+			if (!intLock.compareAndSet(holder, LOCK_UNUSED, LOCK_INACTIVE))
+				throw new IllegalStateException("cannot set lock inactive while in use");
+		} else {
+			if (!intLock.compareAndSet(holder, LOCK_INACTIVE, LOCK_UNUSED))
+				throw new IllegalStateException("lock already active");
+		}
+	}
+
 	public void startRead(T holder) {
+		if (lockInactive(holder))
+			return;
 		int value;
 		// try to acquire an unused lock be incrementing the readers
 		// continuously while the write lock might be held
-		while ((value = (int) intLock.getAndAddAcquire(holder, 1)) >= LOCK_WRITE) {
+		while ((value = (int) intLock.getAndAdd(holder, 1)) >= LOCK_WRITE) {
 			// as this read attempt failed, check how many read attempts there are
 			var readAttempts = value & LOCK_READS_MASK;
 			// should the read attempts threaten to overflow into the write flag
@@ -75,25 +94,31 @@ public final class PrimitiveReentrantReadWriteLock<T> {
 	}
 
 	public void endRead(T holder) {
+		if (lockInactive(holder))
+			return;
 		// remove the reader by decrementing the reader count
-		int lockBeforeRelese = (int) intLock.getAndAddRelease(holder, -1);
+		int lockBeforeRelese = (int) intLock.getAndAdd(holder, -1);
 		// debug/error code
 		if (lockBeforeRelese <= 0)
 			throw new IllegalStateException("endRead(): negative amount of readers");
 	}
 
 	public void startWrite(T holder) {
+		if (lockInactive(holder))
+			return;
 		// wait for the lock to be unused
-		while ((int) intLock.compareAndExchangeAcquire(holder, LOCK_UNUSED, LOCK_WRITE) != LOCK_UNUSED)
+		while ((int) intLock.compareAndExchange(holder, LOCK_UNUSED, LOCK_WRITE) != LOCK_UNUSED)
 			Thread.onSpinWait();
 	}
 
 	public void endWrite(T holder) {
+		if (lockInactive(holder))
+			return;
 		// wait for potential lock reset by readers to be finished
 		while (((int) intLock.getAndBitwiseOr(holder, LOCK_COORD) & LOCK_COORD) != 0)
 			Thread.onSpinWait();
 		// reset everything, including the write flag
-		int lockBeforeRelese = (int) intLock.getAndSetRelease(holder, LOCK_UNUSED);
+		int lockBeforeRelese = (int) intLock.getAndSet(holder, LOCK_UNUSED);
 		// debug/error code
 		if (lockBeforeRelese < LOCK_WRITE)
 			throw new IllegalStateException("endWrite(): no write lock, too many read requests");
