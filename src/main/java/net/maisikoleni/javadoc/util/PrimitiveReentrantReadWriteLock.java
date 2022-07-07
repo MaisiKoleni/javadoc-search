@@ -62,7 +62,8 @@ public final class PrimitiveReentrantReadWriteLock<T> {
 				// try to acquire the coordination flag
 				int coordResult = (int) intLock.getAndBitwiseOr(holder, LOCK_COORD);
 				// if it was 0, we are now permitted to change the lock, endWrite() will wait
-				if ((coordResult & LOCK_COORD) == 0) {
+				// the write flag must still be set
+				if ((coordResult & LOCK_COORD) == 0 && (coordResult & LOCK_WRITE) != 0) {
 					// so we can reset the lock to the write flag only
 					intLock.setVolatile(holder, LOCK_WRITE);
 					// now the coordination flag as well as all read attempts are cleared
