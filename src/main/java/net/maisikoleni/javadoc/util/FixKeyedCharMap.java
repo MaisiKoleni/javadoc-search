@@ -2,6 +2,7 @@ package net.maisikoleni.javadoc.util;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
@@ -138,6 +139,12 @@ public class FixKeyedCharMap<V> implements CharMap<V> {
 				return false;
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return IntStream.range(0, keys.length).mapToObj(i -> keys[i] + "=" + values[i])
+				.collect(Collectors.joining(", ", "{", "}"));
 	}
 
 	@SuppressWarnings("unchecked")
