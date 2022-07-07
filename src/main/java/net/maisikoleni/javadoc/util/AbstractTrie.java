@@ -67,7 +67,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 			if (isStringEnd) {
 				// add value to this node (after potential split)
 				if (values == EMPTY_SET) {
-					values = Set.of(value);
+					values = SingleElementSet.of(value);
 				} else {
 					if (values.size() == 1)
 						values = trie().factory.newValueSet(values);
@@ -78,7 +78,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 				var valueNode = trie().newNode();
 				var transitionChar = cs.charAt(startIndex);
 				valueNode.chars = cs.subSequence(startIndex + 1, cs.length());
-				valueNode.values = Set.of(value);
+				valueNode.values = SingleElementSet.of(value);
 				// add node transition to this node (after potential split)
 				if (transitions == CharMap.EMPTY_MAP)
 					transitions = trie().factory.newTransitionMap();
