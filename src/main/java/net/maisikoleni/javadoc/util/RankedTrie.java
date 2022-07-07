@@ -36,7 +36,7 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 	public static final class RankedSimpleTrie<T extends Comparable<T>> extends RankedTrie<T> {
 
 		public RankedSimpleTrie(RankingFunction<T> rankingFunction) {
-			super(new SimpleTrie<>(new TypeFactory<T>()), rankingFunction);
+			super(new SimpleTrie<>(new TypeFactory<T>()), rankingFunction); // $NOSONAR - Eclipse Compiler Bug
 		}
 
 		private static class TypeFactory<T extends Comparable<T>> extends SimpleTrie.TypeFactory<T> {
@@ -51,7 +51,7 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 	public static final class RankedConcurrentTrie<T extends Comparable<T>> extends RankedTrie<T> {
 
 		public RankedConcurrentTrie(RankingFunction<T> rankingFunction) {
-			super(new ConcurrentTrie<>(new TypeFactory<T>()), rankingFunction);
+			super(new ConcurrentTrie<>(new TypeFactory<T>()), rankingFunction); // $NOSONAR - Eclipse Compiler Bug
 		}
 
 		private static class TypeFactory<T extends Comparable<T>> extends ConcurrentTrie.TypeFactory<T> {
@@ -176,4 +176,22 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 		double applyAsDouble(T entry, double searchGrade);
 	}
 
+	@Override
+	public final int hashCode() {
+		return rankingFunction.hashCode() * 31 + trie.hashCode();
+	}
+
+	@Override
+	public final boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+		if (!(obj instanceof RankedTrie<?> other))
+			return false;
+		return rankingFunction.equals(other.rankingFunction) && trie.equals(other.trie);
+	}
+
+	@Override
+	public final String toString() {
+		return "Ranked" + trie.toString();
+	}
 }
