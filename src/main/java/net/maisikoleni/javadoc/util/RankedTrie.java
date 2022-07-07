@@ -16,10 +16,10 @@ import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 
 public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 
-	private final AbstractTrie<T, ?, ?> trie;
+	private final AbstractTrie<T, ?> trie;
 	private final RankingFunction<T> rankingFunction;
 
-	public RankedTrie(AbstractTrie<T, ?, ?> trie, RankingFunction<T> rankingFunction) {
+	public RankedTrie(AbstractTrie<T, ?> trie, RankingFunction<T> rankingFunction) {
 		this.trie = Objects.requireNonNull(trie);
 		this.rankingFunction = Objects.requireNonNull(rankingFunction);
 	}

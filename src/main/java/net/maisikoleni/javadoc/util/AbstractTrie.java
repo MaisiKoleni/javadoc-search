@@ -12,8 +12,7 @@ import java.util.stream.Stream;
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 
-public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, C>, C extends AbstractTrie<T, N, C>>
-		implements Trie<T> {
+public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>> implements Trie<T> {
 
 	@SuppressWarnings("rawtypes")
 	protected static final Set EMPTY_SET = Collections.EMPTY_SET; // $NOSONAR$ - raw type anyways
@@ -24,21 +23,17 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 	protected final N root;
 	protected boolean mutable = true;
 
-	protected AbstractTrie(AbstractTypeFactory<T> factory) {
+	protected AbstractTrie(N root, AbstractTypeFactory<T> factory) {
 		this.factory = Objects.requireNonNull(factory);
-		this.root = newNode();
+		this.root = Objects.requireNonNull(root);
 	}
 
-	protected abstract N newNode();
-
-	protected abstract static class AbstractNode<T, N extends AbstractNode<T, N, C>, C extends AbstractTrie<T, N, C>> {
+	protected abstract static class AbstractNode<T, N extends AbstractNode<T, N>> {
 
 		protected CharSequence chars = "";
 		protected Set<T> values = EMPTY_SET;
 		protected CharMap<N> transitions = EMPTY_MAP;
 		protected int hashCode;
-
-		protected abstract C trie();
 
 		public final CharSequence chars() {
 			return chars;
@@ -60,28 +55,30 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 			return transitions;
 		}
 
-		public void insert(CharSequence cs, int startIndex, int indexInNode, T value) {
+		protected abstract N newNode();
+
+		public void insert(CharSequence cs, int startIndex, int indexInNode, T value, AbstractTypeFactory<T> factory) {
 			var isStringEnd = cs.length() == startIndex;
 			// split if necessary
-			split(indexInNode);
+			split(indexInNode, factory);
 			if (isStringEnd) {
 				// add value to this node (after potential split)
 				if (values == EMPTY_SET) {
 					values = SingleElementSet.of(value);
 				} else {
 					if (values.size() == 1)
-						values = trie().factory.newValueSet(values);
+						values = factory.newValueSet(values);
 					values.add(value);
 				}
 			} else {
 				// create a new node for the missing content
-				var valueNode = trie().newNode();
+				var valueNode = newNode();
 				var transitionChar = cs.charAt(startIndex);
 				valueNode.chars = cs.subSequence(startIndex + 1, cs.length());
 				valueNode.values = SingleElementSet.of(value);
 				// add node transition to this node (after potential split)
 				if (transitions == CharMap.EMPTY_MAP)
-					transitions = trie().factory.newTransitionMap();
+					transitions = factory.newTransitionMap();
 				transitions.put(transitionChar, valueNode);
 			}
 		}
@@ -103,17 +100,17 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 			return hasMatch || childrenMatched;
 		}
 
-		protected void split(int indexInNode) {
+		protected void split(int indexInNode, AbstractTypeFactory<T> factory) {
 			if (indexInNode == charCount())
 				return;
-			var node = trie().newNode();
+			var node = newNode();
 			// split strings and extract transition character
 			var transitionChar = chars.charAt(indexInNode);
 			node.chars = chars.subSequence(indexInNode + 1, chars.length());
 			chars = chars.subSequence(0, indexInNode);
 			// move transitions and values to the new node behind this one
 			node.transitions = transitions;
-			transitions = trie().factory.newTransitionMap();
+			transitions = factory.newTransitionMap();
 			node.values = values;
 			values = EMPTY_SET;
 			// create new transition
@@ -179,7 +176,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 		public final boolean equals(Object obj) {
 			if (obj == this)
 				return true;
-			return obj instanceof AbstractTrie.AbstractNode<?, ?, ?> other && hashCode() == other.hashCode()
+			return obj instanceof AbstractTrie.AbstractNode<?, ?> other && hashCode() == other.hashCode()
 					&& chars.equals(other.chars) && values.equals(other.values)
 					&& transitions.equals(other.transitions);
 		}
@@ -204,7 +201,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 		}
 	}
 
-	protected interface NodeMatch<T, N extends AbstractTrie.AbstractNode<T, N, C>, C extends AbstractTrie<T, N, C>> {
+	protected interface NodeMatch<T, N extends AbstractTrie.AbstractNode<T, N>> {
 
 		boolean success();
 
@@ -221,8 +218,8 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 			return onFailure.apply(node(), indexInString());
 		}
 
-		default void insert(CharSequence cs, T value) {
-			node().insert(cs, indexInString(), indexInNode(), value);
+		default void insert(CharSequence cs, T value, AbstractTypeFactory<T> factory) {
+			node().insert(cs, indexInString(), indexInNode(), value, factory);
 		}
 	}
 
@@ -239,7 +236,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 		}
 	}
 
-	protected abstract NodeMatch<T, N, C> findNode(CharSequence cs, boolean writeAccess);
+	protected abstract NodeMatch<T, N> findNode(CharSequence cs, boolean writeAccess);
 
 	protected abstract static class AbstractTypeFactory<T> {
 
@@ -272,7 +269,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 	public void insert(CharSequence cs, T value) {
 		if (!mutable)
 			throw new IllegalStateException("Trie is immutable");
-		findNode(cs, true).insert(cs, value);
+		findNode(cs, true).insert(cs, value, factory);
 	}
 
 	public final void compress() {
@@ -295,7 +292,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N, 
 	public final boolean equals(Object obj) {
 		if (obj == this)
 			return true;
-		return obj instanceof AbstractTrie<?, ?, ?> other && hashCode() == other.hashCode() && root.equals(other.root);
+		return obj instanceof AbstractTrie<?, ?> other && hashCode() == other.hashCode() && root.equals(other.root);
 	}
 
 	@Override

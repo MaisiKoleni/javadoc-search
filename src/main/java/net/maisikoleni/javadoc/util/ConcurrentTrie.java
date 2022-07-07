@@ -10,19 +10,14 @@ import java.util.stream.Stream;
 
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 
-public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, ConcurrentTrie<T>> {
+public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node<T>> {
 
 	public ConcurrentTrie() {
-		super(new TypeFactory<>());
+		this(new TypeFactory<>());
 	}
 
 	public ConcurrentTrie(AbstractTypeFactory<T> factory) {
-		super(factory);
-	}
-
-	@Override
-	protected Node newNode() {
-		return new Node();
+		super(new Node<>(), factory);
 	}
 
 	static class TypeFactory<T> extends AbstractTypeFactory<T> {
@@ -43,51 +38,51 @@ public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, C
 		}
 	}
 
-	final class Node extends AbstractTrie.AbstractNode<T, Node, ConcurrentTrie<T>> {
+	static final class Node<T> extends AbstractTrie.AbstractNode<T, Node<T>> {
 
 		private transient ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 		@Override
-		protected ConcurrentTrie<T> trie() {
-			return ConcurrentTrie.this;
+		protected Node<T> newNode() {
+			return new Node<>();
 		}
 
 		@Override
 		protected void startRead() {
-			if (mutable)
+			if (lock != null)
 				lock.readLock().lock();
 		}
 
 		@Override
 		protected void endRead() {
-			if (mutable)
+			if (lock != null)
 				lock.readLock().unlock();
 		}
 
 		@Override
 		protected void startWrite() {
-			if (mutable)
+			if (lock != null)
 				lock.writeLock().lock();
 		}
 
 		@Override
 		protected void endWrite() {
-			if (mutable)
+			if (lock != null)
 				lock.writeLock().unlock();
 		}
 
 		@Override
-		protected void cacheSelf(Cache<Node> nodeCache) {
+		protected void cacheSelf(Cache<Node<T>> nodeCache) {
 			nodeCache.put(this);
 		}
 
 		@Override
-		protected void forEachTransition(CharEntryConsumer<ConcurrentTrie<T>.Node> action) {
+		protected void forEachTransition(CharEntryConsumer<ConcurrentTrie.Node<T>> action) {
 			transitions.forEachParallel(action);
 		}
 
 		@Override
-		protected void updateTransitionTarget(char character, ConcurrentTrie<T>.Node newValue) {
+		protected void updateTransitionTarget(char character, ConcurrentTrie.Node<T> newValue) {
 			synchronized (transitions) {
 				transitions.put(character, newValue);
 			}
@@ -114,7 +109,7 @@ public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, C
 	protected LockedNodeMatch<T> findNode(CharSequence cs, boolean writeAccess) {
 		int length = cs.length();
 		// start with the root (and reading it)
-		Node cNode = root;
+		Node<T> cNode = root;
 		cNode.startRead();
 		boolean writeLock = false;
 		int indexInNode = 0;
@@ -135,7 +130,7 @@ public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, C
 				if (nodeHasCharsLeft && cNode.chars().charAt(indexInNode) == c) {
 					indexInNode++;
 				} else if (!nodeHasCharsLeft) {
-					Node newNode = cNode.transitions().get(c);
+					Node<T> newNode = cNode.transitions().get(c);
 					if (newNode == null) {
 						// acquire write lock and re-check node if necessary
 						if (writeAccess && !writeLock)
@@ -187,16 +182,16 @@ public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, C
 						.formatted(cs, length, writeLock, indexInNode, nodeStartInString, indexInString, cNode));
 	}
 
-	record LockedNodeMatch<T> (boolean success, ConcurrentTrie<T>.Node node, int indexInNode, int indexInString,
-			boolean write) implements NodeMatch<T, ConcurrentTrie<T>.Node, ConcurrentTrie<T>> {
+	record LockedNodeMatch<T> (boolean success, Node<T> node, int indexInNode, int indexInString, boolean write)
+			implements NodeMatch<T, Node<T>> {
 
 		LockedNodeMatch {
 			Objects.requireNonNull(node);
 		}
 
 		@Override
-		public <R> R switchOnSuccess(Function<? super ConcurrentTrie<T>.Node, ? extends R> onSuccess,
-				BiFunction<? super ConcurrentTrie<T>.Node, ? super Integer, ? extends R> onFailure) {
+		public <R> R switchOnSuccess(Function<? super Node<T>, ? extends R> onSuccess,
+				BiFunction<? super Node<T>, ? super Integer, ? extends R> onFailure) {
 			try {
 				return NodeMatch.super.switchOnSuccess(onSuccess, onFailure);
 			} finally {
@@ -205,9 +200,9 @@ public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, C
 		}
 
 		@Override
-		public void insert(CharSequence cs, T value) {
+		public void insert(CharSequence cs, T value, AbstractTypeFactory<T> factory) {
 			try {
-				NodeMatch.super.insert(cs, value);
+				NodeMatch.super.insert(cs, value, factory);
 			} finally {
 				releaseLock();
 			}
@@ -219,17 +214,18 @@ public class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie<T>.Node, C
 			else
 				node.endRead();
 		}
+
 	}
 
 	@Override
 	public Stream<T> search(CharSequence cs) {
-		return findNode(cs, false).switchOnSuccess(Node::valueStream, (node, end) -> Stream.of());
+		return findNode(cs, false).switchOnSuccess(Node<T>::valueStream, (node, end) -> Stream.of());
 	}
 
 	@Override
 	public void insert(CharSequence cs, T value) {
 		if (!mutable)
 			throw new IllegalStateException("Trie is immutable");
-		findNode(cs, true).insert(cs, value);
+		findNode(cs, true).insert(cs, value, factory);
 	}
 }

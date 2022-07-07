@@ -6,19 +6,14 @@ import java.util.Set;
 
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 
-public class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie<T>.Node, SimpleTrie<T>> {
+public final class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie.Node<T>> {
 
 	public SimpleTrie() {
-		super(new TypeFactory<>());
+		this(new TypeFactory<>());
 	}
 
 	public SimpleTrie(AbstractTypeFactory<T> factory) {
-		super(factory);
-	}
-
-	@Override
-	protected Node newNode() {
-		return new Node();
+		super(new Node<>(), factory);
 	}
 
 	static class TypeFactory<T> extends AbstractTypeFactory<T> {
@@ -39,20 +34,20 @@ public class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie<T>.Node, SimpleTri
 		}
 	}
 
-	class Node extends AbstractTrie.AbstractNode<T, Node, SimpleTrie<T>> {
+	static final class Node<T> extends AbstractTrie.AbstractNode<T, Node<T>> {
 
 		@Override
-		protected SimpleTrie<T> trie() {
-			return SimpleTrie.this;
+		protected Node<T> newNode() {
+			return new Node<>();
 		}
 
 		@Override
-		protected void cacheSelf(Cache<Node> nodeCache) {
+		protected void cacheSelf(Cache<Node<T>> nodeCache) {
 			nodeCache.put(this);
 		}
 
 		@Override
-		protected void forEachTransition(CharEntryConsumer<SimpleTrie<T>.Node> action) {
+		protected void forEachTransition(CharEntryConsumer<Node<T>> action) {
 			transitions.forEach(action);
 		}
 	}
@@ -79,8 +74,8 @@ public class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie<T>.Node, SimpleTri
 		return new SimpleNodeMatch<>(indexInNode == cNode.charCount(), cNode, indexInNode, cs.length());
 	}
 
-	record SimpleNodeMatch<T> (boolean success, SimpleTrie<T>.Node node, int indexInNode, int indexInString)
-			implements NodeMatch<T, SimpleTrie<T>.Node, SimpleTrie<T>> {
+	record SimpleNodeMatch<T> (boolean success, Node<T> node, int indexInNode, int indexInString)
+			implements NodeMatch<T, Node<T>> {
 		SimpleNodeMatch {
 			Objects.requireNonNull(node);
 		}
