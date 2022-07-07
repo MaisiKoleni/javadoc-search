@@ -1,9 +1,10 @@
 package net.maisikoleni.javadoc.util;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -40,7 +41,19 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 
 	static final class Node<T> extends AbstractTrie.AbstractNode<T, Node<T>> {
 
-		private transient ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+		private static final VarHandle LOCK_VAR_HANDLE;
+		static {
+			try {
+				LOCK_VAR_HANDLE = MethodHandles.lookup().findVarHandle(Node.class, "lock", int.class);
+			} catch (NoSuchFieldException | IllegalAccessException e) {
+				throw new IllegalStateException(e);
+			}
+		}
+		private static final PrimitiveReentrantReadWriteLock<Node<?>> LOCK = new PrimitiveReentrantReadWriteLock<>(
+				LOCK_VAR_HANDLE);
+		private static final int LOCK_DEACTIVATED = Integer.MIN_VALUE;
+
+		private int lock;
 
 		@Override
 		protected Node<T> newNode() {
@@ -49,26 +62,26 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 
 		@Override
 		protected void startRead() {
-			if (lock != null)
-				lock.readLock().lock();
+			if (lock != LOCK_DEACTIVATED)
+				LOCK.startRead(this);
 		}
 
 		@Override
 		protected void endRead() {
-			if (lock != null)
-				lock.readLock().unlock();
+			if (lock != LOCK_DEACTIVATED)
+				LOCK.endRead(this);
 		}
 
 		@Override
 		protected void startWrite() {
-			if (lock != null)
-				lock.writeLock().lock();
+			if (lock != LOCK_DEACTIVATED)
+				LOCK.startWrite(this);
 		}
 
 		@Override
 		protected void endWrite() {
-			if (lock != null)
-				lock.writeLock().unlock();
+			if (lock != LOCK_DEACTIVATED)
+				LOCK.endWrite(this);
 		}
 
 		@Override
@@ -91,7 +104,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		@Override
 		protected void compress(CommonCompressionCache cache) {
 			super.compress(cache);
-			lock = null;
+			lock = LOCK_DEACTIVATED;
 		}
 
 		@Override
