@@ -57,8 +57,9 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 
 		protected abstract N newNode();
 
-		public void insert(CharSequence cs, int startIndex, int indexInNode, T value, AbstractTypeFactory<T> factory) {
-			var isStringEnd = cs.length() == startIndex;
+		public void insert(CharSequence cs, int indexInString, int indexInNode, T value,
+				AbstractTypeFactory<T> factory) {
+			var isStringEnd = cs.length() == indexInString;
 			// split if necessary
 			split(indexInNode, factory);
 			if (isStringEnd) {
@@ -73,8 +74,8 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 			} else {
 				// create a new node for the missing content
 				var valueNode = newNode();
-				var transitionChar = cs.charAt(startIndex);
-				valueNode.chars = cs.subSequence(startIndex + 1, cs.length());
+				var transitionChar = cs.charAt(indexInString);
+				valueNode.chars = cs.subSequence(indexInString + 1, cs.length());
 				valueNode.values = SingleElementSet.of(value);
 				// add node transition to this node (after potential split)
 				if (transitions == CharMap.EMPTY_MAP)
@@ -163,13 +164,17 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 		}
 
 		@Override
-		public int hashCode() {
+		public final int hashCode() {
 			if (hashCode == 0) {
-				hashCode = Objects.hash(chars, values, transitions);
+				hashCode = calculateHashCode();
 				if (hashCode == 0)
 					hashCode = 1;
 			}
 			return hashCode;
+		}
+
+		protected int calculateHashCode() {
+			return Objects.hash(chars, values, transitions);
 		}
 
 		@Override

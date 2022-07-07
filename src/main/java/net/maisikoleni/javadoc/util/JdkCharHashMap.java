@@ -1,5 +1,7 @@
 package net.maisikoleni.javadoc.util;
 
+import static java.lang.Character.valueOf;
+
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,17 +20,17 @@ public final class JdkCharHashMap<V> extends HashMap<Character, V> implements Ch
 
 	@Override
 	public boolean containsKey(char c) {
-		return super.containsKey(c);
+		return super.containsKey(valueOf(c));
 	}
 
 	@Override
 	public V get(char c) {
-		return super.get(c);
+		return super.get(valueOf(c));
 	}
 
 	@Override
 	public V put(char c, V value) {
-		return super.put(c, value);
+		return super.put(valueOf(c), value);
 	}
 
 	@Override

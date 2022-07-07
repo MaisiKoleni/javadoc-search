@@ -54,24 +54,24 @@ public final class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie.Node<T>> {
 
 	@Override
 	protected SimpleNodeMatch<T> findNode(CharSequence cs, boolean writeAccess) {
-		var cNode = root;
+		var node = root;
 		var indexInNode = 0;
 		for (int indexInString = 0; indexInString < cs.length(); indexInString++) {
 			char c = cs.charAt(indexInString);
-			boolean nodeHasCharsLeft = cNode.charCount() > indexInNode;
-			if (nodeHasCharsLeft && cNode.chars().charAt(indexInNode) == c) {
+			boolean nodeHasCharsLeft = node.charCount() > indexInNode;
+			if (nodeHasCharsLeft && node.chars().charAt(indexInNode) == c) {
 				indexInNode++;
 			} else if (!nodeHasCharsLeft) {
-				var newNode = cNode.transitions().get(c);
+				var newNode = node.transitions().get(c);
 				if (newNode == null)
-					return new SimpleNodeMatch<>(false, cNode, indexInNode, indexInString);
-				cNode = newNode;
+					return new SimpleNodeMatch<>(false, node, indexInNode, indexInString);
+				node = newNode;
 				indexInNode = 0;
 			} else {
-				return new SimpleNodeMatch<>(false, cNode, indexInNode, indexInString);
+				return new SimpleNodeMatch<>(false, node, indexInNode, indexInString);
 			}
 		}
-		return new SimpleNodeMatch<>(indexInNode == cNode.charCount(), cNode, indexInNode, cs.length());
+		return new SimpleNodeMatch<>(indexInNode == node.charCount(), node, indexInNode, cs.length());
 	}
 
 	record SimpleNodeMatch<T> (boolean success, Node<T> node, int indexInNode, int indexInString)

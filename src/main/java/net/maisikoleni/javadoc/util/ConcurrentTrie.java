@@ -44,7 +44,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		private static final VarHandle LOCK_VAR_HANDLE;
 		static {
 			try {
-				LOCK_VAR_HANDLE = MethodHandles.lookup().findVarHandle(Node.class, "lock", int.class);
+				LOCK_VAR_HANDLE = MethodHandles.lookup().findVarHandle(Node.class, "intLock", int.class);
 			} catch (NoSuchFieldException | IllegalAccessException e) {
 				throw new IllegalStateException(e);
 			}
@@ -53,7 +53,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 				LOCK_VAR_HANDLE);
 		private static final int LOCK_DEACTIVATED = Integer.MIN_VALUE;
 
-		private int lock;
+		private int intLock;
 
 		@Override
 		protected Node<T> newNode() {
@@ -62,25 +62,25 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 
 		@Override
 		protected void startRead() {
-			if (lock != LOCK_DEACTIVATED)
+			if (intLock != LOCK_DEACTIVATED)
 				LOCK.startRead(this);
 		}
 
 		@Override
 		protected void endRead() {
-			if (lock != LOCK_DEACTIVATED)
+			if (intLock != LOCK_DEACTIVATED)
 				LOCK.endRead(this);
 		}
 
 		@Override
 		protected void startWrite() {
-			if (lock != LOCK_DEACTIVATED)
+			if (intLock != LOCK_DEACTIVATED)
 				LOCK.startWrite(this);
 		}
 
 		@Override
 		protected void endWrite() {
-			if (lock != LOCK_DEACTIVATED)
+			if (intLock != LOCK_DEACTIVATED)
 				LOCK.endWrite(this);
 		}
 
@@ -104,17 +104,12 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		@Override
 		protected void compress(CommonCompressionCache cache) {
 			super.compress(cache);
-			lock = LOCK_DEACTIVATED;
+			intLock = LOCK_DEACTIVATED;
 		}
 
 		@Override
-		public int hashCode() {
-			if (hashCode == 0) {
-				hashCode = Objects.hash(chars, values, transitions.hashCodeParallel());
-				if (hashCode == 0)
-					hashCode = 1;
-			}
-			return hashCode;
+		protected int calculateHashCode() {
+			return Objects.hash(chars, values, transitions.hashCodeParallel());
 		}
 	}
 
@@ -122,66 +117,66 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 	protected LockedNodeMatch<T> findNode(CharSequence cs, boolean writeAccess) {
 		int length = cs.length();
 		// start with the root (and reading it)
-		Node<T> cNode = root;
-		cNode.startRead();
-		boolean writeLock = false;
+		Node<T> node = root;
+		node.startRead();
+		boolean writeLockAcquired = false;
 		int indexInNode = 0;
 		int nodeStartInString = 0;
 		int indexInString = 0;
 		MAIN_LOOP: while (indexInString <= length) {
-			int nodeCharCount = cNode.charCount();
+			int nodeCharCount = node.charCount();
 			CHECK: {
 				if (indexInString == length) {
 					// acquire write lock and re-check node if necessary
-					if (writeAccess && !writeLock)
+					if (writeAccess && !writeLockAcquired)
 						break CHECK;
 					boolean isExactMatch = indexInNode == nodeCharCount;
-					return new LockedNodeMatch<>(isExactMatch, cNode, indexInNode, length, writeAccess);
+					return new LockedNodeMatch<>(isExactMatch, node, indexInNode, length, writeAccess);
 				}
 				char c = cs.charAt(indexInString);
 				boolean nodeHasCharsLeft = nodeCharCount > indexInNode;
-				if (nodeHasCharsLeft && cNode.chars().charAt(indexInNode) == c) {
+				if (nodeHasCharsLeft && node.chars().charAt(indexInNode) == c) {
 					indexInNode++;
 				} else if (!nodeHasCharsLeft) {
-					Node<T> newNode = cNode.transitions().get(c);
+					Node<T> newNode = node.transitions().get(c);
 					if (newNode == null) {
 						// acquire write lock and re-check node if necessary
-						if (writeAccess && !writeLock)
+						if (writeAccess && !writeLockAcquired)
 							break CHECK;
-						return new LockedNodeMatch<>(false, cNode, indexInNode, indexInString, writeAccess);
+						return new LockedNodeMatch<>(false, node, indexInNode, indexInString, writeAccess);
 					}
 					// start reading new node
 					newNode.startRead();
 					// stop read/write to the old
-					if (writeLock)
-						cNode.endWrite();
+					if (writeLockAcquired)
+						node.endWrite();
 					else
-						cNode.endRead();
+						node.endRead();
 					// switch to node at the other end of the transition
-					cNode = newNode;
+					node = newNode;
 					// node starts with the char after this transition
 					nodeStartInString = indexInString + 1;
 					// reset node-dependent states
 					indexInNode = 0;
-					writeLock = false;
+					writeLockAcquired = false;
 				} else {
 					// acquire write lock and re-check node if necessary
-					if (writeAccess && !writeLock)
+					if (writeAccess && !writeLockAcquired)
 						break CHECK;
-					return new LockedNodeMatch<>(false, cNode, indexInNode, indexInString, writeAccess);
+					return new LockedNodeMatch<>(false, node, indexInNode, indexInString, writeAccess);
 				}
 				// normal for-loop order, continue with next index
 				indexInString++;
 				continue MAIN_LOOP;
 			}
 			// we found the node but require write access
-			cNode.endRead();
+			node.endRead();
 			// state of cNode can change here
-			cNode.startWrite();
+			node.startWrite();
 			// now we can write, but must check if we still got the correct node
-			writeLock = true;
+			writeLockAcquired = true;
 			// check if there was at least one split
-			int newNodeCharCount = cNode.charCount();
+			int newNodeCharCount = node.charCount();
 			if (newNodeCharCount != nodeCharCount && newNodeCharCount < indexInNode) {
 				// re-check new node end
 				indexInString = nodeStartInString + newNodeCharCount;
@@ -192,7 +187,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		}
 		throw new IllegalStateException(
 				"unreachable code: cs='%s',length=%d, writeLock=%s, indexInNode=%d, nodeStartInString=%d, indexInString=%d, node=%s"
-						.formatted(cs, length, writeLock, indexInNode, nodeStartInString, indexInString, cNode));
+						.formatted(cs, length, writeLockAcquired, indexInNode, nodeStartInString, indexInString, node));
 	}
 
 	record LockedNodeMatch<T> (boolean success, Node<T> node, int indexInNode, int indexInString, boolean write)
