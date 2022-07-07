@@ -9,9 +9,9 @@ quarkus:
       "net.maisikoleni":
         level: DEBUG
   live-reload:
+    #instrumentation: true
   qute:
     #suffixes: qute
-    #instrumentation: true
 net:
   maisikoleni:
     javadoc:
