@@ -1,7 +1,7 @@
 package net.maisikoleni.javadoc.server.html;
 
-import static net.maisikoleni.javadoc.server.Configuration.SUGGESTION_COUNT_DEFAULT;
-import static net.maisikoleni.javadoc.server.Configuration.SUGGESTION_COUNT_KEY;
+import static net.maisikoleni.javadoc.Configuration.SUGGESTION_COUNT_DEFAULT;
+import static net.maisikoleni.javadoc.Configuration.SUGGESTION_COUNT_KEY;
 
 import java.net.URI;
 import java.util.Collection;

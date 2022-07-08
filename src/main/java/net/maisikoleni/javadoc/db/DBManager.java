@@ -1,13 +1,18 @@
 package net.maisikoleni.javadoc.db;
 
-import java.nio.file.Paths;
+import static net.maisikoleni.javadoc.Configuration.DB_PATH_DEFAULT;
+import static net.maisikoleni.javadoc.Configuration.DB_PATH_KEY;
+
+import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +34,12 @@ public class DBManager {
 	private EmbeddedStorageManager storageManager;
 	private Storer lazyStorer;
 	private Storer eagerStorer;
-//	private StorageRestService service;
 
-	public DBManager() {
+	@Inject
+	public DBManager(@ConfigProperty(name = DB_PATH_KEY, defaultValue = DB_PATH_DEFAULT) Path databasePath) {
 		if (!active.getAndSet(true)) {
 			LOG.info("Initialize Database");
-			var foundation = EmbeddedStorage.Foundation(Paths.get("database", "javadoc-indexes"));
+			var foundation = EmbeddedStorage.Foundation(databasePath.resolve("javadoc-indexes"));
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			foundation.onConnectionFoundation(f -> {
 				f.setLegacyTypeMappingResultor(PersistenceLegacyTypeMappingResultor.New());
@@ -46,8 +51,6 @@ public class DBManager {
 			lazyStorer = Objects.requireNonNull(storageManager.createLazyStorer());
 			eagerStorer = Objects.requireNonNull(storageManager.createEagerStorer());
 			LOG.info("Database successfully initialized");
-//			service = StorageRestServiceResolver.resolve(storageManager);
-//			service.start();
 		} else {
 			LOG.error("Cannot start DB twice");
 		}
@@ -57,7 +60,6 @@ public class DBManager {
 	public void shutdownStoreage() {
 		storageManager.shutdown();
 		active.set(false);
-//		service.stop();
 	}
 
 	@Produces

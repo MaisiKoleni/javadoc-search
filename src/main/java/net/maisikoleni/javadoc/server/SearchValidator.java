@@ -1,9 +1,9 @@
 package net.maisikoleni.javadoc.server;
 
-import static net.maisikoleni.javadoc.server.Configuration.QUERY_LENGHT_LIMIT_DEFAULT;
-import static net.maisikoleni.javadoc.server.Configuration.QUERY_LENGHT_LIMIT_KEY;
-import static net.maisikoleni.javadoc.server.Configuration.SUGGESTION_COUNT_LIMIT_DEFAULT;
-import static net.maisikoleni.javadoc.server.Configuration.SUGGESTION_COUNT_LIMIT_KEY;
+import static net.maisikoleni.javadoc.Configuration.QUERY_LENGHT_LIMIT_DEFAULT;
+import static net.maisikoleni.javadoc.Configuration.QUERY_LENGHT_LIMIT_KEY;
+import static net.maisikoleni.javadoc.Configuration.SUGGESTION_COUNT_LIMIT_DEFAULT;
+import static net.maisikoleni.javadoc.Configuration.SUGGESTION_COUNT_LIMIT_KEY;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
