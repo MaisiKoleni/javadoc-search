@@ -1,5 +1,8 @@
 package net.maisikoleni.javadoc.server.html;
 
+import static net.maisikoleni.javadoc.server.Configuration.SUGGESTION_COUNT_DEFAULT;
+import static net.maisikoleni.javadoc.server.Configuration.SUGGESTION_COUNT_KEY;
+
 import java.net.URI;
 import java.util.Collection;
 
@@ -21,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
+import net.maisikoleni.javadoc.server.SearchValidator;
 import net.maisikoleni.javadoc.service.Jdk;
 import net.maisikoleni.javadoc.service.Jdk.Version;
 import net.maisikoleni.javadoc.service.SearchService;
@@ -31,12 +35,15 @@ public final class JavadocSearchPage {
 	private static final Logger LOG = LoggerFactory.getLogger(JavadocSearchPage.class);
 
 	@Inject
-	@ConfigProperty(name = "net.maisikoleni.javadoc.search.server.html.suggestion-count", defaultValue = "10")
-	int count;
+	@ConfigProperty(name = SUGGESTION_COUNT_KEY, defaultValue = SUGGESTION_COUNT_DEFAULT)
+	int suggestionCount;
 
 	@Inject
 	@Jdk(Version.RELEASE_18)
 	SearchService searchService;
+
+	@Inject
+	SearchValidator searchValidator;
 
 	@GET
 	@Path("")
@@ -48,6 +55,7 @@ public final class JavadocSearchPage {
 	@POST
 	@Path("search-redirect")
 	public Response searchAndRedirect(@NotNull @FormParam("query") String query) {
+		searchValidator.validateQuery(query);
 		var x = System.currentTimeMillis();
 		try {
 			return Response.seeOther(searchService.getBestUrl(query)).build();
@@ -60,8 +68,9 @@ public final class JavadocSearchPage {
 	@Path("search-suggestions")
 	@Produces(MediaType.TEXT_HTML)
 	public String getSearchSuggestionTable(@NotNull @QueryParam("query") String query) {
+		searchValidator.validateQuery(query);
 		var x = System.currentTimeMillis();
-		var results = searchService.searchEngine().search(query).limit(count).toList();
+		var results = searchService.searchEngine().search(query).limit(suggestionCount).toList();
 		LOG.info("Suggestions for '{}' took {} ms.", query, System.currentTimeMillis() - x);
 		return Templates.searchSuggestions(searchService.javadoc().baseUrl(), results).render();
 	}

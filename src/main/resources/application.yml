@@ -19,3 +19,5 @@ net:
         server:
           html:
             suggestion-count: 10
+          query-char-limit: 1000
+          suggestion-count-limit: 50

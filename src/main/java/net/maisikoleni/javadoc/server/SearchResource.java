@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.OptionalInt;
 
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
@@ -25,8 +24,12 @@ public class SearchResource implements JavadocSearch {
 	@Jdk(Version.RELEASE_18)
 	SearchService searchSerivce;
 
+	@Inject
+	SearchValidator searchValidator;
+
 	@Override
 	public Response searchAndRedirect(String query) {
+		searchValidator.validateQuery(query);
 		var x = System.currentTimeMillis();
 		var destination = searchSerivce.getBestUrl(query);
 		LOG.info("Search for '{}' took {} ms.", query, System.currentTimeMillis() - x);
@@ -35,8 +38,9 @@ public class SearchResource implements JavadocSearch {
 
 	@Override
 	public List<String> suggestions(String query, OptionalInt count) {
-		if (count.isPresent() && count.getAsInt() < 0)
-			throw new BadRequestException("count must not be negative");
+		searchValidator.validateQuery(query);
+		if (count.isPresent())
+			searchValidator.validateQuery(query);
 		var engine = searchSerivce.searchEngine();
 		var x = System.currentTimeMillis();
 		try {
