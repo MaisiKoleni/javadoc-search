@@ -1,7 +1,7 @@
 {#include base.qute.html} {#title}Javadoc Search{/title}
-<div class="me-2">
+<div>
 	<h2>Search the {javadocName} Javadoc</h2>
-	<form class="row g-3" action="/search-redirect" method="post">
+	<form class="row g-1 g-sm-2" action="/search-redirect" method="post">
 		<div class="col">
 			<input type="search" name="query" class="form-control" id="query" placeholder="Enter Query..."
 				hx-get="/search-suggestions" hx-trigger="keyup changed, search" hx-target="#searchResults"
@@ -12,14 +12,13 @@
 		</div>
 	</form>
 </div>
-<hr>
 <div>
-	<h3 id="search-results-headline">Search Results:</h3>
-	<table class="table table-hover" aria-describedby="search-results-headline">
+	<table class="table table-hover caption-top">
+		<caption>Search Results:</caption>
 		<thead>
 			<tr>
-				<th scope="col" class="col-md-1">#</th>
-				<th scope="col" class="col-md-11">Name</th>
+				<th scope="col" class="col-auto text-end min-width-36">#</th>
+				<th scope="col" class="col-12">Qualified Name</th>
 			</tr>
 		</thead>
 		<tbody id="searchResults" class="table-group-divider">
