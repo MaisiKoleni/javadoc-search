@@ -56,7 +56,7 @@ public abstract sealed class SearchableEntity
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj instanceof SearchableEntity se)
@@ -65,17 +65,17 @@ public abstract sealed class SearchableEntity
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return qualifiedName().hashCode();
 	}
 
 	@Override
-	public String toString() {
+	public final String toString() {
 		return qualifiedName().toString();
 	}
 
 	@Override
-	public int compareTo(SearchableEntity o) {
+	public final int compareTo(SearchableEntity o) {
 		return CharSequence.compare(qualifiedName(), o.qualifiedName());
 	}
 }

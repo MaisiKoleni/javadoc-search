@@ -2,7 +2,7 @@ package net.maisikoleni.javadoc.entities;
 
 import java.util.stream.Stream;
 
-public abstract sealed class NestedSearchableEntity<C extends SearchableEntity>
+public abstract sealed class NestedSearchableEntity<C extends SearchableEntity> // $NOSONAR - hashCode/equals final
 		extends SearchableEntity permits Package, Type, Member {
 
 	private final C container;
