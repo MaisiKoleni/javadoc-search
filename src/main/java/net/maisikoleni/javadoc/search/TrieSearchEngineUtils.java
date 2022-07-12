@@ -6,7 +6,6 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.util.regex.CharClass;
 import net.maisikoleni.javadoc.util.regex.Concatenation;
 import net.maisikoleni.javadoc.util.regex.Literal;
@@ -15,8 +14,9 @@ import net.maisikoleni.javadoc.util.regex.Star;
 
 public final class TrieSearchEngineUtils {
 
+	static final String SEPARATOR_CHAR_CLASS = ".,()<>/\\[\\]";
+
 	private static final String SKIP_CHAR = "~";
-	private static final String SEPARATOR_CHAR_CLASS = ".,()<>/\\[\\]";
 	private static final Pattern SEPARATORS = Pattern.compile("[" + SEPARATOR_CHAR_CLASS + "]");
 	private static final Pattern QUERY_SPLIT = Pattern
 			.compile("(?=[" + SEPARATOR_CHAR_CLASS + " ])|(?<=[" + SEPARATOR_CHAR_CLASS + " ])");
@@ -40,13 +40,6 @@ public final class TrieSearchEngineUtils {
 			new Star(new CharClass(c -> !Character.isAlphabetic(c) && !Character.isDigit(c), "[^\\p{Alnum}]")),
 			new CharClass(c -> Character.isAlphabetic(c) || Character.isDigit(c), "[\\p{Alnum}]"),
 			new Star(CharClass.ANY));
-	private static final Regex REGEX_DIVIDER = new CharClass(c -> c == '.' || c == '/',
-			"[" + SEPARATOR_CHAR_CLASS + "]");
-	private static final Regex REGEX_START_AFTER = new CharClass(c -> isSeparator(c) || c == '_' || c == ' ',
-			"[" + SEPARATOR_CHAR_CLASS + "_ ]");
-	private static final Regex REGEX_START_BEFORE = new CharClass(
-			c -> isSeparator(c) || Character.isUpperCase(c) || c == '_',
-			"[" + SEPARATOR_CHAR_CLASS + "_\\p{javaUpperCase}]");
 
 	private static final char[] SPEPARATOR_CHARS = new char[] { '.', ',', '(', ')', '<', '>', '/', '[', ']' };
 
@@ -104,29 +97,5 @@ public final class TrieSearchEngineUtils {
 	static boolean isInsufficientQuery(CharSequence cleanQuery) {
 		return cleanQuery.isEmpty() || cleanQuery.length() == 1
 				&& (isSeparator(cleanQuery.charAt(0)) || SKIP_CHAR.charAt(0) == cleanQuery.charAt(0));
-	}
-
-	static <T extends SearchableEntity> void subdivideEntity(T se, SubdividedEntityConsumer<T> consumer) {
-		var preProcessedName = preProcessEntry(se.qualifiedName());
-		consumer.accept(preProcessedName, se, 3.0);
-		int length = preProcessedName.length();
-		for (int i = 1; i < length; i++) {
-			double rank = 0.0;
-			if (REGEX_DIVIDER.matches(preProcessedName, i - 1, i) || REGEX_DIVIDER.matches(preProcessedName, i, i + 1))
-				rank = 2.5;
-			else if (REGEX_START_AFTER.matches(preProcessedName, i - 1, i)
-					|| REGEX_START_BEFORE.matches(preProcessedName, i, i + 1))
-				rank = 1.25;
-			if (rank > 0.0) {
-				var namePart = preProcessedName.subSequence(i, length);
-				if (isUseful(namePart))
-					consumer.accept(namePart, se, rank);
-			}
-		}
-	}
-
-	@FunctionalInterface
-	interface SubdividedEntityConsumer<T> {
-		void accept(CharSequence name, T entity, double rank);
 	}
 }

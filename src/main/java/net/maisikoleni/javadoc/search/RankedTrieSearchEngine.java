@@ -3,9 +3,6 @@ package net.maisikoleni.javadoc.search;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.maisikoleni.javadoc.entities.JavadocIndex;
 import net.maisikoleni.javadoc.entities.Member;
 import net.maisikoleni.javadoc.entities.Module;
@@ -13,18 +10,14 @@ import net.maisikoleni.javadoc.entities.Package;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.entities.Tag;
 import net.maisikoleni.javadoc.entities.Type;
-import net.maisikoleni.javadoc.search.TrieSearchEngineUtils.SubdividedEntityConsumer;
-import net.maisikoleni.javadoc.util.Cache;
 import net.maisikoleni.javadoc.util.RankedTrie.RankedConcurrentTrie;
+import net.maisikoleni.javadoc.util.RankedTrie.RankingFunction;
 import net.maisikoleni.javadoc.util.Trie;
-import net.maisikoleni.javadoc.util.WeakCommonPool;
 import net.maisikoleni.javadoc.util.regex.CompiledRegex;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 import net.maisikoleni.javadoc.util.regex.Regex;
 
 public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
-
-	private static final Logger LOG = LoggerFactory.getLogger(RankedTrieSearchEngine.class);
 
 	private final Trie<RankedEntry<SearchableEntity>> all;
 	private final Trie<RankedEntry<Module>> modules;
@@ -32,45 +25,38 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 	private final Trie<RankedEntry<Type>> types;
 	private final Trie<RankedEntry<Member>> members;
 	private final Trie<RankedEntry<Tag>> tags;
-	@SuppressWarnings("unused")
-	private final WeakCommonPool weakCommonPool;
 
 	public RankedTrieSearchEngine(JavadocIndex index) {
 		super(index);
-		var cache = new Trie.CommonCompressionCache(Cache::newConcurrent);
-		weakCommonPool = WeakCommonPool.get();
-		all = generateRankedTrie(index.stream(), cache);
-		modules = generateRankedTrie(index.modules(), cache);
-		packages = generateRankedTrie(index.packages(), cache);
-		types = generateRankedTrie(index.types(), cache);
-		members = generateRankedTrie(index.members(), cache);
-		tags = generateRankedTrie(index.tags(), cache);
+		var generator = new RankedConcurrentTrieGenerator();
+		all = generator.generateTrie(index.stream());
+		modules = generator.generateTrie(index.modules());
+		packages = generator.generateTrie(index.packages());
+		types = generator.generateTrie(index.types());
+		members = generator.generateTrie(index.members());
+		tags = generator.generateTrie(index.tags());
 	}
 
-	public static <T extends SearchableEntity> Trie<RankedEntry<T>> generateRankedTrie(List<T> index,
-			Trie.CommonCompressionCache cache) {
-		return generateRankedTrie(index.stream(), cache);
+	static final class RankedConcurrentTrieGenerator extends TrieGenerator {
+
+		RankedConcurrentTrieGenerator() {
+			super(true);
+		}
+
+		<S extends SearchableEntity> Trie<RankedEntry<S>> generateTrie(List<S> index) {
+			return generateTrie(index.stream());
+		}
+
+		<S extends SearchableEntity> Trie<RankedEntry<S>> generateTrie(Stream<S> index) {
+			return super.generateTrie(index.parallel(), RankedConcurrentTrieGenerator::newTrie, RankedEntry::from);
+		}
+
+		static <S extends SearchableEntity> RankedConcurrentTrie<RankedEntry<S>> newTrie() {
+			return new RankedConcurrentTrie<>(SearchableEntityRankingFunction.get());
+		}
 	}
 
-	public static <T extends SearchableEntity> Trie<RankedEntry<T>> generateRankedTrie(Stream<T> index,
-			Trie.CommonCompressionCache cache) {
-		var trieTask = WeakCommonPool.get().forkJoinPool().submit(() -> {
-			Trie<RankedEntry<T>> trie = new RankedConcurrentTrie<>(RankedTrieSearchEngine::rankSearchResult);
-			SubdividedEntityConsumer<T> addRanked = (name, entity, rank) -> trie.insert(name,
-					new RankedEntry<>(entity, rank));
-			long t1 = System.currentTimeMillis();
-			index.parallel().forEach(se -> TrieSearchEngineUtils.subdivideEntity(se, addRanked));
-			long t2 = System.currentTimeMillis();
-			LOG.info("Constructing trie took {} ms", t2 - t1);
-			trie.compress(cache);
-			long t3 = System.currentTimeMillis();
-			LOG.info("Compressing trie took {} ms", t3 - t2);
-			return trie;
-		});
-		return trieTask.join();
-	}
-
-	record RankedEntry<T extends SearchableEntity> (T entity, double rank) implements Comparable<RankedEntry<T>> {
+	record RankedEntry<T extends Comparable<? super T>> (T entity, double rank) implements Comparable<RankedEntry<T>> {
 
 		@Override
 		public int compareTo(RankedEntry<T> o) {
@@ -80,11 +66,11 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 				return cmp;
 			return entity.compareTo(o.entity);
 		}
-	}
 
-	private static <T extends SearchableEntity> double rankSearchResult(RankedEntry<T> rankedEntry,
-			double searchGrade) {
-		return rankedEntry.rank() + searchGrade;
+		static <T extends Comparable<? super T>> RankedEntry<T> from(@SuppressWarnings("unused") CharSequence name,
+				T entity, double rank) {
+			return new RankedEntry<>(entity, rank);
+		}
 	}
 
 	@Override
@@ -109,5 +95,39 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 	private static <T extends SearchableEntity> Stream<T> search(Trie<RankedEntry<T>> trie,
 			GradingLongStepMatcher matcher) {
 		return trie.search(matcher).map(RankedEntry::entity);
+	}
+
+	static final class SearchableEntityRankingFunction<T extends SearchableEntity>
+			implements RankingFunction<RankedEntry<T>> {
+
+		@SuppressWarnings("rawtypes")
+		private static final SearchableEntityRankingFunction INSTANCE = new SearchableEntityRankingFunction<>();
+
+		private SearchableEntityRankingFunction() {
+		}
+
+		@Override
+		public double applyAsDouble(RankedEntry<T> rankedEntry, double searchGrade) {
+			return rankedEntry.rank() + searchGrade;
+		}
+
+		@Override
+		public int hashCode() {
+			return 1;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj != null && obj.getClass() == SearchableEntityRankingFunction.class;
+		}
+
+		@Override
+		public String toString() {
+			return "SearchableEntityRankingFunction[RankedEntry.rank() + searchGrade]";
+		}
+
+		static <T extends SearchableEntity> SearchableEntityRankingFunction<T> get() {
+			return INSTANCE;
+		}
 	}
 }
