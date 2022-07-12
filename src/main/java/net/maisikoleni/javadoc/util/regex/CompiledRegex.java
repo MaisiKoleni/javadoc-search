@@ -180,87 +180,23 @@ public final class CompiledRegex implements GradingLongStepMatcher {
 
 	public static CompiledRegex compile(Regex simpleRegex, boolean caseInsensitive) {
 		Objects.requireNonNull(simpleRegex);
-		boolean compilable = simpleRegex.accept(new RegexVisitor<>() {
-			@Override
-			public Boolean visit(Concatenation concatenation) {
-				for (var part : concatenation.parts())
-					if (!part.accept(this))
-						return false;
-				return true;
-			}
-
-			@Override
-			public Boolean visit(Literal literal) {
-				return true;
-			}
-
-			@Override
-			public Boolean visit(Star star) {
-				var regex = star.regex();
-				if (regex instanceof Literal l)
-					return l.chars().length() == 1;
-				return regex instanceof CharClass;
-			}
-
-			@Override
-			public Boolean visit(CharClass charClass) {
-				return true;
-			}
-		});
+		boolean compilable = isCompatible(simpleRegex);
 		if (!compilable)
 			throw new IllegalArgumentException("cannot compile regex structure");
 
-		int instructionCount = simpleRegex.accept(new RegexVisitor<>() {
-			@Override
-			public Integer visit(Concatenation concatenation) {
-				return concatenation.parts().stream().mapToInt(r -> r.accept(this)).sum();
-			}
-
-			@Override
-			public Integer visit(Literal literal) {
-				return literal.chars().length();
-			}
-
-			@Override
-			public Integer visit(Star star) {
-				return 1;
-			}
-
-			@Override
-			public Integer visit(CharClass charClass) {
-				return 1;
-			}
-		});
-		var charPredicateMap = simpleRegex.accept(new RegexVisitor<Map<CharPredicate, Integer>>() {
-			int nextIndex;
-			Map<CharPredicate, Integer> map = new LinkedHashMap<>();
-
-			@Override
-			public Map<CharPredicate, Integer> visit(Concatenation concatenation) {
-				for (var regex : concatenation.parts())
-					regex.accept(this);
-				return map;
-			}
-
-			@Override
-			public Map<CharPredicate, Integer> visit(Literal literal) {
-				return map;
-			}
-
-			@Override
-			public Map<CharPredicate, Integer> visit(Star star) {
-				return star.regex().accept(this);
-			}
-
-			@Override
-			public Map<CharPredicate, Integer> visit(CharClass charClass) {
-				map.computeIfAbsent(charClass.predicate(), predicate -> nextIndex++);
-				return map;
-			}
-		});
+		int instructionCount = countInstructions(simpleRegex);
+		var charPredicateMap = collectAndIndexCharPredicates(simpleRegex);
 		var instructions = new int[instructionCount];
 		var charClasses = charPredicateMap.keySet().toArray(CharPredicate[]::new);
-		int addedInstructions = simpleRegex.accept(new RegexVisitor<>() {
+		int addedInstructions = composeInstructionArray(instructions, simpleRegex, charPredicateMap);
+		if (addedInstructions != instructions.length)
+			throw new IllegalStateException();
+		return new CompiledRegex(charClasses, instructions, caseInsensitive);
+	}
+
+	private static Integer composeInstructionArray(int[] instructions, Regex simpleRegex,
+			Map<CharPredicate, Integer> charPredicateMap) {
+		return simpleRegex.accept(new RegexVisitor<>() {
 
 			int nextIndex;
 
@@ -302,9 +238,90 @@ public final class CompiledRegex implements GradingLongStepMatcher {
 				return nextIndex++;
 			}
 		});
-		if (addedInstructions != instructions.length)
-			throw new IllegalStateException();
-		return new CompiledRegex(charClasses, instructions, caseInsensitive);
+	}
+
+	private static Map<CharPredicate, Integer> collectAndIndexCharPredicates(Regex simpleRegex) {
+		return simpleRegex.accept(new RegexVisitor<Map<CharPredicate, Integer>>() {
+			int nextIndex;
+			Map<CharPredicate, Integer> map = new LinkedHashMap<>();
+
+			@Override
+			public Map<CharPredicate, Integer> visit(Concatenation concatenation) {
+				for (var regex : concatenation.parts())
+					regex.accept(this);
+				return map;
+			}
+
+			@Override
+			public Map<CharPredicate, Integer> visit(Literal literal) {
+				return map;
+			}
+
+			@Override
+			public Map<CharPredicate, Integer> visit(Star star) {
+				return star.regex().accept(this);
+			}
+
+			@Override
+			public Map<CharPredicate, Integer> visit(CharClass charClass) {
+				map.computeIfAbsent(charClass.predicate(), predicate -> nextIndex++);
+				return map;
+			}
+		});
+	}
+
+	private static Integer countInstructions(Regex simpleRegex) {
+		return simpleRegex.accept(new RegexVisitor<>() {
+			@Override
+			public Integer visit(Concatenation concatenation) {
+				return concatenation.parts().stream().mapToInt(r -> r.accept(this)).sum();
+			}
+
+			@Override
+			public Integer visit(Literal literal) {
+				return literal.chars().length();
+			}
+
+			@Override
+			public Integer visit(Star star) {
+				return 1;
+			}
+
+			@Override
+			public Integer visit(CharClass charClass) {
+				return 1;
+			}
+		});
+	}
+
+	private static Boolean isCompatible(Regex simpleRegex) {
+		return simpleRegex.accept(new RegexVisitor<>() {
+			@Override
+			public Boolean visit(Concatenation concatenation) {
+				for (var part : concatenation.parts())
+					if (!part.accept(this).booleanValue())
+						return false;
+				return true;
+			}
+
+			@Override
+			public Boolean visit(Literal literal) {
+				return true;
+			}
+
+			@Override
+			public Boolean visit(Star star) {
+				var regex = star.regex();
+				if (regex instanceof Literal l)
+					return l.chars().length() == 1;
+				return regex instanceof CharClass;
+			}
+
+			@Override
+			public Boolean visit(CharClass charClass) {
+				return true;
+			}
+		});
 	}
 
 	@Override
