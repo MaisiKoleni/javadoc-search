@@ -40,7 +40,7 @@ public class SearchResource implements JavadocSearch {
 	public List<String> suggestions(String query, OptionalInt count) {
 		searchValidator.validateQuery(query);
 		if (count.isPresent())
-			searchValidator.validateQuery(query);
+			searchValidator.validateSuggestionCount(count.getAsInt());
 		var engine = searchSerivce.searchEngine();
 		var x = System.currentTimeMillis();
 		try {
