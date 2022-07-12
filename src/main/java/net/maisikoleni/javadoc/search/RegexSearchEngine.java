@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.maisikoleni.javadoc.entities.JavadocIndex;
 import net.maisikoleni.javadoc.entities.Member;
 import net.maisikoleni.javadoc.entities.Module;
@@ -16,6 +19,8 @@ import net.maisikoleni.javadoc.entities.Tag;
 import net.maisikoleni.javadoc.entities.Type;
 
 public final class RegexSearchEngine extends IndexBasedSearchEngine {
+
+	private static final Logger LOG = LoggerFactory.getLogger(RegexSearchEngine.class);
 
 	private static final String SEPARATOR_CHARS = ".,()<>/\\[\\]";
 	private static final String INBETWEEN_CHARS = "[^\\p{javaUpperCase}\\p{Space}_" + SEPARATOR_CHARS + "]*";
@@ -77,9 +82,9 @@ public final class RegexSearchEngine extends IndexBasedSearchEngine {
 			if (queryMatchEnd <= matchThresholdIndex)
 				return Match.none();
 			/*
-			 * The score is the number of fully specified identifiers or parts (TODO:
-			 * apparently, the start is better than the whole part at the end:
-			 * "SettingControl" is a better match for "Set" than "AbstractSet")
+			 * The score is the number of fully specified identifiers or parts (apparently,
+			 * the start is better than the whole part at the end: "SettingControl" is a
+			 * better match for "Set" than "AbstractSet")
 			 */
 			int score = 0;
 			if (result.start(1) == 0 || SEPARATOR_CHARS.indexOf(idenifier.charAt(result.start(1) - 1)) >= 0)
@@ -140,22 +145,21 @@ public final class RegexSearchEngine extends IndexBasedSearchEngine {
 	private static String assembleQueryPatternString(String query) {
 		StringBuilder pattern = new StringBuilder();
 		pattern.append("^(?:|.*(?<=[" + SEPARATOR_CHARS + "_])|.*(?=[\\p{javaUpperCase}_" + SEPARATOR_CHARS + "]))(");
-		// TODO: this is too strict with whitespace splitting
-		pattern.append(
-				Stream.of(QUERY_SPLIT.split(query.strip())).map(String::strip).peek(System.err::println).map(part -> {
-					// preserve "significant" whitespace between words
-					if (part.isEmpty())
-						return "\\s";
-					// keep separators as they are
-					if (SEPARATORS.matcher(part).matches())
-						return "(" + INBETWEEN_CHARS + "+)" + Pattern.quote(part);
-					// insert patterns for partial identifier matches
-					return Stream.of(IDENTIFIER_SPLIT.split(part.strip())).map(Pattern::quote)
-							.collect(Collectors.joining("(" + INBETWEEN_CHARS + "+)"));
-				}).peek(System.err::println).collect(Collectors.joining("\\s*+")));
+		// this is too strict with whitespace splitting
+		pattern.append(Stream.of(QUERY_SPLIT.split(query.strip())).map(String::strip).map(part -> {
+			// preserve "significant" whitespace between words
+			if (part.isEmpty())
+				return "\\s";
+			// keep separators as they are
+			if (SEPARATORS.matcher(part).matches())
+				return "(" + INBETWEEN_CHARS + "+)" + Pattern.quote(part);
+			// insert patterns for partial identifier matches
+			return Stream.of(IDENTIFIER_SPLIT.split(part.strip())).map(Pattern::quote)
+					.collect(Collectors.joining("(" + INBETWEEN_CHARS + "+)"));
+		}).collect(Collectors.joining("\\s*+")));
 		pattern.append(").*+");
 		String finalPattern = pattern.toString().replace("\\s*+\\s", "\\s");
-		System.out.println("pattern: " + finalPattern);
+		LOG.debug("pattern: {}", finalPattern);
 		return finalPattern;
 	}
 }
