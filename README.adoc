@@ -97,11 +97,21 @@ if case-sensitive did not yield _any_ results.
 
 == Building
 
+This project requires at least JDK 17.
+
 Building should be straightforward since this is a regular Maven project.
+
+- `mvn clean` to clean up generated artifacts (does not remove the `database` folder)
+- `mvn test` runs all tests
+- `mvn quarkus:dev` starts the
+  https://quarkus.io/guides/dev-mode-differences[Quarkus dev mode] (live reload)
+- `mvn package` bundles the web application using the `prod` profile
+  into `target/quarkus-app`
+
 It might be helpful to add the missing search-index files
 in `src/main/resources/net/maisikoleni/javadoc/service/jdk18`
 (see `jdk-index-files-go-here.txt` there for details), but this is not required
 as they are then fetched from the official site and cached in `database/javadoc-indexes`.
 
-To run, `--add-exports java.base/jdk.internal.misc=ALL-UNNAMED` is required
+To run outside Maven, `--add-exports java.base/jdk.internal.misc=ALL-UNNAMED` is required
 as MicroStream requires Unsafe at the moment.
