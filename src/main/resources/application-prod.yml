@@ -5,14 +5,19 @@ quarkus:
     port: 8080
     ssl-port: 8443
     cors: true
+    limits:
+      max-body-size: 16384
+      max-header-size: 8192 
+    read-timeout: 10s
+    idle-timeout: 10M
+    body:
+      handle-file-uploads: false
+      uploads-directory: uploads
   log:
     category:
       "net.maisikoleni":
         level: DEBUG
   live-reload:
-    #instrumentation: true
-  qute:
-    #suffixes: qute
 net:
   maisikoleni:
     javadoc:
@@ -22,5 +27,3 @@ net:
             suggestion-count: 10
           query-char-limit: 1000
           suggestion-count-limit: 50
-jdk:
-  serialFilter: maxbytes=0
