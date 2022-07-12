@@ -132,7 +132,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 			});
 		}
 
-		protected void compressTransitions() {
+		protected final void compressTransitions() {
 			transitions = FixKeyedCharMap.copyOf(transitions);
 			forEachTransition((c, node) -> node.compressTransitions());
 		}
