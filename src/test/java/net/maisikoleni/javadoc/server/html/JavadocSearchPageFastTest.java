@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Test;
 
-class JavadocSearchPageTest {
+class JavadocSearchPageFastTest {
 
 	private static final Path CUSTOM_CSS_PATH = Path
 			.of("src/main/resources/META-INF/resources/javadoc-search-style.css");

@@ -2,6 +2,7 @@ package net.maisikoleni.javadoc.server;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.emptyString;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
@@ -69,41 +70,41 @@ class SearchResourceTest {
 	void testRedirectNoQuery() {
 		given().when().get("api/search/redirect").then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
-				.body(is(""));
+				.body(emptyString());
 	}
 
 	@Test
 	void testRedirectLongQuery() {
 		given().when().get("api/search/redirect?query=" + "a".repeat(1001)).then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
-				.body(is(""));
+				.body(emptyString());
 	}
 
 	@Test
 	void testSuggestionsNoQuery() {
 		given().when().get("api/search/suggestions").then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
-				.body(is(""));
+				.body(emptyString());
 	}
 
 	@Test
 	void testSuggestionsLongQuery() {
 		given().when().get("api/search/suggestions?query=" + "a".repeat(1001)).then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
-				.body(is(""));
+				.body(emptyString());
 	}
 
 	@Test
 	void testSuggestionsLargeCount() {
 		given().when().get("api/search/suggestions?query=Se&count=100").then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
-				.body(is(""));
+				.body(emptyString());
 	}
 
 	@Test
 	void testSuggestionsNegativeCount() {
 		given().when().get("api/search/suggestions?query=Se&count=0").then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
-				.body(is(""));
+				.body(emptyString());
 	}
 }
