@@ -22,5 +22,6 @@ net:
             suggestion-count: 10
           query-char-limit: 1000
           suggestion-count-limit: 50
+          log-search-threshold-nanos: 20000000
 jdk:
   serialFilter: maxbytes=0

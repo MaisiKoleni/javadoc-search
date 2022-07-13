@@ -18,6 +18,9 @@ public final class Configuration {
 	public static final String SUGGESTION_COUNT_LIMIT_KEY = PACKAGE + ".server.suggestion-count-limit";
 	public static final String SUGGESTION_COUNT_LIMIT_DEFAULT = "50";
 
+	public static final String LOG_SEARCH_THRESHOLD_NANOS_KEY = PACKAGE + ".server.log-search-threshold-nanos";
+	public static final String LOG_SEARCH_THRESHOLD_NANOS_DEFAULT = "" + 20_000_000;
+
 	private Configuration() {
 	}
 }

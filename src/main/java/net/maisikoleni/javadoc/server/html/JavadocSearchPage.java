@@ -18,12 +18,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
+import net.maisikoleni.javadoc.server.SearchReporter;
 import net.maisikoleni.javadoc.server.SearchValidator;
 import net.maisikoleni.javadoc.service.Jdk;
 import net.maisikoleni.javadoc.service.Jdk.Version;
@@ -31,8 +30,6 @@ import net.maisikoleni.javadoc.service.SearchService;
 
 @Path("/")
 public final class JavadocSearchPage {
-
-	private static final Logger LOG = LoggerFactory.getLogger(JavadocSearchPage.class);
 
 	@Inject
 	@ConfigProperty(name = SUGGESTION_COUNT_KEY, defaultValue = SUGGESTION_COUNT_DEFAULT)
@@ -45,6 +42,9 @@ public final class JavadocSearchPage {
 	@Inject
 	SearchValidator searchValidator;
 
+	@Inject
+	SearchReporter searchReporter;
+
 	@GET
 	@Path("")
 	@Produces(MediaType.TEXT_HTML)
@@ -56,11 +56,11 @@ public final class JavadocSearchPage {
 	@Path("search-redirect")
 	public Response searchAndRedirect(@NotNull @FormParam("query") String query) {
 		searchValidator.validateQuery(query);
-		var x = System.currentTimeMillis();
+		var startTime = System.nanoTime();
 		try {
 			return Response.seeOther(searchService.getBestUrl(query)).build();
 		} finally {
-			LOG.info("Search for '{}' took {} ms.", query, System.currentTimeMillis() - x);
+			searchReporter.logSearchTime("html/redirect", query, startTime);
 		}
 	}
 
@@ -69,9 +69,9 @@ public final class JavadocSearchPage {
 	@Produces(MediaType.TEXT_HTML)
 	public String getSearchSuggestionTable(@NotNull @QueryParam("query") String query) {
 		searchValidator.validateQuery(query);
-		var x = System.currentTimeMillis();
+		var startTime = System.nanoTime();
 		var results = searchService.searchEngine().search(query).limit(suggestionCount).toList();
-		LOG.info("Suggestions for '{}' took {} ms.", query, System.currentTimeMillis() - x);
+		searchReporter.logSearchTime("html/suggestions", query, startTime);
 		return Templates.searchSuggestions(searchService.javadoc().baseUrl(), results).render();
 	}
 
