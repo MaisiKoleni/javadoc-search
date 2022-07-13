@@ -44,7 +44,7 @@ This allows for the following search syntax:
    * `java.base/java.lang.Object`
    * `java.base/java.lang.Override`
    * `java.base/java.lang.OutOfMemoryError`
-- Query `*LDT*`* will find:
+- Query `*LDT*` will find:
    * `java.base/java.time.LocalDateTime`
    * `java.base/java.time.chrono.ChronoLocalDateTime`
    * ...
@@ -91,6 +91,13 @@ The matching results are currently ranked by:
   `java.desktop/javax.print.attribute.SetOfIntegerSyntax`
   is therefore a better match for `*Set*`
   than `java.base/java.util.AbstractSet`.
+- Natural order of the entries. +
+  Results with smaller char values at the same position come first
+  This is like `String.compareTo` on the qualified names,
+  except that the current implementation adds chars to
+  distinguish the different segments of the name and
+  those cause a slight deviation from the ordering in
+  the specification.
 
 Case insensitive matching is only performed
 if case-sensitive did not yield _any_ results.
