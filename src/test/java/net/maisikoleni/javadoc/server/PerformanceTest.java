@@ -1,5 +1,6 @@
 package net.maisikoleni.javadoc.server;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URLEncoder;
@@ -74,10 +75,8 @@ class PerformanceTest {
 		LOG.info("Performance statistics: {}", stats);
 
 		assertThat(stats.getCount()).isEqualTo(REQUESTS);
-		// average below 5 milliseconds
-		assertThat(stats.getAverage()).isLessThan(5_000_000);
-		// minimum below 0.5 milliseconds
-		assertThat(stats.getMin()).isLessThan(500_000);
+		assertThat(stats.getAverage()).isLessThan(MILLISECONDS.toNanos(20));
+		assertThat(stats.getMin()).isLessThan(MILLISECONDS.toNanos(2));
 	}
 
 	private static List<String> generateRandomQueries() {
