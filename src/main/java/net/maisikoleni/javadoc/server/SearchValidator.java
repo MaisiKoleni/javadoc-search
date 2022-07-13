@@ -34,5 +34,7 @@ public final class SearchValidator {
 			throw new BadRequestException("query must not be null");
 		if (query.length() > queryCharLimit)
 			throw new BadRequestException("query length must not exceed " + queryCharLimit);
+		if (!query.chars().allMatch(Character::isDefined))
+			throw new BadRequestException("query length must not contain undefined characters");
 	}
 }

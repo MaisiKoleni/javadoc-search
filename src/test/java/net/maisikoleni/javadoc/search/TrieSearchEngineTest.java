@@ -33,7 +33,7 @@ class TrieSearchEngineTest {
 						"java.base/java.util.EnumSet", //
 						"java.sql/java.sql.ResultSet", //
 						"jdk.jfr/jdk.jfr.SettingControl") //
-				.hasSize(71);
+				.hasSize(75);
 		assertThat(result.members().map(SearchableEntity::qualifiedName).toList()) //
 				.contains( //
 						"java.base/java.util.Calendar.isSet", //
@@ -41,7 +41,7 @@ class TrieSearchEngineTest {
 						"java.base/java.util.BitSet.BitSet()", //
 						"java.base/java.util.EnumMap.keySet()", //
 						"jdk.jfr/jdk.jfr.Recording.getSettings()") //
-				.hasSize(689);
+				.hasSize(727);
 		assertThat(result.tags()).isEmpty();
 	}
 }

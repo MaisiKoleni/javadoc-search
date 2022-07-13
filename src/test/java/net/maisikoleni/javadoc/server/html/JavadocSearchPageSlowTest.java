@@ -44,6 +44,12 @@ class JavadocSearchPageSlowTest {
 								<a href="https://docs.oracle.com/en/java/javase/18/docs/api/java.base/java/util/stream/Collectors.html">\
 								java.base/java.util.stream.Collectors</a></td>
 								</tr>
+								<tr>
+									<th scope="row" class="text-end">3</th>
+									<td class="text-break">\
+								<a href="https://docs.oracle.com/en/java/javase/18/docs/api/java.base/java/util/stream/Collector.Characteristics.html">\
+								java.base/java.util.stream.Collector.Characteristics</a></td>
+								</tr>
 								"""));
 	}
 

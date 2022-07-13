@@ -33,16 +33,16 @@ class Jdk18SearchSerivceTest {
 		var results = searchAsList("Set");
 		assertThat(results).startsWith(expectedSearchResults("""
 				java.base/java.util.Set
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax
-				jdk.management.jfr/jdk.management.jfr.SettingDescriptorInfo
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(String)
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int)
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int[][])
 				jdk.jfr/jdk.jfr.SettingControl
 				jdk.jfr/jdk.jfr.SettingControl.SettingControl()
 				jdk.jfr/jdk.jfr.SettingDefinition
 				jdk.jfr/jdk.jfr.SettingDescriptor
+				jdk.management.jfr/jdk.management.jfr.SettingDescriptorInfo
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(String)
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int)
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int[][])
 				java.base/java.lang.constant.ConstantDescs.CD_Set
 				java.base/java.util.AbstractSet
 				java.base/java.util.BitSet
@@ -94,7 +94,7 @@ class Jdk18SearchSerivceTest {
 				java.sql/java.sql.ResultSet
 				java.sql/javax.sql.RowSet
 				jdk.jdi/com.sun.jdi.event.EventSet
-				""")).hasLineCount(760);
+				""")).hasLineCount(802);
 	}
 
 	@Test
@@ -110,6 +110,7 @@ class Jdk18SearchSerivceTest {
 		var results = searchAsList(".Collector");
 		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.util.stream.Collector
+				java.base/java.util.stream.Collector.Characteristics
 				java.base/java.util.stream.Collectors
 				"""));
 	}
@@ -145,6 +146,10 @@ class Jdk18SearchSerivceTest {
 				java.desktop/javax.print.attribute.AttributeSet
 				java.desktop/javax.swing.text.AttributeSet
 				java.desktop/javax.print.attribute.AttributeSetUtilities
+				java.desktop/javax.swing.text.AttributeSet.FontAttribute
+				java.desktop/javax.swing.text.AttributeSet.ParagraphAttribute
+				java.desktop/javax.swing.text.AttributeSet.CharacterAttribute
+				java.desktop/javax.swing.text.AttributeSet.ColorAttribute
 				"""));
 	}
 

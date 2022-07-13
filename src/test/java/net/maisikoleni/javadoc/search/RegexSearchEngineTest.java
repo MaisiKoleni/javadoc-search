@@ -43,7 +43,6 @@ class RegexSearchEngineTest {
 						"java.desktop/javax.imageio.plugins.tiff.BaselineTIFFTagSet", //
 						"java.sql.rowset/javax.sql.rowset.BaseRowSet", //
 						"java.base/java.util.BitSet") //
-				// due to different handling of nested classes
 				.contains("java.desktop/javax.swing.text.AttributeSet.CharacterAttribute") //
 				.hasSize(75);
 		assertThat(result.members().map(SearchableEntity::qualifiedName).toList()) //

@@ -4,8 +4,10 @@ import static net.maisikoleni.javadoc.util.regex.CharPredicate.caseIndependent;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.util.regex.CharClass;
 import net.maisikoleni.javadoc.util.regex.Concatenation;
 import net.maisikoleni.javadoc.util.regex.Literal;
@@ -14,6 +16,12 @@ import net.maisikoleni.javadoc.util.regex.Star;
 
 public final class TrieSearchEngineUtils {
 
+	static final char SEGMENT_DIVIDER_CHAR = '\u0378';
+	static final String SEGMENT_DIVIDER_STRING = "" + SEGMENT_DIVIDER_CHAR;
+	static {
+		if (Character.isDefined(SEGMENT_DIVIDER_CHAR))
+			throw new IllegalStateException("SEGMENT_DIVIDER_CHAR must be undefined");
+	}
 	static final String SEPARATOR_CHAR_CLASS = ".,()<>/\\[\\]";
 
 	private static final String SKIP_CHAR = "~";
@@ -31,12 +39,15 @@ public final class TrieSearchEngineUtils {
 	private static final Regex REGEX_LOWER_CASE = new CharClass(caseIndependent(Character::isLowerCase),
 			"\\p{javaLowerCase}");
 	private static final Regex REGEX_ANY_LOWER_CASE = new Star(REGEX_LOWER_CASE);
+	private static final Regex REGEX_ANY_LOWER_CASE_AND_OPTIONAL_DIVIDER = Concatenation.of(REGEX_ANY_LOWER_CASE,
+			new Star(new Literal(SEGMENT_DIVIDER_STRING)));
 	private static final Regex REGEX_ANY_NON_DIVIDER = new Star(
-			new CharClass(caseIndependent(c -> c != '.' && c != '/'), "[^./]"));
-	private static final Regex REGEX_WHITESPACE_WITH_ANY_LOWER = new Concatenation(REGEX_ANY_LOWER_CASE,
+			new CharClass(caseIndependent(c -> c != SEGMENT_DIVIDER_CHAR), "[^" + SEGMENT_DIVIDER_CHAR + "]"));
+	private static final Regex REGEX_WHITESPACE_WITH_ANY_LOWER = Concatenation.of(
+			REGEX_ANY_LOWER_CASE_AND_OPTIONAL_DIVIDER,
 			new CharClass(caseIndependent(c -> c == '.' || c == '/' || Character.isWhitespace(c)), "[\\s/.]"));
 
-	private static final Regex REGEX_USEFUL_CHARS = new Concatenation(
+	private static final Regex REGEX_USEFUL_CHARS = Concatenation.of(
 			new Star(new CharClass(c -> !Character.isAlphabetic(c) && !Character.isDigit(c), "[^\\p{Alnum}]")),
 			new CharClass(c -> Character.isAlphabetic(c) || Character.isDigit(c), "[\\p{Alnum}]"),
 			new Star(CharClass.ANY));
@@ -53,11 +64,17 @@ public final class TrieSearchEngineUtils {
 		return false;
 	}
 
+	static boolean isSeparator(String s) {
+		return s.length() == 1 && isSeparator(s.charAt(0));
+	}
+
 	static boolean isUseful(CharSequence cs) {
 		return !cs.isEmpty() && (cs.length() > 2 || REGEX_USEFUL_CHARS.matches(cs));
 	}
 
 	static Regex generateRegexFromQuery(String query) {
+		if (query.indexOf(SEGMENT_DIVIDER_CHAR) >= 0)
+			throw new IllegalArgumentException("query must not contain the segment divider char");
 		var cleanQuery = preProcessEntry(query.strip());
 		// TODO: keep?
 		if (cleanQuery.toString().endsWith("^^"))
@@ -79,7 +96,7 @@ public final class TrieSearchEngineUtils {
 				return REGEX_WHITESPACE_WITH_ANY_LOWER;
 			// keep separators as they are
 			if (SEPARATORS.matcher(part).matches())
-				return Concatenation.of(REGEX_ANY_LOWER_CASE, new Literal(part));
+				return Concatenation.of(REGEX_ANY_LOWER_CASE_AND_OPTIONAL_DIVIDER, new Literal(part));
 			// insert patterns for partial identifier matches
 			return Stream.of(IDENTIFIER_SPLIT.split(part)).map(x ->
 			// allow skipping lower case chars with ~ and use the next as char class
@@ -97,5 +114,14 @@ public final class TrieSearchEngineUtils {
 	static boolean isInsufficientQuery(CharSequence cleanQuery) {
 		return cleanQuery.isEmpty() || cleanQuery.length() == 1
 				&& (isSeparator(cleanQuery.charAt(0)) || SKIP_CHAR.charAt(0) == cleanQuery.charAt(0));
+	}
+
+	static CharSequence generateTrieName(SearchableEntity se) {
+		var nameWithSegmentDividers = se.qualifiedNameSegments().<String>mapMulti((segment, sink) -> {
+			if (isSeparator(segment))
+				sink.accept(SEGMENT_DIVIDER_STRING);
+			sink.accept(segment);
+		}).collect(Collectors.joining());
+		return preProcessEntry(nameWithSegmentDividers);
 	}
 }

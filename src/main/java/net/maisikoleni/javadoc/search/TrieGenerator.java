@@ -78,7 +78,7 @@ public class TrieGenerator {
 	}
 
 	static <T extends SearchableEntity> void subdivideEntity(T se, SubdividedEntityConsumer<T> consumer) {
-		var preProcessedName = TrieSearchEngineUtils.preProcessEntry(se.qualifiedName());
+		var preProcessedName = TrieSearchEngineUtils.generateTrieName(se);
 		consumer.accept(preProcessedName, se, 3.0);
 		int length = preProcessedName.length();
 		for (int i = 1; i < length; i++) {
