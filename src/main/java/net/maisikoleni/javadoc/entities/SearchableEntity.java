@@ -76,6 +76,9 @@ public abstract sealed class SearchableEntity
 
 	@Override
 	public final int compareTo(SearchableEntity o) {
+		var nameComparison = name.compareToIgnoreCase(o.name);
+		if (nameComparison != 0)
+			return nameComparison;
 		return CharSequence.compare(qualifiedName(), o.qualifiedName());
 	}
 }
