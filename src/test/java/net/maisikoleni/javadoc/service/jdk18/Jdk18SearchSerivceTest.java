@@ -33,67 +33,67 @@ class Jdk18SearchSerivceTest {
 		var results = searchAsList("Set");
 		assertThat(results.lines().limit(62).collect(Collectors.joining("\n"))).isEqualTo(expectedSearchResults("""
 				java.base/java.util.Set
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int)
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int[][])
+				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(String)
 				jdk.jfr/jdk.jfr.SettingControl
 				jdk.jfr/jdk.jfr.SettingControl.SettingControl()
 				jdk.jfr/jdk.jfr.SettingDefinition
 				jdk.jfr/jdk.jfr.SettingDescriptor
 				jdk.management.jfr/jdk.management.jfr.SettingDescriptorInfo
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(String)
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int)
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
-				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int[][])
-				java.base/java.lang.constant.ConstantDescs.CD_Set
 				java.base/java.util.AbstractSet
-				java.base/java.util.BitSet
-				java.base/java.util.Calendar.areFieldsSet
-				java.base/java.util.Calendar.isSet
-				java.base/java.util.Calendar.isTimeSet
-				java.base/java.util.EnumSet
-				java.base/java.util.HashSet
-				java.base/java.util.LinkedHashSet
-				java.base/java.util.NavigableSet
-				java.base/java.util.SortedSet
-				java.base/java.util.TreeSet
-				java.base/java.util.concurrent.ConcurrentSkipListSet
-				java.base/java.util.concurrent.CopyOnWriteArraySet
 				java.desktop/javax.accessibility.AccessibleRelationSet
 				java.desktop/javax.accessibility.AccessibleStateSet
-				java.desktop/javax.imageio.ImageWriteParam.tilingSet
+				java.base/java.util.Calendar.areFieldsSet
+				java.desktop/javax.print.attribute.AttributeSet
+				java.desktop/javax.swing.text.AttributeSet
 				java.desktop/javax.imageio.plugins.tiff.BaselineTIFFTagSet
+				java.sql.rowset/javax.sql.rowset.BaseRowSet
+				java.base/java.util.BitSet
+				java.sql.rowset/javax.sql.rowset.CachedRowSet
+				java.base/java.lang.constant.ConstantDescs.CD_Set
+				java.base/java.util.concurrent.ConcurrentSkipListSet
+				java.base/java.util.concurrent.CopyOnWriteArraySet
+				java.desktop/javax.print.attribute.DocAttributeSet
+				java.base/java.util.EnumSet
+				jdk.jdi/com.sun.jdi.event.EventSet
 				java.desktop/javax.imageio.plugins.tiff.ExifGPSTagSet
 				java.desktop/javax.imageio.plugins.tiff.ExifInteroperabilityTagSet
 				java.desktop/javax.imageio.plugins.tiff.ExifParentTIFFTagSet
 				java.desktop/javax.imageio.plugins.tiff.ExifTIFFTagSet
 				java.desktop/javax.imageio.plugins.tiff.FaxTIFFTagSet
+				java.sql.rowset/javax.sql.rowset.FilteredRowSet
 				java.desktop/javax.imageio.plugins.tiff.GeoTIFFTagSet
-				java.desktop/javax.imageio.plugins.tiff.TIFFTagSet
-				java.desktop/javax.print.attribute.AttributeSet
-				java.desktop/javax.print.attribute.DocAttributeSet
 				java.desktop/javax.print.attribute.HashAttributeSet
 				java.desktop/javax.print.attribute.HashDocAttributeSet
 				java.desktop/javax.print.attribute.HashPrintJobAttributeSet
 				java.desktop/javax.print.attribute.HashPrintRequestAttributeSet
 				java.desktop/javax.print.attribute.HashPrintServiceAttributeSet
+				java.base/java.util.HashSet
+				java.base/java.util.Calendar.isSet
+				java.base/java.util.Calendar.isTimeSet
+				java.desktop/javax.swing.JViewport.isViewSizeSet
+				java.sql.rowset/javax.sql.rowset.JdbcRowSet
+				java.sql.rowset/javax.sql.rowset.JoinRowSet
+				java.base/java.util.LinkedHashSet
+				java.desktop/javax.swing.text.MutableAttributeSet
+				java.base/java.util.NavigableSet
 				java.desktop/javax.print.attribute.PrintJobAttributeSet
 				java.desktop/javax.print.attribute.PrintRequestAttributeSet
 				java.desktop/javax.print.attribute.PrintServiceAttributeSet
-				java.desktop/javax.swing.JViewport.isViewSizeSet
-				java.desktop/javax.swing.text.AttributeSet
-				java.desktop/javax.swing.text.MutableAttributeSet
-				java.desktop/javax.swing.text.SimpleAttributeSet
-				java.desktop/javax.swing.text.StyleConstants.TabSet
-				java.desktop/javax.swing.text.StyleContext.SmallAttributeSet
-				java.desktop/javax.swing.text.TabSet
-				java.sql.rowset/javax.sql.rowset.BaseRowSet
-				java.sql.rowset/javax.sql.rowset.CachedRowSet
-				java.sql.rowset/javax.sql.rowset.FilteredRowSet
-				java.sql.rowset/javax.sql.rowset.JdbcRowSet
-				java.sql.rowset/javax.sql.rowset.JoinRowSet
-				java.sql.rowset/javax.sql.rowset.WebRowSet
 				java.sql/java.sql.ResultSet
 				java.sql/javax.sql.RowSet
-				jdk.jdi/com.sun.jdi.event.EventSet
+				java.desktop/javax.swing.text.SimpleAttributeSet
+				java.base/java.util.SortedSet
+				java.desktop/javax.swing.text.StyleContext.SmallAttributeSet
+				java.desktop/javax.swing.text.StyleConstants.TabSet
+				java.desktop/javax.swing.text.TabSet
+				java.desktop/javax.imageio.plugins.tiff.TIFFTagSet
+				java.desktop/javax.imageio.ImageWriteParam.tilingSet
+				java.base/java.util.TreeSet
+				java.sql.rowset/javax.sql.rowset.WebRowSet
 				"""));
 		assertThat(results).hasLineCount(798);
 	}
@@ -102,33 +102,33 @@ class Jdk18SearchSerivceTest {
 	void testSearchJavaModuleWithJPackageWithSTypeAndSomeAMember() {
 		var results = searchAsList("java./j..S.~A");
 		assertThat(results).isEqualTo(expectedSearchResults("""
+				java.desktop/java.awt.Scrollbar.AccessibleAWTScrollBar
 				java.base/java.util.Spliterators.AbstractDoubleSpliterator
+				java.base/java.util.Spliterators.AbstractIntSpliterator
 				java.base/java.util.Spliterators.AbstractLongSpliterator
 				java.base/java.util.Spliterators.AbstractSpliterator
-				java.desktop/java.awt.Scrollbar.AccessibleAWTScrollBar
-				java.base/java.util.Spliterators.AbstractIntSpliterator
-				java.desktop/java.awt.Scrollbar.processAdjustmentEvent(AdjustmentEvent)
-				java.desktop/java.awt.Scrollbar.getAdjustmentListeners()
-				java.desktop/java.awt.Scrollbar.getAccessibleContext()
 				java.desktop/java.awt.Scrollbar.addAdjustmentListener(AdjustmentListener)
-				java.base/java.util.Set.containsAll(Collection<?>)
-				java.base/java.util.Spliterator.tryAdvance(Consumer<? super T>)
-				java.base/java.security.Security.getAlgorithms(String)
 				java.base/java.util.Set.addAll(Collection<? extends E>)
-				java.base/java.security.Security.getAlgorithmProperty(String, String)
-				java.base/java.util.Scanner.findAll(String)
-				java.base/java.util.Set.toArray(T[])
-				java.base/java.util.Set.toArray()
-				java.base/java.util.Set.retainAll(Collection<?>)
-				java.base/java.util.Set.removeAll(Collection<?>)
-				java.sql/java.sql.Struct.getAttributes(Map<String, Class<?>>)
-				java.base/java.lang.String.replaceAll(String, String)
 				java.base/java.lang.String.charAt(int)
+				java.base/java.util.Set.containsAll(Collection<?>)
 				java.base/java.util.Scanner.findAll(Pattern)
+				java.base/java.util.Scanner.findAll(String)
+				java.desktop/java.awt.Scrollbar.getAccessibleContext()
+				java.desktop/java.awt.Scrollbar.getAdjustmentListeners()
 				java.base/java.security.Signature.getAlgorithm()
-				java.sql/java.sql.Struct.getAttributes()
-				java.desktop/java.awt.Scrollbar.removeAdjustmentListener(AdjustmentListener)
+				java.base/java.security.Security.getAlgorithmProperty(String, String)
+				java.base/java.security.Security.getAlgorithms(String)
 				java.desktop/java.beans.Statement.getArguments()
+				java.sql/java.sql.Struct.getAttributes()
+				java.sql/java.sql.Struct.getAttributes(Map<String, Class<?>>)
+				java.desktop/java.awt.Scrollbar.processAdjustmentEvent(AdjustmentEvent)
+				java.desktop/java.awt.Scrollbar.removeAdjustmentListener(AdjustmentListener)
+				java.base/java.util.Set.removeAll(Collection<?>)
+				java.base/java.lang.String.replaceAll(String, String)
+				java.base/java.util.Set.retainAll(Collection<?>)
+				java.base/java.util.Set.toArray()
+				java.base/java.util.Set.toArray(T[])
+				java.base/java.util.Spliterator.tryAdvance(Consumer<? super T>)
 				"""));
 	}
 
@@ -154,13 +154,13 @@ class Jdk18SearchSerivceTest {
 		var results = searchAsList("math max");
 		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.lang.Math.max(double, double)
-				java.base/java.lang.Math.max(long, long)
 				java.base/java.lang.Math.max(float, float)
 				java.base/java.lang.Math.max(int, int)
+				java.base/java.lang.Math.max(long, long)
+				java.base/java.lang.StrictMath.max(double, double)
 				java.base/java.lang.StrictMath.max(float, float)
 				java.base/java.lang.StrictMath.max(int, int)
 				java.base/java.lang.StrictMath.max(long, long)
-				java.base/java.lang.StrictMath.max(double, double)
 				"""));
 	}
 
@@ -188,18 +188,18 @@ class Jdk18SearchSerivceTest {
 		var results = searchAsList("IOOBE");
 		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.lang.IndexOutOfBoundsException
-				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException(long)
 				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException()
 				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException(int)
+				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException(long)
 				java.base/java.lang.IndexOutOfBoundsException.IndexOutOfBoundsException(String)
+				java.base/java.lang.ArrayIndexOutOfBoundsException
+				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException()
 				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(int)
 				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(String)
+				java.base/java.lang.StringIndexOutOfBoundsException
+				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException()
 				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException(int)
 				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException(String)
-				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException()
-				java.base/java.lang.ArrayIndexOutOfBoundsException
-				java.base/java.lang.StringIndexOutOfBoundsException.StringIndexOutOfBoundsException()
-				java.base/java.lang.StringIndexOutOfBoundsException
 				"""));
 	}
 
@@ -208,9 +208,9 @@ class Jdk18SearchSerivceTest {
 		var results = searchAsList("aioobe^^");
 		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.lang.ArrayIndexOutOfBoundsException
+				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException()
 				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(int)
 				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException(String)
-				java.base/java.lang.ArrayIndexOutOfBoundsException.ArrayIndexOutOfBoundsException()
 				"""));
 	}
 
