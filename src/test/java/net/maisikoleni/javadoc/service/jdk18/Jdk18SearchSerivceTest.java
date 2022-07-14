@@ -31,7 +31,7 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testSearchSet() {
 		var results = searchAsList("Set");
-		assertThat(results).startsWith(expectedSearchResults("""
+		assertThat(results.lines().limit(62).collect(Collectors.joining("\n"))).isEqualTo(expectedSearchResults("""
 				java.base/java.util.Set
 				jdk.jfr/jdk.jfr.SettingControl
 				jdk.jfr/jdk.jfr.SettingControl.SettingControl()
@@ -94,7 +94,42 @@ class Jdk18SearchSerivceTest {
 				java.sql/java.sql.ResultSet
 				java.sql/javax.sql.RowSet
 				jdk.jdi/com.sun.jdi.event.EventSet
-				""")).hasLineCount(798);
+				"""));
+		assertThat(results).hasLineCount(798);
+	}
+
+	@Test
+	void testSearchJavaModuleWithJPackageWithSTypeAndSomeAMember() {
+		var results = searchAsList("java./j..S.~A");
+		assertThat(results).isEqualTo(expectedSearchResults("""
+				java.base/java.util.Spliterators.AbstractDoubleSpliterator
+				java.base/java.util.Spliterators.AbstractLongSpliterator
+				java.base/java.util.Spliterators.AbstractSpliterator
+				java.desktop/java.awt.Scrollbar.AccessibleAWTScrollBar
+				java.base/java.util.Spliterators.AbstractIntSpliterator
+				java.desktop/java.awt.Scrollbar.processAdjustmentEvent(AdjustmentEvent)
+				java.desktop/java.awt.Scrollbar.getAdjustmentListeners()
+				java.desktop/java.awt.Scrollbar.getAccessibleContext()
+				java.desktop/java.awt.Scrollbar.addAdjustmentListener(AdjustmentListener)
+				java.base/java.util.Set.containsAll(Collection<?>)
+				java.base/java.util.Spliterator.tryAdvance(Consumer<? super T>)
+				java.base/java.security.Security.getAlgorithms(String)
+				java.base/java.util.Set.addAll(Collection<? extends E>)
+				java.base/java.security.Security.getAlgorithmProperty(String, String)
+				java.base/java.util.Scanner.findAll(String)
+				java.base/java.util.Set.toArray(T[])
+				java.base/java.util.Set.toArray()
+				java.base/java.util.Set.retainAll(Collection<?>)
+				java.base/java.util.Set.removeAll(Collection<?>)
+				java.sql/java.sql.Struct.getAttributes(Map<String, Class<?>>)
+				java.base/java.lang.String.replaceAll(String, String)
+				java.base/java.lang.String.charAt(int)
+				java.base/java.util.Scanner.findAll(Pattern)
+				java.base/java.security.Signature.getAlgorithm()
+				java.sql/java.sql.Struct.getAttributes()
+				java.desktop/java.awt.Scrollbar.removeAdjustmentListener(AdjustmentListener)
+				java.desktop/java.beans.Statement.getArguments()
+				"""));
 	}
 
 	@Test
