@@ -58,7 +58,7 @@ public final class HtmxHeaders {
 		/**
 		 * can be used to do a client-side redirect to a new location
 		 */
-		public static final String Redirect = "HX-Redirect";
+		public static final String REDIRECT = "HX-Redirect";
 		/**
 		 * Allows you to do a client-side redirect that does not do a full page reload
 		 */
@@ -76,7 +76,7 @@ public final class HtmxHeaders {
 		 * Allows you to specify how the response will be swapped. See hx-swap for
 		 * possible values
 		 */
-		public static final String Reswap = "HX-Reswap";
+		public static final String RESWAP = "HX-Reswap";
 		/**
 		 * allows you to trigger client side events, see the documentation for more info
 		 */
