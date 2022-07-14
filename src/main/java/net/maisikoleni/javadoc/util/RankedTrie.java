@@ -156,7 +156,10 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 			@Override
 			public int compareTo(Entry o) {
 				// reversed to have higher values first
-				return Double.compare(o.currentRank, currentRank);
+				var rankComparison = Double.compare(o.currentRank, currentRank);
+				if (rankComparison != 0)
+					return rankComparison;
+				return currentValue.compareTo(o.currentValue);
 			}
 		}
 	}
