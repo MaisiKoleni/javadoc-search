@@ -5,7 +5,7 @@
 		<div class="col">
 			<input type="search" name="query" class="form-control" id="query" placeholder="Enter Query..."
 				hx-get="/search-suggestions" hx-trigger="keyup changed, search" hx-target="#searchResults"
-				aria-label="Query" autofocus="autofocus">
+				aria-label="Query" autofocus="autofocus" autocomplete="off">
 		</div>
 		<div class="col-auto d-flex align-items-center">
 			<button class="btn btn-primary" type="submit" aria-label="Search">Search!</button>
