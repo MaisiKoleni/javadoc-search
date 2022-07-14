@@ -1,6 +1,7 @@
 package net.maisikoleni.javadoc.server.html;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.equalToCompressingWhiteSpace;
 
@@ -30,6 +31,7 @@ class JavadocSearchPageSlowTest {
 	void testSuggestionsFound() {
 		given().when().get("search-suggestions?query=str Col~or").then() //
 				.statusCode(Status.OK.getStatusCode()) //
+				.header(HtmxHeaders.Response.REPLACE_URL, "/?query=str+Col~or") //
 				.body(equalToCompressingWhiteSpace(
 						"""
 								<tr>
@@ -48,9 +50,35 @@ class JavadocSearchPageSlowTest {
 	}
 
 	@Test
+	void startPageWithQuery() {
+		String expectedInputValue = """
+				value="jdk.a"
+				""".strip();
+		String expectedResultTable = """
+				<tr>
+					<th scope="row" class="text-end">1</th>
+					<td class="text-break">\
+				<a href="https://docs.oracle.com/en/java/javase/18/docs/api/jdk.accessibility/module-summary.html">\
+				jdk.accessibility</a></td>
+				</tr>
+				<tr>
+					<th scope="row" class="text-end">2</th>
+					<td class="text-break">\
+				<a href="https://docs.oracle.com/en/java/javase/18/docs/api/jdk.attach/module-summary.html">\
+				jdk.attach</a></td>
+				</tr>
+				""".strip();
+		given().when().get("?query=jdk.a").then() //
+				.statusCode(Status.OK.getStatusCode()) //
+				.body(containsString(expectedInputValue), //
+						containsString(expectedResultTable));
+	}
+
+	@Test
 	void testSuggestionsEmpty() {
 		given().when().get("search-suggestions?query=").then() //
 				.statusCode(Status.OK.getStatusCode()) //
+				.header(HtmxHeaders.Response.REPLACE_URL, "/?query=") //
 				.body(emptyString());
 	}
 
