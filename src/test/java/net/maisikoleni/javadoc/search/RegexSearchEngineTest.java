@@ -43,8 +43,7 @@ class RegexSearchEngineTest {
 						"java.desktop/javax.imageio.plugins.tiff.BaselineTIFFTagSet", //
 						"java.sql.rowset/javax.sql.rowset.BaseRowSet", //
 						"java.base/java.util.BitSet") //
-				.contains("java.desktop/javax.swing.text.AttributeSet.CharacterAttribute") //
-				.hasSize(75);
+				.hasSize(71);
 		assertThat(result.members().map(SearchableEntity::qualifiedName).toList()) //
 				.startsWith( //
 						"java.base/java.nio.file.attribute.PosixFilePermissions.asFileAttribute(Set<PosixFilePermission>)", //

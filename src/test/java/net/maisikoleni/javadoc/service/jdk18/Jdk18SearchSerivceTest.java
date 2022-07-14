@@ -94,7 +94,7 @@ class Jdk18SearchSerivceTest {
 				java.sql/java.sql.ResultSet
 				java.sql/javax.sql.RowSet
 				jdk.jdi/com.sun.jdi.event.EventSet
-				""")).hasLineCount(802);
+				""")).hasLineCount(798);
 	}
 
 	@Test
@@ -110,7 +110,6 @@ class Jdk18SearchSerivceTest {
 		var results = searchAsList(".Collector");
 		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.base/java.util.stream.Collector
-				java.base/java.util.stream.Collector.Characteristics
 				java.base/java.util.stream.Collectors
 				"""));
 	}
@@ -146,10 +145,6 @@ class Jdk18SearchSerivceTest {
 				java.desktop/javax.print.attribute.AttributeSet
 				java.desktop/javax.swing.text.AttributeSet
 				java.desktop/javax.print.attribute.AttributeSetUtilities
-				java.desktop/javax.swing.text.AttributeSet.FontAttribute
-				java.desktop/javax.swing.text.AttributeSet.ParagraphAttribute
-				java.desktop/javax.swing.text.AttributeSet.CharacterAttribute
-				java.desktop/javax.swing.text.AttributeSet.ColorAttribute
 				"""));
 	}
 

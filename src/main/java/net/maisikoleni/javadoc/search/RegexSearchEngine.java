@@ -53,7 +53,8 @@ public final class RegexSearchEngine extends IndexBasedSearchEngine {
 	private static <T extends SearchableEntity> List<MatchableEntity<T>> generateMatchableEntities(List<T> index) {
 		return index.stream().map(entity -> {
 			var qualifiedName = entity.qualifiedName();
-			var matchThresholdIndex = Math.max(0, qualifiedName.length() - (entity.name().length() + 1));
+			var lastNameSegmentLength = entity.qualifiedNameSegments().reduce("", (prev, next) -> next).length();
+			var matchThresholdIndex = Math.max(0, qualifiedName.length() - (lastNameSegmentLength + 1));
 			return new MatchableEntity<>(qualifiedName, matchThresholdIndex, entity);
 		}).toList();
 	}

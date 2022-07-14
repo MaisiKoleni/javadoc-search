@@ -25,7 +25,7 @@ class RankedTrieSearchEngineTest {
 	/**
 	 * This is expected to be stable on the premise that String.hashCode unchanged.
 	 */
-	private static final int EXPECTED_HASH_CODE = 1127896801;
+	private static final int EXPECTED_HASH_CODE = -1527552154;
 
 	@Inject
 	@Jdk(Version.RELEASE_18)

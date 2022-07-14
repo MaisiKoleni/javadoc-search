@@ -1,6 +1,7 @@
 package net.maisikoleni.javadoc.entities;
 
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 public abstract sealed class NestedSearchableEntity<C extends SearchableEntity> // $NOSONAR - hashCode/equals final
 		extends SearchableEntity permits Package, Type, Member {
@@ -23,7 +24,11 @@ public abstract sealed class NestedSearchableEntity<C extends SearchableEntity> 
 	@Override
 	protected Stream.Builder<String> qualifiedNameSegments(Stream.Builder<String> builder) {
 		if (container != null)
-			return container.qualifiedNameSegments(builder).add(DOT).add(name());
+			return nameSegments(container.qualifiedNameSegments(builder).add(DOT));
+		return nameSegments(builder);
+	}
+
+	protected Builder<String> nameSegments(Builder<String> builder) {
 		return builder.add(name());
 	}
 

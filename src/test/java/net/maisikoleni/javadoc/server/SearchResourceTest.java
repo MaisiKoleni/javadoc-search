@@ -43,8 +43,7 @@ class SearchResourceTest {
 				.body(is("""
 						["str Col~or",[\
 						"java.base/java.util.stream.Collector",\
-						"java.base/java.util.stream.Collectors",\
-						"java.base/java.util.stream.Collector.Characteristics"\
+						"java.base/java.util.stream.Collectors"\
 						]]"""));
 	}
 

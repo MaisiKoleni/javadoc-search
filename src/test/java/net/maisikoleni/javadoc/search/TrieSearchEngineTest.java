@@ -33,7 +33,7 @@ class TrieSearchEngineTest {
 						"java.base/java.util.EnumSet", //
 						"java.sql/java.sql.ResultSet", //
 						"jdk.jfr/jdk.jfr.SettingControl") //
-				.hasSize(75);
+				.hasSize(71);
 		assertThat(result.members().map(SearchableEntity::qualifiedName).toList()) //
 				.contains( //
 						"java.base/java.util.Calendar.isSet", //
