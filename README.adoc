@@ -92,12 +92,11 @@ The matching results are currently ranked by:
   is therefore a better match for `*Set*`
   than `java.base/java.util.AbstractSet`.
 - Natural order of the entries. +
-  Results with smaller char values at the same position come first
-  This is like `String.compareTo` on the qualified names,
-  except that the current implementation adds chars to
-  distinguish the different segments of the name and
-  those cause a slight deviation from the ordering in
-  the specification.
+  Results with smaller char values at the same position come first.
+  The implementation is very much like `String.compareTo`
+  on the qualified names, which causes a slight deviation
+  from the ordering of the JDK Javadoc search,
+  which sorts by the last segment of the qualified name.
 
 Case insensitive matching is only performed
 if case-sensitive did not yield _any_ results.
