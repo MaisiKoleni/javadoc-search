@@ -1,6 +1,8 @@
 name: Deploy App to javadoc-search.maisikoleni.net
 
 on:
+  push:
+    branches: [ "deployment-environment-gh-actions" ]
   workflow_dispatch:
 
 jobs:
