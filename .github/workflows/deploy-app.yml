@@ -36,5 +36,5 @@ jobs:
       # Sync files with server
       run: |
         export ID_FILE=$(realpath ~/.ssh/id_gha)
-        rsync --delete -avce 'ssh -i $ID_FILE' target/quarkus-app ${{ secrets.SSH_CONNECTION }}:${{ secrets.NEW_APP_LOCATION }}
+        rsync --delete -avce "ssh -i $ID_FILE" target/quarkus-app ${{ secrets.SSH_CONNECTION }}:${{ secrets.NEW_APP_LOCATION }}
         ssh -i $ID_FILE ${{ secrets.SSH_CONNECTION }} "touch ${{ secrets.NEW_APP_LOCATION }}/.done"
