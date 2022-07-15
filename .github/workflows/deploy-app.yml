@@ -23,7 +23,7 @@ jobs:
         install -m 600 -D /dev/null ~/.deploy_key.pem
         echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" > ~/.deploy_key.pem
         cd target/quarkus-app
-        find . -type f -print0 | sort -z | xargs -0 sha256sum | openssl dgst -sha256 -sign ~/.deploy_key.pem -out .signature
+        find . -type f -print0 | env LC_ALL=C sort -z | xargs -0 sha256sum | openssl dgst -sha256 -sign ~/.deploy_key.pem -out .signature
         cd ../..
         rm ~/.deploy_key.pem
     - name: Setup SSH
