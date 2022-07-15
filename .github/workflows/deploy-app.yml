@@ -1,0 +1,39 @@
+name: Deploy App to javadoc-search.maisikoleni.net
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to javadoc-search.maisikoleni.net
+    environment: javadoc-search.maisikoleni.net
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Package with Maven
+      run: mvn -B clean package -Dmaven.test.skip=true
+    - name: Hash and sign
+      run: |
+        install -m 600 -D /dev/null ~/.deploy_key.pem
+        echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" > ~/.deploy_key.pem
+        cd target/quarkus-app
+        find . -type f -print0 | sort -z | xargs -0 sha256sum | openssl dgst -sha256 -sign ~/.deploy_key.pem -out .signature
+        cd ../..
+        rm ~/.deploy_key.pem
+    - name: Setup SSH
+      # First create id with rw-user-only permissions, then fill the files with the secrets
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_gha
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_gha
+        echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+    - name: Transfer to server
+      # Sync files with server
+      run: |
+        rsync --delete -avce 'ssh -i ${{ home }}/.ssh/id_gha' ${{ secrets.SSH_CONNECTION }}${{ secrets.NEW_APP_LOCATION }}
+        ssh -i ${{ home }}/.ssh/id_gha ${{ secrets.SSH_CONNECTION }} "touch ${{ secrets.NEW_APP_LOCATION }}/.done"
