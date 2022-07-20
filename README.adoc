@@ -27,12 +27,15 @@ The above is a fairly weak server and not suitable for benchmarking.
 
 == Details
 
-Realized as Quarkus web application mainly with https://quarkus.io/guides/qute[Qute],
+Realized as https://quarkus.io[Quarkus] web application mainly with https://quarkus.io/guides/qute[Qute],
 https://quarkus.io/guides/resteasy[RESTEasy] and https://microstream.one/platforms/microstream-for-java/[Microstream].
 The client-side uses https://getbootstrap.com[Bootstrap] and https://htmx.org[htmx].
 
-The search engine is implemented as a https://en.wikipedia.org/wiki/Trie[trie]
+The search engine is implemented as a https://en.wikipedia.org/wiki/Radix_tree[sparse radix trie]
 generated from the `xxx-search-index.js` files of a Javadoc site.
+It is also mixed with a https://en.wikipedia.org/wiki/Suffix_tree[suffix tree]
+for name segments of the Javadoc elements.
+
 
 To search in that trie like one can in the official Javadoc implementation,
 the nodes in the trie are being traversed recursively
@@ -40,7 +43,7 @@ based on a custom regular expression matcher implementation.
 
 This allows for the following search syntax:
 
-- Query `*j.l.o*` will find:
+- Query `*ja.l.o*` will find:
    * `java.base/java.lang.Object`
    * `java.base/java.lang.Override`
    * `java.base/java.lang.OutOfMemoryError`
@@ -94,9 +97,7 @@ The matching results are currently ranked by:
 - Natural order of the entries. +
   Results with smaller char values at the same position come first.
   The implementation is very much like `String.compareTo`
-  on the qualified names, which causes a slight deviation
-  from the ordering of the JDK Javadoc search,
-  which sorts by the last segment of the qualified name.
+  on the last segment of the qualified name.
 
 Case insensitive matching is only performed
 if case-sensitive did not yield _any_ results.
