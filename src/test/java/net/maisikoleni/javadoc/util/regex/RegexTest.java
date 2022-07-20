@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 import net.maisikoleni.javadoc.db.TestJavadocIndexes;
 import net.maisikoleni.javadoc.entities.JavadocIndex;
@@ -81,6 +82,8 @@ class RegexTest {
 	}
 
 	@Test
+	@DisabledIfEnvironmentVariable(named = "GITHUB_ACTIONS", matches = "true", //
+			disabledReason = "GitHub Actions cannot do this reliably due to weaker and non-dedicated system")
 	void testRegexMatchingPerformance(TestReporter reporter) {
 		long timeRegex = 0;
 		long timeJdkPattern = 0;
