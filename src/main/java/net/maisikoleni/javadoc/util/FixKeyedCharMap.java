@@ -94,7 +94,7 @@ public class FixKeyedCharMap<V> implements CharMap<V> {
 		int size = cm.size();
 		if (size == 0)
 			return CharMap.EMPTY_MAP;
-		assert size < 1 << BITS_16 : "Cannot create immutable map with 2^16 keys or more";
+		assert size < 1 << BITS_16 : "Cannot create fix keyed map with 2^16 keys or more";
 		int[] indexedKeys = new int[size];
 		V[] unsortedValues = newValueArray(size);
 		Int index = new Int();
