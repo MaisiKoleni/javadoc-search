@@ -1,4 +1,4 @@
-package net.maisikoleni.javadoc.util;
+package net.maisikoleni.javadoc.util.trie;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -9,6 +9,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import net.maisikoleni.javadoc.util.Cache;
+import net.maisikoleni.javadoc.util.CharMap;
+import net.maisikoleni.javadoc.util.FixKeyedCharMap;
+import net.maisikoleni.javadoc.util.SingleElementSet;
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 

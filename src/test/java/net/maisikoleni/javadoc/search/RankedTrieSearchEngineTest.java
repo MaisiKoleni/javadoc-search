@@ -15,9 +15,9 @@ import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.search.RankedTrieSearchEngine.RankedEntry;
 import net.maisikoleni.javadoc.service.Jdk;
 import net.maisikoleni.javadoc.service.Jdk.Version;
+import net.maisikoleni.javadoc.util.trie.Trie;
+import net.maisikoleni.javadoc.util.trie.RankedTrie.RankedSimpleTrie;
 import net.maisikoleni.javadoc.service.SearchService;
-import net.maisikoleni.javadoc.util.RankedTrie.RankedSimpleTrie;
-import net.maisikoleni.javadoc.util.Trie;
 
 @QuarkusTest
 class RankedTrieSearchEngineTest {

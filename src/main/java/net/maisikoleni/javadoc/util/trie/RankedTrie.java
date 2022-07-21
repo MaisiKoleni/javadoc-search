@@ -1,4 +1,4 @@
-package net.maisikoleni.javadoc.util;
+package net.maisikoleni.javadoc.util.trie;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,8 +11,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import net.maisikoleni.javadoc.util.AbstractTrie.GradedValueSet;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
+import net.maisikoleni.javadoc.util.trie.AbstractTrie.GradedValueSet;
 
 public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 

@@ -1,4 +1,4 @@
-package net.maisikoleni.javadoc.util;
+package net.maisikoleni.javadoc.util.trie;
 
 import java.util.stream.Stream;
 

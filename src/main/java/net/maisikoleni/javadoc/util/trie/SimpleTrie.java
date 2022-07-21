@@ -1,9 +1,12 @@
-package net.maisikoleni.javadoc.util;
+package net.maisikoleni.javadoc.util.trie;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import net.maisikoleni.javadoc.util.Cache;
+import net.maisikoleni.javadoc.util.CharMap;
+import net.maisikoleni.javadoc.util.JdkCharHashMap;
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 
 public final class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie.Node<T>> {

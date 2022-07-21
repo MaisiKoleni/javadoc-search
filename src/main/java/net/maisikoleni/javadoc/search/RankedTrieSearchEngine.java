@@ -10,12 +10,12 @@ import net.maisikoleni.javadoc.entities.Package;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.entities.Tag;
 import net.maisikoleni.javadoc.entities.Type;
-import net.maisikoleni.javadoc.util.RankedTrie.RankedConcurrentTrie;
-import net.maisikoleni.javadoc.util.RankedTrie.RankingFunction;
-import net.maisikoleni.javadoc.util.Trie;
 import net.maisikoleni.javadoc.util.regex.CompiledRegex;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 import net.maisikoleni.javadoc.util.regex.Regex;
+import net.maisikoleni.javadoc.util.trie.Trie;
+import net.maisikoleni.javadoc.util.trie.RankedTrie.RankedConcurrentTrie;
+import net.maisikoleni.javadoc.util.trie.RankedTrie.RankingFunction;
 
 public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 

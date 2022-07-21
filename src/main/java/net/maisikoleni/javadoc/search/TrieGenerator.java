@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory;
 
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.util.Cache;
-import net.maisikoleni.javadoc.util.Trie;
 import net.maisikoleni.javadoc.util.WeakCommonPool;
 import net.maisikoleni.javadoc.util.regex.CharClass;
 import net.maisikoleni.javadoc.util.regex.Regex;
+import net.maisikoleni.javadoc.util.trie.Trie;
 
 public class TrieGenerator {
 

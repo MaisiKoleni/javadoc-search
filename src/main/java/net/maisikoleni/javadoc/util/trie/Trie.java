@@ -1,6 +1,8 @@
-package net.maisikoleni.javadoc.util;
+package net.maisikoleni.javadoc.util.trie;
 
 import java.util.Set;
+
+import net.maisikoleni.javadoc.util.Cache;
 
 public interface Trie<T> extends PatternLookup<T> {
 
