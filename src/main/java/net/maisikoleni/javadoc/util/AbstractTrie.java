@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
@@ -57,30 +57,52 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 
 		protected abstract N newNode();
 
-		public void insert(CharSequence cs, int indexInString, int indexInNode, T value,
-				AbstractTypeFactory<T> factory) {
-			var isStringEnd = cs.length() == indexInString;
-			// split if necessary
-			split(indexInNode, factory);
-			if (isStringEnd) {
-				// add value to this node (after potential split)
-				if (values == EMPTY_SET) {
-					values = SingleElementSet.of(value);
-				} else {
-					if (values.size() == 1)
-						values = factory.newValueSet(values);
-					values.add(value);
-				}
+		public void insert(CharSequence key, int indexInKey, int indexInNode, T value, AbstractTypeFactory<T> factory) {
+			var isKeyEnd = key.length() == indexInKey;
+			splitIfNecessary(indexInNode, factory);
+			if (isKeyEnd)
+				addValue(value, factory);
+			else
+				addTransitionToNewNode(key, indexInKey, value, factory);
+		}
+
+		private void splitIfNecessary(int indexInNode, AbstractTypeFactory<T> factory) {
+			if (indexInNode == charCount())
+				return;
+			var node = newNode();
+			// split strings and extract transition character
+			var transitionChar = chars.charAt(indexInNode);
+			node.chars = chars.subSequence(indexInNode + 1, chars.length());
+			chars = chars.subSequence(0, indexInNode);
+			// move transitions and values to the new node behind this one
+			node.transitions = transitions;
+			transitions = factory.newTransitionMap();
+			node.values = values;
+			values = EMPTY_SET;
+			// create new transition
+			transitions.put(transitionChar, node);
+		}
+
+		private void addTransitionToNewNode(CharSequence key, int indexInKey, T value, AbstractTypeFactory<T> factory) {
+			// create a new node for the missing content
+			var valueNode = newNode();
+			var transitionChar = key.charAt(indexInKey);
+			valueNode.chars = key.subSequence(indexInKey + 1, key.length());
+			valueNode.values = SingleElementSet.of(value);
+			// add node transition to this node (after potential split)
+			if (transitions == CharMap.EMPTY_MAP)
+				transitions = factory.newTransitionMap();
+			transitions.put(transitionChar, valueNode);
+		}
+
+		private void addValue(T value, AbstractTypeFactory<T> factory) {
+			// add value to this node (after potential split)
+			if (values == EMPTY_SET) {
+				values = SingleElementSet.of(value);
 			} else {
-				// create a new node for the missing content
-				var valueNode = newNode();
-				var transitionChar = cs.charAt(indexInString);
-				valueNode.chars = cs.subSequence(indexInString + 1, cs.length());
-				valueNode.values = SingleElementSet.of(value);
-				// add node transition to this node (after potential split)
-				if (transitions == CharMap.EMPTY_MAP)
-					transitions = factory.newTransitionMap();
-				transitions.put(transitionChar, valueNode);
+				if (values.size() == 1)
+					values = factory.newValueSet(values);
+				values.add(value);
 			}
 		}
 
@@ -101,26 +123,9 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 			return hasMatch || childrenMatched;
 		}
 
-		protected void split(int indexInNode, AbstractTypeFactory<T> factory) {
-			if (indexInNode == charCount())
-				return;
-			var node = newNode();
-			// split strings and extract transition character
-			var transitionChar = chars.charAt(indexInNode);
-			node.chars = chars.subSequence(indexInNode + 1, chars.length());
-			chars = chars.subSequence(0, indexInNode);
-			// move transitions and values to the new node behind this one
-			node.transitions = transitions;
-			transitions = factory.newTransitionMap();
-			node.values = values;
-			values = EMPTY_SET;
-			// create new transition
-			transitions.put(transitionChar, node);
-		}
-
-		protected void compress(CommonCompressionCache cache) {
+		protected void compress(CompressionCache cache) {
 			cacheSelf(cache.nodes());
-			chars = cache.charSequences().getOrCache(chars);
+			chars = cache.keySegments().getOrCache(chars);
 			values = cache.<T>valueSets().getOrCache(values);
 			// template methods to allow for parallel computation
 			forEachTransition((c, node) -> {
@@ -214,17 +219,16 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 
 		int indexInNode();
 
-		int indexInString();
+		int indexInKey();
 
-		default <R> R switchOnSuccess(Function<? super N, ? extends R> onSuccess,
-				BiFunction<? super N, ? super Integer, ? extends R> onFailure) {
+		default <R> R switchOnSuccess(Function<? super N, ? extends R> onSuccess, Supplier<? extends R> onFailure) {
 			if (success())
 				return onSuccess.apply(node());
-			return onFailure.apply(node(), indexInString());
+			return onFailure.get();
 		}
 
-		default void insert(CharSequence cs, T value, AbstractTypeFactory<T> factory) {
-			node().insert(cs, indexInString(), indexInNode(), value, factory);
+		default void insert(CharSequence key, T value, AbstractTypeFactory<T> factory) {
+			node().insert(key, indexInKey(), indexInNode(), value, factory);
 		}
 	}
 
@@ -241,7 +245,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 		}
 	}
 
-	protected abstract NodeMatch<T, N> findNode(CharSequence cs, boolean writeAccess);
+	protected abstract NodeMatch<T, N> findNode(CharSequence key, boolean writeAccess);
 
 	protected abstract static class AbstractTypeFactory<T> {
 
@@ -259,8 +263,8 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 	}
 
 	@Override
-	public Stream<T> search(CharSequence cs) {
-		return findNode(cs, false).switchOnSuccess(N::valueStream, (node, end) -> Stream.of());
+	public Stream<T> search(CharSequence key) {
+		return findNode(key, false).switchOnSuccess(N::valueStream, Stream::of);
 	}
 
 	@Override
@@ -271,18 +275,18 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 	}
 
 	@Override
-	public void insert(CharSequence cs, T value) {
+	public void insert(CharSequence key, T value) {
 		if (!mutable)
 			throw new IllegalStateException("Trie is immutable");
-		findNode(cs, true).insert(cs, value, factory);
+		findNode(key, true).insert(key, value, factory);
 	}
 
 	public final void compress() {
-		compress(new CommonCompressionCache(factory::newCache));
+		compress(new CompressionCache(factory::newCache));
 	}
 
 	@Override
-	public final void compress(CommonCompressionCache compressionCache) {
+	public final void compress(CompressionCache compressionCache) {
 		mutable = false;
 		root.compressTransitions();
 		root.compress(compressionCache);

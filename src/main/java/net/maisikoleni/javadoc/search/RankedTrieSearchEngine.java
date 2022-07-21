@@ -107,7 +107,7 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 		}
 
 		@Override
-		public double applyAsDouble(RankedEntry<T> rankedEntry, double searchGrade) {
+		public double rank(RankedEntry<T> rankedEntry, double searchGrade) {
 			return rankedEntry.rank() + searchGrade;
 		}
 

@@ -42,7 +42,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		private static final VarHandle LOCK_VAR_HANDLE;
 		static {
 			try {
-				LOCK_VAR_HANDLE = MethodHandles.lookup().findVarHandle(Node.class, "intLock", int.class);
+				LOCK_VAR_HANDLE = MethodHandles.lookup().findVarHandle(Node.class, "lockState", int.class);
 			} catch (NoSuchFieldException | IllegalAccessException e) {
 				throw new IllegalStateException(e);
 			}
@@ -51,7 +51,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 				LOCK_VAR_HANDLE);
 
 		@SuppressWarnings("unused") // used in VarHandle
-		private int intLock;
+		private int lockState;
 
 		@Override
 		protected Node<T> newNode() {
@@ -96,7 +96,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 		}
 
 		@Override
-		protected void compress(CommonCompressionCache cache) {
+		protected void compress(CompressionCache cache) {
 			super.compress(cache);
 			LOCK.setInactive(this, true);
 		}
@@ -108,26 +108,26 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 	}
 
 	@Override
-	protected LockedNodeMatch<T> findNode(CharSequence cs, boolean writeAccess) {
-		int length = cs.length();
+	protected LockedNodeMatch<T> findNode(CharSequence key, boolean writeAccess) {
+		int length = key.length();
 		// start with the root (and reading it)
 		Node<T> node = root;
 		node.startRead();
 		boolean writeLockAcquired = false;
 		int indexInNode = 0;
-		int nodeStartInString = 0;
-		int indexInString = 0;
-		MAIN_LOOP: while (indexInString <= length) {
+		int indexInKey = 0;
+		int nodeStartInKey = 0;
+		MAIN_LOOP: while (indexInKey <= length) {
 			int nodeCharCount = node.charCount();
 			CHECK: {
-				if (indexInString == length) {
+				if (indexInKey == length) {
 					// acquire write lock and re-check node if necessary
 					if (writeAccess && !writeLockAcquired)
 						break CHECK;
 					boolean isExactMatch = indexInNode == nodeCharCount;
 					return new LockedNodeMatch<>(isExactMatch, node, indexInNode, length, writeAccess);
 				}
-				char c = cs.charAt(indexInString);
+				char c = key.charAt(indexInKey);
 				boolean nodeHasCharsLeft = nodeCharCount > indexInNode;
 				if (nodeHasCharsLeft && node.chars().charAt(indexInNode) == c) {
 					indexInNode++;
@@ -137,7 +137,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 						// acquire write lock and re-check node if necessary
 						if (writeAccess && !writeLockAcquired)
 							break CHECK;
-						return new LockedNodeMatch<>(false, node, indexInNode, indexInString, writeAccess);
+						return new LockedNodeMatch<>(false, node, indexInNode, indexInKey, writeAccess);
 					}
 					// start reading new node
 					newNode.startRead();
@@ -149,7 +149,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 					// switch to node at the other end of the transition
 					node = newNode;
 					// node starts with the char after this transition
-					nodeStartInString = indexInString + 1;
+					nodeStartInKey = indexInKey + 1;
 					// reset node-dependent states
 					indexInNode = 0;
 					writeLockAcquired = false;
@@ -157,10 +157,10 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 					// acquire write lock and re-check node if necessary
 					if (writeAccess && !writeLockAcquired)
 						break CHECK;
-					return new LockedNodeMatch<>(false, node, indexInNode, indexInString, writeAccess);
+					return new LockedNodeMatch<>(false, node, indexInNode, indexInKey, writeAccess);
 				}
 				// normal for-loop order, continue with next index
-				indexInString++;
+				indexInKey++;
 				continue MAIN_LOOP;
 			}
 			// we found the node but require write access
@@ -173,18 +173,18 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 			int newNodeCharCount = node.charCount();
 			if (newNodeCharCount != nodeCharCount && newNodeCharCount < indexInNode) {
 				// re-check new node end
-				indexInString = nodeStartInString + newNodeCharCount;
+				indexInKey = nodeStartInKey + newNodeCharCount;
 				indexInNode = newNodeCharCount;
 			} else {
 				// just re-check last char
 			}
 		}
 		throw new IllegalStateException(
-				"unreachable code: cs='%s',length=%d, writeLock=%s, indexInNode=%d, nodeStartInString=%d, indexInString=%d, node=%s"
-						.formatted(cs, length, writeLockAcquired, indexInNode, nodeStartInString, indexInString, node));
+				"unreachable code: key='%s',length=%d, writeLock=%s, indexInNode=%d, nodeStartInKey=%d, indexInKey=%d, node=%s"
+						.formatted(key, length, writeLockAcquired, indexInNode, nodeStartInKey, indexInKey, node));
 	}
 
-	record LockedNodeMatch<T> (boolean success, Node<T> node, int indexInNode, int indexInString, boolean write)
+	record LockedNodeMatch<T> (boolean success, Node<T> node, int indexInNode, int indexInKey, boolean write)
 			implements NodeMatch<T, Node<T>>, AutoCloseable {
 
 		LockedNodeMatch {
@@ -201,18 +201,18 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 	}
 
 	@Override
-	public Stream<T> search(CharSequence cs) {
-		try (var nodeMatch = findNode(cs, false)) {
-			return nodeMatch.switchOnSuccess(Node<T>::valueStream, (node, end) -> Stream.of());
+	public Stream<T> search(CharSequence key) {
+		try (var nodeMatch = findNode(key, false)) {
+			return nodeMatch.switchOnSuccess(Node<T>::valueStream, Stream::of);
 		}
 	}
 
 	@Override
-	public void insert(CharSequence cs, T value) {
+	public void insert(CharSequence key, T value) {
 		if (!mutable)
 			throw new IllegalStateException("Trie is immutable");
-		try (var nodeMatch = findNode(cs, true)) {
-			nodeMatch.insert(cs, value, factory);
+		try (var nodeMatch = findNode(key, true)) {
+			nodeMatch.insert(key, value, factory);
 		}
 	}
 }

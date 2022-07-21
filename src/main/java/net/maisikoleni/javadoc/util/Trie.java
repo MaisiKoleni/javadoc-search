@@ -4,18 +4,18 @@ import java.util.Set;
 
 public interface Trie<T> extends PatternLookup<T> {
 
-	void compress(CommonCompressionCache compressionCache);
+	void compress(CompressionCache compressionCache);
 
-	class CommonCompressionCache {
+	class CompressionCache {
 
 		private final Cache<?> nodes;
 		private final Cache<Set<?>> valueSets;
-		private final Cache<CharSequence> charSequences;
+		private final Cache<CharSequence> keySegments;
 
-		public CommonCompressionCache(CacheSupplier cacheSupplier) {
+		public CompressionCache(CacheSupplier cacheSupplier) {
 			nodes = cacheSupplier.createNew();
 			valueSets = cacheSupplier.createNew();
-			charSequences = cacheSupplier.createNew();
+			keySegments = cacheSupplier.createNew();
 		}
 
 		@SuppressWarnings({ "unchecked" })
@@ -28,14 +28,14 @@ public interface Trie<T> extends PatternLookup<T> {
 			return (Cache<Set<T>>) (Cache<?>) valueSets;
 		}
 
-		public Cache<CharSequence> charSequences() {
-			return charSequences;
+		public Cache<CharSequence> keySegments() {
+			return keySegments;
 		}
 
 		public void clear() {
 			nodes.clear();
 			valueSets.clear();
-			charSequences.clear();
+			keySegments.clear();
 		}
 	}
 

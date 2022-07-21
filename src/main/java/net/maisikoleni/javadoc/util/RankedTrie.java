@@ -24,15 +24,6 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 		this.rankingFunction = Objects.requireNonNull(rankingFunction);
 	}
 
-	public abstract static class AbstractTypeFactory<T extends Comparable<T>>
-			extends AbstractTrie.AbstractTypeFactory<T> {
-
-		@Override
-		protected Set<T> newValueSet() {
-			return new TreeSet<>();
-		}
-	}
-
 	public static final class RankedSimpleTrie<T extends Comparable<T>> extends RankedTrie<T> {
 
 		public RankedSimpleTrie(RankingFunction<T> rankingFunction) {
@@ -64,17 +55,17 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 	}
 
 	@Override
-	public void insert(CharSequence cs, T value) {
-		trie.insert(cs, value);
+	public void insert(CharSequence key, T value) {
+		trie.insert(key, value);
 	}
 
 	@Override
-	public Stream<T> search(CharSequence cs) {
-		return trie.search(cs);
+	public Stream<T> search(CharSequence key) {
+		return trie.search(key);
 	}
 
 	@Override
-	public void compress(CommonCompressionCache compressionCache) {
+	public void compress(CompressionCache compressionCache) {
 		trie.compress(compressionCache);
 	}
 
@@ -142,7 +133,7 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 					return false;
 				}
 				currentValue = values.next();
-				currentRank = rankingFunction.applyAsDouble(currentValue, searchGrade);
+				currentRank = rankingFunction.rank(currentValue, searchGrade);
 				return true;
 			}
 
@@ -168,7 +159,7 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 	public interface RankingFunction<T> {
 
 		/**
-		 * Returns the score of a result for a given search and match.
+		 * Returns the rank of a result for a given search and match.
 		 * <p>
 		 * A higher value is better, 0.0 is the lowest possible rank.
 		 *
@@ -176,7 +167,7 @@ public class RankedTrie<T extends Comparable<T>> implements Trie<T> {
 		 * @param searchGrade the grade of the match itself from
 		 *                    {@link GradingLongStepMatcher#grade(long)}
 		 */
-		double applyAsDouble(T entry, double searchGrade);
+		double rank(T entry, double searchGrade);
 	}
 
 	@Override

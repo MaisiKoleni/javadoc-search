@@ -6,9 +6,9 @@ import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 
 public interface PatternLookup<T> {
 
-	Stream<T> search(CharSequence cs);
+	Stream<T> search(CharSequence key);
 
 	Stream<T> search(GradingLongStepMatcher matcher);
 
-	void insert(CharSequence cs, T value);
+	void insert(CharSequence key, T value);
 }
