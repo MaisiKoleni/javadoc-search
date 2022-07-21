@@ -5,8 +5,6 @@ import java.lang.invoke.VarHandle;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
@@ -187,49 +185,34 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 	}
 
 	record LockedNodeMatch<T> (boolean success, Node<T> node, int indexInNode, int indexInString, boolean write)
-			implements NodeMatch<T, Node<T>> {
+			implements NodeMatch<T, Node<T>>, AutoCloseable {
 
 		LockedNodeMatch {
 			Objects.requireNonNull(node);
 		}
 
 		@Override
-		public <R> R switchOnSuccess(Function<? super Node<T>, ? extends R> onSuccess,
-				BiFunction<? super Node<T>, ? super Integer, ? extends R> onFailure) {
-			try {
-				return NodeMatch.super.switchOnSuccess(onSuccess, onFailure);
-			} finally {
-				releaseLock();
-			}
-		}
-
-		@Override
-		public void insert(CharSequence cs, T value, AbstractTypeFactory<T> factory) {
-			try {
-				NodeMatch.super.insert(cs, value, factory);
-			} finally {
-				releaseLock();
-			}
-		}
-
-		void releaseLock() {
+		public void close() {
 			if (write)
 				node.endWrite();
 			else
 				node.endRead();
 		}
-
 	}
 
 	@Override
 	public Stream<T> search(CharSequence cs) {
-		return findNode(cs, false).switchOnSuccess(Node<T>::valueStream, (node, end) -> Stream.of());
+		try (var nodeMatch = findNode(cs, false)) {
+			return nodeMatch.switchOnSuccess(Node<T>::valueStream, (node, end) -> Stream.of());
+		}
 	}
 
 	@Override
 	public void insert(CharSequence cs, T value) {
 		if (!mutable)
 			throw new IllegalStateException("Trie is immutable");
-		findNode(cs, true).insert(cs, value, factory);
+		try (var nodeMatch = findNode(cs, true)) {
+			nodeMatch.insert(cs, value, factory);
+		}
 	}
 }
