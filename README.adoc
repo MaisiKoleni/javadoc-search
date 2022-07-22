@@ -36,6 +36,12 @@ generated from the `xxx-search-index.js` files of a Javadoc site.
 It is also mixed with a https://en.wikipedia.org/wiki/Suffix_tree[suffix tree]
 for name segments of the Javadoc elements.
 
+The following example shows the trie generated for `java.lang.Long`
+and `java.util.OptionalLong`, both in the `java.base` module.
+The trie will be compressed such that the equally colored nodes point to the same object.
+
+.Example trie
+image::docs/example-trie.svg[]
 
 To search in that trie like one can in the official Javadoc implementation,
 the nodes in the trie are being traversed recursively
