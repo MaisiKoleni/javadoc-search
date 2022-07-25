@@ -1,4 +1,8 @@
-{#include base.qute.html} {#title}Javadoc Search{/title}
+{#include base.qute.html}
+{#head}
+<link rel="search" type="application/opensearchdescription+xml" title="JavadocSearch" href="/opensearch.xml">
+{/head}
+{#title}Javadoc Search{/title}
 <div>
 	<h2>Search the {javadocName} Javadoc</h2>
 	<form class="row g-1 g-sm-2" action="/search-redirect" method="post">
@@ -22,9 +26,9 @@
 			</tr>
 		</thead>
 		<tbody id="searchResults" class="table-group-divider">
-		{#if query}
+			{#if query}
 			{inject:javadocSearchPage.getSuggestionTable(query).embedHtml}
-		{/if}
+			{/if}
 		</tbody>
 	</table>
 </div>
