@@ -47,7 +47,78 @@ To search in that trie like one can in the official Javadoc implementation,
 the nodes in the trie are being traversed recursively
 based on a custom regular expression matcher implementation.
 
-This allows for the following search syntax:
+For example, `*j.u.OpL*` gets transformed into a regular expression
+equivalent to
+[source,regexp]
+----
+j\p{javaLowerCase}*+\s*+•*+\.\s*+u\p{javaLowerCase}*+\s*+•*+\.\s*+Op\p{javaLowerCase}*+L[^•]*+
+----
+and gets compiled into:
+[source,java]
+----
+CompiledRegex [
+  0x0000006a,  // matches 'j'
+  0xc0000000,  // star referencing char class #0 -> "\p{javaLowerCase}"
+  0xc0000001,  // star referencing char class #1 -> "\s"
+  0x80000378,  // star referencing literal '•'
+  0x0000002e,  // matches '.'
+  0xc0000001,  // star referencing char class #1 -> "\s"
+  0x00000075,  // matches 'u'
+  0xc0000000,  // star referencing char class #0 -> "\p{javaLowerCase}"
+  0xc0000001,  // star referencing char class #1 -> "\s"
+  0x80000378,  // star referencing literal '•'
+  0x0000002e,  // matches '.'
+  0xc0000001,  // star referencing char class #1 -> "\s"
+  0x0000004f,  // matches 'O'
+  0x00000070,  // matches 'p'
+  0xc0000000,  // star referencing char class #0 -> "\p{javaLowerCase}"
+  0x0000004c,  // matches 'L'
+  0xc0000002   // star referencing char class #2 -> "[^•]"
+]
+----
+These instructions are an array of `int` and
+they are accompanied by an array of CharPredicates,
+which are functions of type `char -> boolean`
+and represent the character classes in the custom regex implementation.
+
+The instructions are encoded as follows:
+[options="header"]
+|===
+| Bit 31             | Bit 30                   | Bits 29 ... 0
+//-------------------------------------------------------------------------------------
+| Wrapped by a star? | Represents a char class? | `char` value or `CharPredicate` index
+|===
+
+This compiled custom regex implementation has the
+disadvantage that it does not support nested groups or
+repetitions of more than a single character.
+This is however not an issue for our purpose,
+as we only need to star single characters.
+
+The advantage, however, is
+that all its state can be stored in a single `long`,
+which can easily be passed around methods
+and avoids the generation of objects.
+
+This long value is composed as follows:
+[options="header"]
+|===
+| Bit 63              | Bits 62 ... 32                                 | Bit 31   | Bits 30 ... 0
+//-------------------------------
+| Did the match fail?
+| Number of stars that matched at least one character
+| Did the current star already match one character?
+| Next index in the instruction array
+|===
+
+As the state is only a long that is stored by the user
+and this possessive matcher implementation can advance the state
+step by step consuming a single character,
+collecting all matches by traversing the trie
+and branching at the transitions is fairly simple.
+
+
+All of that allows for the following search syntax:
 
 - Query `*ja.l.o*` will find:
    * `java.base/java.lang.Object`
