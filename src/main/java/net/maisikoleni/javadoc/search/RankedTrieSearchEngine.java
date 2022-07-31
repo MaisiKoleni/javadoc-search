@@ -13,9 +13,9 @@ import net.maisikoleni.javadoc.entities.Type;
 import net.maisikoleni.javadoc.util.regex.CompiledRegex;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 import net.maisikoleni.javadoc.util.regex.Regex;
-import net.maisikoleni.javadoc.util.trie.Trie;
 import net.maisikoleni.javadoc.util.trie.RankedTrie.RankedConcurrentTrie;
 import net.maisikoleni.javadoc.util.trie.RankedTrie.RankingFunction;
+import net.maisikoleni.javadoc.util.trie.Trie;
 
 public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 
@@ -76,6 +76,8 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 	@Override
 	public Stream<SearchableEntity> search(String query) {
 		var regex = TrieSearchEngineUtils.generateRegexFromQuery(query);
+		System.out.println(regex);
+		System.out.println(CompiledRegex.compile(regex, false));
 		return GroupedSearchResult.ifEmptyTry(search(all, CompiledRegex.compile(regex, false)),
 				() -> search(all, CompiledRegex.compile(regex, true)));
 	}

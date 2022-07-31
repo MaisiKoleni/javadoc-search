@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public record Concatenation(List<Regex> parts) implements Regex {
 
@@ -43,6 +44,11 @@ public record Concatenation(List<Regex> parts) implements Regex {
 	@Override
 	public <R> R accept(RegexVisitor<R> visitor) {
 		return visitor.visit(this);
+	}
+
+	@Override
+	public Stream<Regex> stream() {
+		return parts.stream().flatMap(Regex::stream);
 	}
 
 	public static Concatenation of(Regex... parts) {

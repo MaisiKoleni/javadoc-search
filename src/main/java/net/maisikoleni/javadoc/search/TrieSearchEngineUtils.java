@@ -3,6 +3,7 @@ package net.maisikoleni.javadoc.search;
 import static net.maisikoleni.javadoc.util.regex.CharPredicate.caseIndependent;
 
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,16 +37,14 @@ public final class TrieSearchEngineUtils {
 
 	private static final Regex REGEX_WHITESPACE = new CharClass(caseIndependent(Character::isWhitespace), "\\s");
 	private static final Regex REGEX_ANY_WHITESPACE = new Star(REGEX_WHITESPACE);
-	private static final Regex REGEX_LOWER_CASE = new CharClass(caseIndependent(Character::isLowerCase),
-			"\\p{javaLowerCase}");
-	private static final Regex REGEX_ANY_LOWER_CASE = new Star(REGEX_LOWER_CASE);
-	private static final Regex REGEX_ANY_LOWER_CASE_AND_OPTIONAL_DIVIDER = Concatenation.of(REGEX_ANY_LOWER_CASE,
-			new Star(new Literal(SEGMENT_DIVIDER_STRING)));
+	private static final Regex REGEX_ANY_LOWER_CASE = new Star(
+			new CharClass(caseIndependent(Character::isLowerCase), "\\p{javaLowerCase}"));
+	private static final Regex REGEX_OPTIONAL_DIVIDER = new Star(new Literal(SEGMENT_DIVIDER_STRING));
+	private static final Regex REGEX_DIVIDING_WHITESPACE = Concatenation.of(REGEX_OPTIONAL_DIVIDER,
+			new CharClass(caseIndependent(c -> c == '.' || c == '/' || Character.isWhitespace(c)), "[\\s/.]"));
 	private static final Regex REGEX_ANY_NON_DIVIDER = new Star(
 			new CharClass(caseIndependent(c -> c != SEGMENT_DIVIDER_CHAR), "[^" + SEGMENT_DIVIDER_CHAR + "]"));
-	private static final Regex REGEX_WHITESPACE_WITH_ANY_LOWER = Concatenation.of(
-			REGEX_ANY_LOWER_CASE_AND_OPTIONAL_DIVIDER,
-			new CharClass(caseIndependent(c -> c == '.' || c == '/' || Character.isWhitespace(c)), "[\\s/.]"));
+	private static final Regex NO_WHITESPACE_MARKER = new Concatenation();
 
 	private static final Regex REGEX_USEFUL_CHARS = Concatenation.of(
 			new Star(new CharClass(c -> !Character.isAlphabetic(c) && !Character.isDigit(c), "[^\\p{Alnum}]")),
@@ -90,25 +89,44 @@ public final class TrieSearchEngineUtils {
 	static Regex generateRegex(CharSequence cleanQuery) {
 		if (isInsufficientQuery(cleanQuery))
 			return new Concatenation();
-		return Concatenation.of(Stream.of(QUERY_SPLIT.split(cleanQuery)).map(String::strip).map(part -> {
-			// preserve "significant" whitespace between words
-			if (part.isEmpty())
-				return REGEX_WHITESPACE_WITH_ANY_LOWER;
-			// keep separators as they are
-			if (SEPARATORS.matcher(part).matches())
-				return Concatenation.of(REGEX_ANY_LOWER_CASE_AND_OPTIONAL_DIVIDER, new Literal(part));
-			// insert patterns for partial identifier matches
-			return Stream.of(IDENTIFIER_SPLIT.split(part)).map(x ->
-			// allow skipping lower case chars with ~ and use the next as char class
-			Stream.of(SKIP_TO_CHAR.split(x)).map(Literal::new).collect(Concatenation.joining((prev, next) -> {
-				var nextChar = next.chars().charAt(0);
-				var charClass = new CharClass(caseIndependent(c -> c != nextChar && Character.isLowerCase(c)),
-						"[^" + nextChar + "]");
-				return Concatenation.of(charClass, new Star(charClass));
-			}))).collect(Concatenation.joining(REGEX_ANY_LOWER_CASE));
-		}).collect(
-				Concatenation.joining(REGEX_ANY_WHITESPACE, (prev, next) -> next != REGEX_WHITESPACE_WITH_ANY_LOWER)),
-				REGEX_ANY_NON_DIVIDER);
+		return Concatenation.of(Stream.of(QUERY_SPLIT.split(cleanQuery)).map(String::strip)
+				// map each part to multiple regexes
+				.mapMulti(TrieSearchEngineUtils::queryPartToRegex)
+				// join those regexes with whitespace unless marked otherwise
+				.collect(Concatenation.joining(REGEX_ANY_WHITESPACE,
+						(prev, next) -> prev != NO_WHITESPACE_MARKER && next != NO_WHITESPACE_MARKER))
+				// flatten the resulting regex and discard all starts at the beginning
+				.stream().flatMap(Regex::stream).dropWhile(Star.class::isInstance)
+				// join them back into a concatenation and append non-divider wildcard
+				.collect(Concatenation.joining()), REGEX_ANY_NON_DIVIDER);
+	}
+
+	private static void queryPartToRegex(String part, Consumer<Regex> downstream) {
+		// preserve "significant" whitespace between words
+		if (part.isEmpty()) {
+			downstream.accept(NO_WHITESPACE_MARKER);
+			downstream.accept(REGEX_ANY_LOWER_CASE);
+			downstream.accept(NO_WHITESPACE_MARKER);
+			downstream.accept(REGEX_DIVIDING_WHITESPACE);
+			return;
+		}
+		// keep separators as they are
+		if (SEPARATORS.matcher(part).matches()) {
+			downstream.accept(NO_WHITESPACE_MARKER);
+			downstream.accept(REGEX_ANY_LOWER_CASE);
+			downstream.accept(Concatenation.of(REGEX_OPTIONAL_DIVIDER, new Literal(part)));
+			return;
+		}
+		// insert patterns for partial identifier matches
+		var identifierRegex = Stream.of(IDENTIFIER_SPLIT.split(part)).map(x ->
+		// allow skipping lower case chars with ~ and use the next as char class
+		Stream.of(SKIP_TO_CHAR.split(x)).map(Literal::new).collect(Concatenation.joining((prev, next) -> {
+			var nextChar = next.chars().charAt(0);
+			var charClass = new CharClass(caseIndependent(c -> c != nextChar && Character.isLowerCase(c)),
+					"[^" + nextChar + "]");
+			return Concatenation.of(charClass, new Star(charClass));
+		}))).collect(Concatenation.joining(REGEX_ANY_LOWER_CASE));
+		downstream.accept(identifierRegex);
 	}
 
 	static boolean isInsufficientQuery(CharSequence cleanQuery) {

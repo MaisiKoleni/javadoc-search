@@ -1,5 +1,7 @@
 package net.maisikoleni.javadoc.util.regex;
 
+import java.util.stream.Stream;
+
 /**
  * Simple regular expression structures, everything is possessive.
  *
@@ -18,4 +20,8 @@ public sealed interface Regex permits Concatenation, Literal, CharClass, Star {
 	int matches(CharSequence s, int start);
 
 	<R> R accept(RegexVisitor<R> visitor);
+
+	default Stream<Regex> stream() {
+		return Stream.of(this);
+	}
 }
