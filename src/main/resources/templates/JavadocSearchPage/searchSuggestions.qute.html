@@ -1,6 +1,6 @@
 {#for suggestion in suggestions}
 <tr>
 	<th scope="row" class="text-end">{suggestion_count}</th>
-	<td class="text-break"><a href="{suggestion.url(baseUrl)}">{suggestion.qualifiedName}</a></td>
+	<td class="text-break"><a href="{suggestion.toUrlSafe(baseUrl)}">{suggestion.qualifiedName}</a></td>
 </tr>
 {/for}
