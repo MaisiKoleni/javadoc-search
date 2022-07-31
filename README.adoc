@@ -89,10 +89,6 @@ The longer the search term, the faster the results are available.
 
 The matching results are currently ranked by:
 
-- How good they match the query. +
-  `java.base/java.io.File.isHidden()` is a better match for `*File.isH*`
-  than `java.base/java.nio.file.Files.isHidden(Path)` because
-  it does not require further lower case characters after `File`.
 - Where the match of the query starts. +
   A match starting at the beginning is the best case, a match starting
   at or after a separator comes next and matches that start
@@ -100,6 +96,10 @@ The matching results are currently ranked by:
   `java.desktop/javax.print.attribute.SetOfIntegerSyntax`
   is therefore a better match for `*Set*`
   than `java.base/java.util.AbstractSet`.
+- How good they match the query. +
+  `java.base/java.io.File.isHidden()` is a better match for `*File.isH*`
+  than `java.base/java.nio.file.Files.isHidden(Path)` because
+  it does not require further lower case characters after `File`.
 - Natural order of the entries. +
   Results with smaller char values at the same position come first.
   The implementation is very much like `String.compareTo`
