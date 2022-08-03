@@ -76,8 +76,6 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 	@Override
 	public Stream<SearchableEntity> search(String query) {
 		var regex = TrieSearchEngineUtils.generateRegexFromQuery(query);
-		System.out.println(regex);
-		System.out.println(CompiledRegex.compile(regex, false));
 		return GroupedSearchResult.ifEmptyTry(search(all, CompiledRegex.compile(regex, false)),
 				() -> search(all, CompiledRegex.compile(regex, true)));
 	}
