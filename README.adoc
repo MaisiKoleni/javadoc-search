@@ -100,7 +100,7 @@ that all its state can be stored in a single `long`,
 which can easily be passed around methods
 and avoids the generation of objects.
 
-This long value is composed as follows:
+This `long` value is composed as follows:
 [options="header"]
 |===
 | Bit 63              | Bits 62 ... 32                                 | Bit 31   | Bits 30 ... 0
@@ -111,7 +111,7 @@ This long value is composed as follows:
 | Next index in the instruction array
 |===
 
-As the state is only a long that is stored by the user
+As the state is only a `long` that is stored by the user
 and this possessive matcher implementation can advance the state
 step by step consuming a single character,
 collecting all matches by traversing the trie
