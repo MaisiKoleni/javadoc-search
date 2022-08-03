@@ -29,7 +29,7 @@ public class TrieGenerator {
 			"[" + SEPARATOR_CHAR_CLASS + "_\\p{javaUpperCase}]");
 
 	private final boolean parallel;
-	private final Trie.CompressionCache cache;
+	private Trie.CompressionCache cache;
 	private final WeakCommonPool pool;
 
 	public TrieGenerator(boolean parallel) {
@@ -45,6 +45,10 @@ public class TrieGenerator {
 		if (parallel)
 			return new Trie.CompressionCache(Cache::newConcurrent);
 		return new Trie.CompressionCache(Cache::newDefault);
+	}
+
+	public final void clearCache() {
+		cache = newCache();
 	}
 
 	public final <S extends SearchableEntity, R, T extends Trie<R>> T generateTrie(Stream<S> index,
