@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -27,6 +28,7 @@ import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.server.SearchReporter;
 import net.maisikoleni.javadoc.server.SearchValidator;
 import net.maisikoleni.javadoc.server.html.util.HtmxHeaders;
+import net.maisikoleni.javadoc.service.Javadoc;
 import net.maisikoleni.javadoc.service.SearchService;
 
 @Named()
@@ -54,7 +56,6 @@ public final class JavadocSearchPage {
 	}
 
 	@GET
-	@Path("")
 	@Produces(MediaType.TEXT_HTML)
 	public String generateMainPage(@QueryParam(QUERY_NAME) Optional<String> query) {
 		return Templates.searchPage(searchService.javadoc().name(), query.orElse(null)).render();
@@ -90,11 +91,23 @@ public final class JavadocSearchPage {
 		return Templates.searchSuggestions(searchService.javadoc().baseUrl(), results);
 	}
 
+	@GET
+	@Path("opensearch.xml")
+	@Produces(MediaType.TEXT_XML)
+	public String opensearchXml() {
+		var javadoc = searchService.javadoc();
+		if (javadoc == null)
+			throw new NotFoundException("No library with id '" + libraryId + "' found.");
+		return Templates.opensearch(javadoc).render();
+	}
+
 	@CheckedTemplate
 	public static class Templates {
 
 		public static native TemplateInstance searchPage(String javadocName, String query);
 
 		public static native TemplateInstance searchSuggestions(URI baseUrl, Collection<SearchableEntity> suggestions);
+
+		public static native TemplateInstance opensearch(Javadoc javadoc);
 	}
 }
