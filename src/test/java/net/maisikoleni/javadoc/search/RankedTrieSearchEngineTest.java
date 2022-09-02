@@ -13,11 +13,10 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.search.RankedTrieSearchEngine.RankedEntry;
-import net.maisikoleni.javadoc.service.Jdk;
-import net.maisikoleni.javadoc.service.Jdk.Version;
-import net.maisikoleni.javadoc.util.trie.Trie;
-import net.maisikoleni.javadoc.util.trie.RankedTrie.RankedSimpleTrie;
 import net.maisikoleni.javadoc.service.SearchService;
+import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
+import net.maisikoleni.javadoc.util.trie.RankedTrie.RankedSimpleTrie;
+import net.maisikoleni.javadoc.util.trie.Trie;
 
 @QuarkusTest
 class RankedTrieSearchEngineTest {
@@ -28,7 +27,7 @@ class RankedTrieSearchEngineTest {
 	private static final int EXPECTED_HASH_CODE = 1889388144;
 
 	@Inject
-	@Jdk(Version.RELEASE_18)
+	@FixLibraryId
 	SearchService searchService;
 
 	@Test

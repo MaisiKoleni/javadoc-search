@@ -6,6 +6,10 @@ import net.maisikoleni.javadoc.entities.JavadocIndex;
 
 public interface Javadoc {
 
+	String id();
+
+	String name();
+
 	JavadocIndex index();
 
 	URI baseUrl();

@@ -17,11 +17,13 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 class JavadocSearchPageSlowTest {
 
+	private static final String ROUTE_PREFIX = "/libraries/jdk-latest/";
+
 	@Test
 	void testSearchAndRedirectFound() {
 		given().redirects().follow(false).when() //
 				.formParams(Map.of("query", "str Col~or")) //
-				.post("search-redirect").then() //
+				.post(ROUTE_PREFIX + "search-redirect").then() //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
 				.header(HttpHeaders.LOCATION,
 						"https://docs.oracle.com/en/java/javase/18/docs/api/java.base/java/util/stream/Collector.html");
@@ -29,9 +31,9 @@ class JavadocSearchPageSlowTest {
 
 	@Test
 	void testSuggestionsFound() {
-		given().when().get("search-suggestions?query=str Col~or").then() //
+		given().when().get(ROUTE_PREFIX + "search-suggestions?query=str Col~or").then() //
 				.statusCode(Status.OK.getStatusCode()) //
-				.header(HtmxHeaders.Response.REPLACE_URL, "/?query=str+Col~or") //
+				.header(HtmxHeaders.Response.REPLACE_URL, ROUTE_PREFIX + "?query=str+Col~or") //
 				.body(equalToCompressingWhiteSpace(
 						"""
 								<tr>
@@ -68,7 +70,7 @@ class JavadocSearchPageSlowTest {
 				jdk.attach</a></td>
 				</tr>
 				""".strip();
-		given().when().get("?query=jdk.a").then() //
+		given().when().get(ROUTE_PREFIX + "?query=jdk.a").then() //
 				.statusCode(Status.OK.getStatusCode()) //
 				.body(containsString(expectedInputValue), //
 						containsString(expectedResultTable));
@@ -76,36 +78,36 @@ class JavadocSearchPageSlowTest {
 
 	@Test
 	void testSuggestionsEmpty() {
-		given().when().get("search-suggestions?query=").then() //
+		given().when().get(ROUTE_PREFIX + "search-suggestions?query=").then() //
 				.statusCode(Status.OK.getStatusCode()) //
-				.header(HtmxHeaders.Response.REPLACE_URL, "/?query=") //
+				.header(HtmxHeaders.Response.REPLACE_URL, ROUTE_PREFIX + "?query=") //
 				.body(emptyString());
 	}
 
 	@Test
 	void testRedirectNoQuery() {
-		given().when().post("search-redirect").then() //
+		given().when().post(ROUTE_PREFIX + "search-redirect").then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
 				.body(emptyString());
 	}
 
 	@Test
 	void testRedirectLongQuery() {
-		given().when().post("search-redirect?query=" + "a".repeat(1001)).then() //
+		given().when().post(ROUTE_PREFIX + "search-redirect?query=" + "a".repeat(1001)).then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
 				.body(emptyString());
 	}
 
 	@Test
 	void testSuggestionsNoQuery() {
-		given().when().get("search-suggestions").then() //
+		given().when().get(ROUTE_PREFIX + "search-suggestions").then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
 				.body(emptyString());
 	}
 
 	@Test
 	void testSuggestionsLongQuery() {
-		given().when().get("search-suggestions?query=" + "a".repeat(1001)).then() //
+		given().when().get(ROUTE_PREFIX + "search-suggestions?query=" + "a".repeat(1001)).then() //
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
 				.body(emptyString());
 	}

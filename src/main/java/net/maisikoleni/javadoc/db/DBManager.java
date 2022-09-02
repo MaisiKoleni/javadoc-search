@@ -1,9 +1,5 @@
 package net.maisikoleni.javadoc.db;
 
-import static net.maisikoleni.javadoc.Configuration.DB_PATH_DEFAULT;
-import static net.maisikoleni.javadoc.Configuration.DB_PATH_KEY;
-
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -12,10 +8,10 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.maisikoleni.javadoc.config.Configuration;
 import one.microstream.persistence.types.PersistenceLegacyTypeMappingResultor;
 import one.microstream.persistence.types.Storer;
 import one.microstream.reflect.ClassLoaderProvider;
@@ -36,10 +32,11 @@ public class DBManager {
 	private Storer eagerStorer;
 
 	@Inject
-	public DBManager(@ConfigProperty(name = DB_PATH_KEY, defaultValue = DB_PATH_DEFAULT) Path databasePath) {
+	public DBManager(Configuration config) {
 		if (!active.getAndSet(true)) {
 			LOG.info("Initialize Database");
-			var foundation = EmbeddedStorage.Foundation(databasePath.resolve("javadoc-indexes"));
+			var path = config.db().path().resolve("javadoc-indexes");
+			var foundation = EmbeddedStorage.Foundation(path);
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			foundation.onConnectionFoundation(f -> {
 				f.setLegacyTypeMappingResultor(PersistenceLegacyTypeMappingResultor.New());

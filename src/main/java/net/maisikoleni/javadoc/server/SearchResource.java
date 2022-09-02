@@ -3,20 +3,20 @@ package net.maisikoleni.javadoc.server;
 import java.util.List;
 import java.util.OptionalInt;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import net.maisikoleni.javadoc.Constants;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
-import net.maisikoleni.javadoc.service.Jdk;
-import net.maisikoleni.javadoc.service.Jdk.Version;
 import net.maisikoleni.javadoc.service.SearchService;
 
-@Path("/api/search")
+@RequestScoped
+@Path("/api/libraries/{" + Constants.LIBRARY_ID_PARAMETER + "}/search")
 public class SearchResource implements JavadocSearch {
 
 	@Inject
-	@Jdk(Version.RELEASE_18)
 	SearchService searchSerivce;
 
 	@Inject
@@ -49,5 +49,4 @@ public class SearchResource implements JavadocSearch {
 			searchReporter.logSearchTime("api/suggestions", query, startTime);
 		}
 	}
-
 }

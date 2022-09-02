@@ -3,6 +3,8 @@ package net.maisikoleni.javadoc.parser;
 import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNonEmpty;
 import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNullOrNonEmpty;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 record JsonType( //
 		/**
 		 * Package, may be <code>null</code>.
@@ -19,7 +21,7 @@ record JsonType( //
 		/**
 		 * URL, may be <code>null</code>.
 		 */
-		String u) implements JsonSearchablePackagedEntity {
+		@JsonAlias("url") String u) implements JsonSearchablePackagedEntity {
 
 	JsonType {
 		requireNullOrNonEmpty(m, "Module 'm'");

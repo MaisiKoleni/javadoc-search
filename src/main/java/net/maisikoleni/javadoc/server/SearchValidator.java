@@ -1,26 +1,22 @@
 package net.maisikoleni.javadoc.server;
 
-import static net.maisikoleni.javadoc.Configuration.QUERY_LENGHT_LIMIT_DEFAULT;
-import static net.maisikoleni.javadoc.Configuration.QUERY_LENGHT_LIMIT_KEY;
-import static net.maisikoleni.javadoc.Configuration.SUGGESTION_COUNT_LIMIT_DEFAULT;
-import static net.maisikoleni.javadoc.Configuration.SUGGESTION_COUNT_LIMIT_KEY;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
+import net.maisikoleni.javadoc.config.Configuration;
 
 @Singleton
 public final class SearchValidator {
 
-	@Inject
-	@ConfigProperty(name = QUERY_LENGHT_LIMIT_KEY, defaultValue = QUERY_LENGHT_LIMIT_DEFAULT)
-	int queryCharLimit;
+	private final int suggestionCountLimit;
+	private final int queryCharLimit;
 
 	@Inject
-	@ConfigProperty(name = SUGGESTION_COUNT_LIMIT_KEY, defaultValue = SUGGESTION_COUNT_LIMIT_DEFAULT)
-	int suggestionCountLimit;
+	public SearchValidator(Configuration config) {
+		this.suggestionCountLimit = config.server().suggestionCountLimit();
+		this.queryCharLimit = config.server().queryCharLimit();
+	}
 
 	public void validateSuggestionCount(int suggestionCount) {
 		if (suggestionCount <= 0)

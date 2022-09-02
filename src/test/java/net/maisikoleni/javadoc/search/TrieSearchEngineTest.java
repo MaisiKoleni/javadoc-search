@@ -8,15 +8,14 @@ import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
-import net.maisikoleni.javadoc.service.Jdk;
-import net.maisikoleni.javadoc.service.Jdk.Version;
 import net.maisikoleni.javadoc.service.SearchService;
+import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
 
 @QuarkusTest
 class TrieSearchEngineTest {
 
 	@Inject
-	@Jdk(Version.RELEASE_18)
+	@FixLibraryId
 	SearchService searchService;
 
 	@Test

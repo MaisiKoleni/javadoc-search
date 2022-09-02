@@ -6,36 +6,35 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
-import net.maisikoleni.javadoc.db.TestJavadocIndexes;
-import net.maisikoleni.javadoc.entities.JavadocIndex;
+import io.quarkus.test.junit.QuarkusTest;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
-import net.maisikoleni.javadoc.service.jdk18.Jdk18Javadoc;
+import net.maisikoleni.javadoc.service.SearchService;
+import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
 
+@QuarkusTest
 class RegexTest {
 
 	private static final int LOOPS = 10;
 
-	private static JavadocIndex index;
 	private static String[] names;
+
+	@FixLibraryId
+	SearchService searchService;
 
 	private Regex regex;
 	private CompiledRegex compiledRegex;
 	private Pattern jdkPattern;
 
-	@BeforeAll
-	static void initializeIndex() {
-		index = new Jdk18Javadoc(new TestJavadocIndexes()).index();
-		names = index.stream().map(SearchableEntity::qualifiedName).toArray(String[]::new);
-	}
-
 	@BeforeEach
 	void createRegexesAndPatterns() {
+		if (names == null)
+			names = searchService.javadoc().index().stream().map(SearchableEntity::qualifiedName)
+					.toArray(String[]::new);
 		var lowerCaseChar = new CharClass(Character::isLowerCase, "\\p{javaLowerCase}");
 		var nonDivider = new CharClass(c -> c != '.' && c != '/', "[^./]");
 		var anyLower = new Star(lowerCaseChar);

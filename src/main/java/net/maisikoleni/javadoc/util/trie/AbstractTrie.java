@@ -11,9 +11,9 @@ import java.util.stream.Stream;
 
 import net.maisikoleni.javadoc.util.Cache;
 import net.maisikoleni.javadoc.util.CharMap;
+import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 import net.maisikoleni.javadoc.util.FixKeyedCharMap;
 import net.maisikoleni.javadoc.util.SingleElementSet;
-import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 import net.maisikoleni.javadoc.util.regex.GradingLongStepMatcher;
 
 public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>> implements Trie<T> {
