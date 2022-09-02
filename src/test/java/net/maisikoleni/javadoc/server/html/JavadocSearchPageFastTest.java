@@ -27,7 +27,7 @@ class JavadocSearchPageFastTest {
 		var hashInTemplatePattern = Pattern.compile("""
 				link\\s++\
 				rel="stylesheet"\\s++\
-				href="javadoc-search-style.css"\\s++\
+				href="/javadoc-search-style.css"\\s++\
 				integrity="sha256-([A-Za-z0-9+/=]++)"\
 				""");
 		var matcher = hashInTemplatePattern.matcher(templateBase);
