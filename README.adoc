@@ -9,21 +9,31 @@
 
 = Javadoc Search
 
-A fast server-side search engine for the JDK 18 Javadoc API.
+A fast server-side search engine for the Javadoc API
+of selected JDK releases and other libraries.
 
 *Available at https://javadoc-search.maisikoleni.net*
 
 Can also be added to a bowser as custom search engine:
 
 - Search URL Template: +
-  `https://javadoc-search.maisikoleni.net/api/search/redirect?query=%s`
+  `https://javadoc-search.maisikoleni.net/api/libraries/jdk-latest/search/redirect?query=%s`
 - Search Suggestions URL Template: +
-  `https://javadoc-search.maisikoleni.net/api/search/suggestions?query=%s`
+  `https://javadoc-search.maisikoleni.net/api/libraries/jdk-latest/search/suggestions?query=%s`
 
 [WARNING]
 ====
 The above is a fairly weak server and not suitable for benchmarking.
 ====
+
+You can also replace `jdk-latest` which always points to the
+latest full release with one of the following:
+
+- `jdk-11` for the JDK 11 API
+- `jdk-17` for the JDK 17 API
+- `junit5-latest` for the current JUnit 5 API
+
+The same works for the website in the browser as well.
 
 == Details
 
@@ -193,7 +203,7 @@ Building should be straightforward since this is a regular Maven project.
   into `target/quarkus-app`
 
 It might be helpful to add the missing search-index files
-in `src/main/resources/net/maisikoleni/javadoc/service/jdk18`
+in `src/main/resources/net/maisikoleni/javadoc/service/jdk-latest`
 (see `jdk-index-files-go-here.txt` there for details), but this is not required
 as they are then fetched from the official site and cached in `database/javadoc-indexes`.
 
