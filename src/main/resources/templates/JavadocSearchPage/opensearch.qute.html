@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OpenSearchDescription
+	xmlns="http://a9.com/-/spec/opensearch/1.1/"
+	xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+	<ShortName>JD-{javadoc.id}</ShortName>
+	<LongName>{javadoc.name} Javadoc Search</LongName>
+	<Description>Search the {javadoc.name} Javadoc</Description>
+	<InputEncoding>UTF-8</InputEncoding>
+	<Image height="32" width="32">/favicon.ico</Image>
+	<Url type="text/html" method="get"
+		template="https://javadoc-search.maisikoleni.net/api/libraries/{javadoc.id}/search/redirect?query=\{searchTerms\}" />
+	<Url type="application/x-suggestions+json"
+		template="https://javadoc-search.maisikoleni.net/api/libraries/{javadoc.id}/search/suggestions?query=\{searchTerms\}" />
+	<moz:SearchForm>https://javadoc-search.maisikoleni.net/libraries/{javadoc.id}/</moz:SearchForm>
+</OpenSearchDescription>

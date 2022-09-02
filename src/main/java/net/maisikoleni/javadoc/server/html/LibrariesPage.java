@@ -13,7 +13,7 @@ import io.quarkus.qute.TemplateInstance;
 import net.maisikoleni.javadoc.service.Javadoc;
 import net.maisikoleni.javadoc.service.JavadocSearchEngines;
 
-@Path("libraries")
+@Path("/libraries/")
 public class LibrariesPage {
 
 	@Inject
