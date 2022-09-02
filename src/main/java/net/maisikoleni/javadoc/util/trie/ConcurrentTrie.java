@@ -9,9 +9,9 @@ import java.util.stream.Stream;
 
 import net.maisikoleni.javadoc.util.Cache;
 import net.maisikoleni.javadoc.util.CharMap;
+import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 import net.maisikoleni.javadoc.util.JdkCharHashMap;
 import net.maisikoleni.javadoc.util.PrimitiveReentrantReadWriteLock;
-import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
 
 public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node<T>> {
 

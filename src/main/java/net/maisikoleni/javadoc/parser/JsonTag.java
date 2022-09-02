@@ -4,6 +4,8 @@ import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNonEmpt
 import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNonNull;
 import static net.maisikoleni.javadoc.parser.JsonSearchableEntity.requireNullOrNonEmpty;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 record JsonTag( //
 		/**
 		 * Label.
@@ -20,7 +22,7 @@ record JsonTag( //
 		/**
 		 * URL.
 		 */
-		String u) implements JsonSearchableEntity {
+		@JsonAlias("url") String u) implements JsonSearchableEntity {
 
 	JsonTag {
 		requireNonEmpty(l, "Label 'l'");

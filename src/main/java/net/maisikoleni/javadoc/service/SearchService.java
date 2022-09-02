@@ -2,20 +2,34 @@ package net.maisikoleni.javadoc.service;
 
 import java.net.URI;
 
+import javax.ws.rs.NotFoundException;
+
 import org.slf4j.LoggerFactory;
 
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.search.SearchEngine;
 
-public interface SearchService {
+public class SearchService {
 
-	String name();
+	private final Javadoc javadoc;
+	private final SearchEngine searchEngine;
 
-	Javadoc javadoc();
+	SearchService(JavadocSearchEngines javadocSearchEngines, String id) {
+		this.javadoc = javadocSearchEngines.getJavadoc(id);
+		if (this.javadoc == null)
+			throw new NotFoundException("No Javadoc with id '" + id + "' registered.");
+		this.searchEngine = javadocSearchEngines.getSearchEngine(id);
+	}
 
-	SearchEngine searchEngine();
+	public Javadoc javadoc() {
+		return javadoc;
+	}
 
-	default URI getBestUrl(String query) {
+	public SearchEngine searchEngine() {
+		return searchEngine;
+	}
+
+	public URI getBestUrl(String query) {
 		var results = searchEngine().search(query);
 		var baseUrl = javadoc().baseUrl();
 		try {

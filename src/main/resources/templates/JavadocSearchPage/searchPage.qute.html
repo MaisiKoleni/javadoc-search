@@ -5,10 +5,10 @@
 {#title}Javadoc Search{/title}
 <div>
 	<h2>Search the {javadocName} Javadoc</h2>
-	<form class="row g-1 g-sm-2" action="/search-redirect" method="post">
+	<form class="row g-1 g-sm-2" action="search-redirect" method="post">
 		<div class="col">
 			<input type="search" name="query" class="form-control" id="query" placeholder="Enter Query..."
-				hx-get="/search-suggestions" hx-trigger="keyup changed, search" hx-target="#searchResults"
+				hx-get="search-suggestions" hx-trigger="keyup changed, search" hx-target="#searchResults"
 				aria-label="Query" autofocus="autofocus" autocomplete="off" value="{query or ""}">
 		</div>
 		<div class="col-auto d-flex align-items-center">

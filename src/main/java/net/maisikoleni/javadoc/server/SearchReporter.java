@@ -1,16 +1,14 @@
 package net.maisikoleni.javadoc.server;
 
-import static net.maisikoleni.javadoc.Configuration.LOG_SEARCH_THRESHOLD_NANOS_DEFAULT;
-import static net.maisikoleni.javadoc.Configuration.LOG_SEARCH_THRESHOLD_NANOS_KEY;
-
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.maisikoleni.javadoc.config.Configuration;
 
 @Singleton
 public final class SearchReporter {
@@ -19,9 +17,12 @@ public final class SearchReporter {
 
 	private static final double NANOS_IN_MILLISECOND = TimeUnit.MILLISECONDS.toNanos(1);
 
+	private final int logSearchThresholdNanos;
+
 	@Inject
-	@ConfigProperty(name = LOG_SEARCH_THRESHOLD_NANOS_KEY, defaultValue = LOG_SEARCH_THRESHOLD_NANOS_DEFAULT)
-	int logSearchThresholdNanos;
+	public SearchReporter(Configuration config) {
+		this.logSearchThresholdNanos = config.server().logSearchThresholdNanos();
+	}
 
 	public void logSearchTime(String operation, String query, long x) {
 		long dt = System.nanoTime() - x;

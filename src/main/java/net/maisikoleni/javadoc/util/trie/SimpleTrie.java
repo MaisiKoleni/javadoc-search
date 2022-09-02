@@ -6,8 +6,8 @@ import java.util.Set;
 
 import net.maisikoleni.javadoc.util.Cache;
 import net.maisikoleni.javadoc.util.CharMap;
-import net.maisikoleni.javadoc.util.JdkCharHashMap;
 import net.maisikoleni.javadoc.util.CharMap.CharEntryConsumer;
+import net.maisikoleni.javadoc.util.JdkCharHashMap;
 
 public final class SimpleTrie<T> extends AbstractTrie<T, SimpleTrie.Node<T>> {
 

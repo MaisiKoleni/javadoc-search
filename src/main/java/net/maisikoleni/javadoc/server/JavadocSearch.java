@@ -3,7 +3,6 @@ package net.maisikoleni.javadoc.server;
 import java.util.List;
 import java.util.OptionalInt;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -24,7 +23,7 @@ public interface JavadocSearch {
 	 */
 	@GET
 	@Path("redirect")
-	Response searchAndRedirect(@QueryParam("query") @NotNull String query);
+	Response searchAndRedirect(@QueryParam("query") String query);
 
 	/**
 	 * Returns the top search suggestions.
@@ -48,7 +47,7 @@ public interface JavadocSearch {
 	@GET
 	@Path("suggestions")
 	@Produces(MediaType.APPLICATION_JSON)
-	default List<Object> suggestionsForBrowser(@QueryParam("query") @NotNull String query,
+	default List<Object> suggestionsForBrowser(@QueryParam("query") String query,
 			@QueryParam("count") OptionalInt count) {
 		return List.of(query, suggestions(query, count));
 	}
