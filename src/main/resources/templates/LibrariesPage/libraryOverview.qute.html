@@ -1,0 +1,9 @@
+{#include base.qute.html}
+{#title}Available Javadoc Search Libraries{/title}
+<h1>Available Javadoc Search Libraries</h1>
+<ul>
+	{#for library in libraries}
+	<li><a href="{library.id}">{library.name}</a></li>
+	{/for}
+</ul>
+{/include}

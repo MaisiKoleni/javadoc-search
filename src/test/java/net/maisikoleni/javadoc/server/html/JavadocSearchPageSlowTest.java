@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response.Status;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
+import net.maisikoleni.javadoc.server.html.util.HtmxHeaders;
 
 @QuarkusTest
 class JavadocSearchPageSlowTest {
