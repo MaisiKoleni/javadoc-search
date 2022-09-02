@@ -1,4 +1,4 @@
-package net.maisikoleni.javadoc.server.html;
+package net.maisikoleni.javadoc.server.html.util;
 
 public final class HtmxHeaders {
 

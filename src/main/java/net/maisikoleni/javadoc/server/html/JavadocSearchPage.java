@@ -26,6 +26,7 @@ import net.maisikoleni.javadoc.config.Configuration.ServerConfig.HtmlConfig;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.server.SearchReporter;
 import net.maisikoleni.javadoc.server.SearchValidator;
+import net.maisikoleni.javadoc.server.html.util.HtmxHeaders;
 import net.maisikoleni.javadoc.service.SearchService;
 
 @Named()
@@ -33,7 +34,7 @@ import net.maisikoleni.javadoc.service.SearchService;
 @RequestScoped
 public final class JavadocSearchPage {
 
-	private static final String QUERY_NAME = "query";
+	static final String QUERY_NAME = "query";
 
 	private final HtmlConfig config;
 	private final SearchService searchService;

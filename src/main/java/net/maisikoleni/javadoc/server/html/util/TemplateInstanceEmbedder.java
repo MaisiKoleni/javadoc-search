@@ -1,4 +1,4 @@
-package net.maisikoleni.javadoc.server.html;
+package net.maisikoleni.javadoc.server.html.util;
 
 import io.quarkus.qute.RawString;
 import io.quarkus.qute.TemplateExtension;

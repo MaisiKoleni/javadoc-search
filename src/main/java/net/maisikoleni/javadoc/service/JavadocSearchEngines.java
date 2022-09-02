@@ -1,5 +1,6 @@
 package net.maisikoleni.javadoc.service;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -30,6 +31,10 @@ public class JavadocSearchEngines {
 				.collect(Collectors.toMap(Entry::getKey, entry -> entryToJavadoc(entry, javadocIndexes)));
 		searchEngines = installedJavadocs.values().stream()
 				.collect(Collectors.toMap(Javadoc::id, javadoc -> new RankedTrieSearchEngine(javadoc.index())));
+	}
+
+	public Collection<Javadoc> allJavadocs() {
+		return installedJavadocs.values();
 	}
 
 	public String getDefaultLibraryId() {
