@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 public final class JavaScriptIndexParser {
 
 	private static final Pattern JSON_ENTITY_ARRAY_PATTERN = Pattern
-			.compile("^\\w++\\s*+=\\s*+([^;]++);\\s*+\\w++\\(\\)\\s*+;\\s*+$");
+			.compile("^\\w++\\s*+=\\s*+([^;]++)(;\\s*+\\w++\\(\\)\\s*+;)?\\s*+$");
 
 	private JavaScriptIndexParser() {
 	}
