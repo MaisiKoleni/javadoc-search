@@ -38,11 +38,12 @@ public class JavadocImpl implements Javadoc {
 	}
 
 	private JavadocIndex fetchIndex() {
+		LOG.info("Fetching JavadocIndex for {}", id);
 		try {
 			return JavadocIndex
 					.loadFromInputStreams(indexFile -> JavadocImpl.class.getResourceAsStream(id + "/" + indexFile));
 		} catch (Exception e) {
-			LOG.warn("Fetching JavadocIndex as resource failed, loading it from the website.", e);
+			LOG.warn("Fetching JavadocIndex as resource failed, loading it from the website: {}", e.toString());
 			return JavadocIndex.loadFromUrl(baseUrl);
 		}
 	}
