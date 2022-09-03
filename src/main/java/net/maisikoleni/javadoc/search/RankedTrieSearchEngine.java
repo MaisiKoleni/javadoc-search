@@ -26,9 +26,8 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 	private final Trie<RankedEntry<Member>> members;
 	private final Trie<RankedEntry<Tag>> tags;
 
-	public RankedTrieSearchEngine(JavadocIndex index) {
+	public RankedTrieSearchEngine(JavadocIndex index, RankedConcurrentTrieGenerator generator) {
 		super(index);
-		var generator = new RankedConcurrentTrieGenerator();
 		all = generator.generateTrie(index.stream());
 		modules = generator.generateTrie(index.modules());
 		packages = generator.generateTrie(index.packages());
@@ -37,7 +36,11 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 		tags = generator.generateTrie(index.tags());
 	}
 
-	static final class RankedConcurrentTrieGenerator extends TrieGenerator {
+	public RankedTrieSearchEngine(JavadocIndex index) {
+		this(index, new RankedConcurrentTrieGenerator());
+	}
+
+	public static final class RankedConcurrentTrieGenerator extends TrieGenerator {
 
 		RankedConcurrentTrieGenerator() {
 			super(true);
@@ -53,6 +56,10 @@ public final class RankedTrieSearchEngine extends IndexBasedSearchEngine {
 
 		static <S extends SearchableEntity> RankedConcurrentTrie<RankedEntry<S>> newTrie() {
 			return new RankedConcurrentTrie<>(SearchableEntityRankingFunction.get());
+		}
+
+		public static RankedConcurrentTrieGenerator of() {
+			return new RankedConcurrentTrieGenerator();
 		}
 	}
 

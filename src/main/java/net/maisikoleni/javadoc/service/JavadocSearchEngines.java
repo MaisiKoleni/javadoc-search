@@ -29,8 +29,9 @@ public class JavadocSearchEngines {
 		defaultLibraryId = extractDefaultLibraryId(libraries);
 		installedJavadocs = libraries.entrySet().stream()
 				.collect(Collectors.toMap(Entry::getKey, entry -> entryToJavadoc(entry, javadocIndexes)));
-		searchEngines = installedJavadocs.values().stream()
-				.collect(Collectors.toMap(Javadoc::id, javadoc -> new RankedTrieSearchEngine(javadoc.index())));
+		var commonGenerator = RankedTrieSearchEngine.RankedConcurrentTrieGenerator.of();
+		searchEngines = installedJavadocs.values().stream().collect(
+				Collectors.toMap(Javadoc::id, javadoc -> new RankedTrieSearchEngine(javadoc.index(), commonGenerator)));
 	}
 
 	public Collection<Javadoc> allJavadocs() {
