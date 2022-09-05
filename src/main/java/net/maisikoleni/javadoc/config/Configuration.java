@@ -13,7 +13,6 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -58,8 +57,13 @@ public interface Configuration {
 		}
 	}
 
+	/**
+	 * FIXME: Requires fix in
+	 * io.smallrye.config.validator.BeanValidationConfigValidator
+	 */
 	@ExactlyOneDefault
-	Map<@Pattern(regexp = "[\\p{Alnum}_-]{2,50}") String, @NotNull LibraryConfigValue> libraries();
+	@ValidLibraryId
+	Map<String, LibraryConfigValue> libraries();
 
 	public interface LibraryConfigValue {
 
