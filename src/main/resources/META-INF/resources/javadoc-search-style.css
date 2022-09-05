@@ -1,3 +1,11 @@
 .min-width-36 {
 	min-width: 36px;
 }
+#search-duke {
+	height: 1.5em;
+	transition-duration: 0.5s;
+    transition-property: transform;
+}
+#search-duke:hover {
+	transform: rotate(225deg);
+}
