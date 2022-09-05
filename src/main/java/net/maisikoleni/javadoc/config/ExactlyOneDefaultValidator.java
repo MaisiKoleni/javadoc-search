@@ -7,11 +7,10 @@ import javax.validation.ConstraintValidatorContext;
 
 import net.maisikoleni.javadoc.config.Configuration.LibraryConfigValue;
 
-public final class ExactlyOneDefaultValidator
-		implements ConstraintValidator<ExactlyOneDefault, Map<String, LibraryConfigValue>> {
+public class ExactlyOneDefaultValidator implements ConstraintValidator<ExactlyOneDefault, Map<?, LibraryConfigValue>> {
 
 	@Override
-	public boolean isValid(Map<String, LibraryConfigValue> map, ConstraintValidatorContext context) {
+	public boolean isValid(Map<?, LibraryConfigValue> map, ConstraintValidatorContext context) {
 		var defaultLibrariesCount = map.entrySet().stream().filter(entry -> entry.getValue().isDefault()).count();
 		return defaultLibrariesCount == 1;
 	}
