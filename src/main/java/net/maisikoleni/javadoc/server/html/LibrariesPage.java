@@ -1,6 +1,9 @@
 package net.maisikoleni.javadoc.server.html;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -23,7 +26,9 @@ public class LibrariesPage {
 	@Path("")
 	@Produces(MediaType.TEXT_HTML)
 	public String showLibraries() {
-		return Templates.libraryOverview(javadocSearchEngines.allJavadocs()).render();
+		var allJavadocs = new ArrayList<>(javadocSearchEngines.allJavadocs());
+		Collections.sort(allJavadocs, Comparator.comparing(Javadoc::id));
+		return Templates.libraryOverview(allJavadocs).render();
 	}
 
 	@CheckedTemplate
