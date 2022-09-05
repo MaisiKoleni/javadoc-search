@@ -19,17 +19,19 @@ public class JavadocImpl implements Javadoc {
 
 	private final String id;
 	private final String name;
+	private final String description;
 	private final URI baseUrl;
 	private final JavadocIndex index;
 
 	@Inject
-	public JavadocImpl(String id, String name, URI baseUrl, JavadocIndexes javadocIndexes) {
+	public JavadocImpl(String id, String name, String description, URI baseUrl, JavadocIndexes javadocIndexes) {
 		if (!JAVADOC_SEARCH_ID_PATTERN.matcher(id).matches())
 			throw new IllegalArgumentException("id must match: " + JAVADOC_SEARCH_ID_PATTERN.pattern());
 		if (name.isBlank())
 			throw new IllegalArgumentException("name must not be empty");
 		this.id = id;
 		this.name = name;
+		this.description = description;
 		this.baseUrl = Objects.requireNonNull(baseUrl);
 		long startTime = System.currentTimeMillis();
 		this.index = javadocIndexes.getIndexByBaseUrl(baseUrl, this::fetchIndex);
@@ -56,6 +58,11 @@ public class JavadocImpl implements Javadoc {
 	@Override
 	public String name() {
 		return name;
+	}
+
+	@Override
+	public String description() {
+		return description;
 	}
 
 	@Override

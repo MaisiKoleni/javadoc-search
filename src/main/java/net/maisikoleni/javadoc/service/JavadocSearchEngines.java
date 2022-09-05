@@ -62,7 +62,7 @@ public class JavadocSearchEngines {
 
 	static Javadoc entryToJavadoc(Map.Entry<String, LibraryConfigValue> configEntry, JavadocIndexes javadocIndexes) {
 		var libraryConfigValue = configEntry.getValue();
-		return new JavadocImpl(configEntry.getKey(), libraryConfigValue.name(), libraryConfigValue.baseUrl(),
-				javadocIndexes);
+		return new JavadocImpl(configEntry.getKey(), libraryConfigValue.name(), libraryConfigValue.description(),
+				libraryConfigValue.baseUrl(), javadocIndexes);
 	}
 }
