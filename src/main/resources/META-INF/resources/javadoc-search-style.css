@@ -3,6 +3,7 @@
 }
 #search-duke {
 	height: 1.5em;
+	max-height: 24px;
 	transition-duration: 0.5s;
     transition-property: transform;
 }
