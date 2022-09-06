@@ -17,9 +17,9 @@ of selected JDK releases and other libraries.
 Can also be added to a bowser as custom search engine:
 
 - Search URL Template: +
-  `https://javadoc-search.maisikoleni.net/api/libraries/jdk-latest/search/redirect?query=%s`
+  `https://javadoc-search.maisikoleni.net/api/v2/libraries/jdk-latest/search/redirect?query=%s`
 - Search Suggestions URL Template: +
-  `https://javadoc-search.maisikoleni.net/api/libraries/jdk-latest/search/suggestions?query=%s`
+  `https://javadoc-search.maisikoleni.net/api/v2/libraries/jdk-latest/search/suggestions?query=%s`
 
 [WARNING]
 ====
