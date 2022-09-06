@@ -13,7 +13,7 @@ import net.maisikoleni.javadoc.service.Javadoc;
 import net.maisikoleni.javadoc.service.JavadocSearchEngines;
 
 @Singleton
-@Path("/api/libraries")
+@Path("/api/v2/libraries")
 public class LibrariesResource {
 
 	@Inject
@@ -21,7 +21,7 @@ public class LibrariesResource {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	Collection<Javadoc> allAvailableLibraries() {
+	public Collection<Javadoc> allAvailableLibraries() {
 		return javadocSearchEngines.allJavadocs();
 	}
 }

@@ -14,7 +14,7 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 class SearchResourceTest {
 
-	private static final String ROUTE_PREFIX = "/api/libraries/jdk-latest/search/";
+	private static final String ROUTE_PREFIX = "/api/v2/libraries/jdk-latest/search/";
 
 	@Test
 	void testSearchAndRedirectFound() {

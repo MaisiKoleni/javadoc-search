@@ -13,17 +13,19 @@ import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.service.SearchService;
 
 @RequestScoped
-@Path("/api/libraries/{" + Constants.LIBRARY_ID_PARAMETER + "}/search")
+@Path("/api/v2/libraries/{" + Constants.LIBRARY_ID_PARAMETER + "}/search")
 public class SearchResource implements JavadocSearch {
 
-	@Inject
-	SearchService searchSerivce;
+	private final SearchService searchSerivce;
+	private final SearchValidator searchValidator;
+	private final SearchReporter searchReporter;
 
 	@Inject
-	SearchValidator searchValidator;
-
-	@Inject
-	SearchReporter searchReporter;
+	public SearchResource(SearchService searchSerivce, SearchValidator searchValidator, SearchReporter searchReporter) {
+		this.searchSerivce = searchSerivce;
+		this.searchValidator = searchValidator;
+		this.searchReporter = searchReporter;
+	}
 
 	@Override
 	public Response searchAndRedirect(String query) {

@@ -65,7 +65,8 @@ class PerformanceTest {
 
 		@SuppressWarnings("rawtypes") // needs to be raw type, sadly
 		var futureResponses = queries.stream().<Future>map(q -> {
-			String requestURI = "/api/search/suggestions?query=" + URLEncoder.encode(q, StandardCharsets.UTF_8);
+			String requestURI = "/api/v2/libraries/jdk-latest/search/suggestions?query="
+					+ URLEncoder.encode(q, StandardCharsets.UTF_8);
 			return client.request(HttpMethod.GET, requestURI).compose(req -> handleRequest(req, q));
 		}).toList();
 		// wait for requests to complete
