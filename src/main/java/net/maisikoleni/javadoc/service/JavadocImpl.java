@@ -1,6 +1,7 @@
 package net.maisikoleni.javadoc.service;
 
-import static net.maisikoleni.javadoc.Constants.JAVADOC_SEARCH_ID_PATTERN;
+import static net.maisikoleni.javadoc.Constants.LIBRARY_ID_PATTERN;
+import static net.maisikoleni.javadoc.Constants.LIBRARY_ID_PATTERN_STRING;
 
 import java.net.URI;
 import java.util.Objects;
@@ -25,8 +26,8 @@ public class JavadocImpl implements Javadoc {
 
 	@Inject
 	public JavadocImpl(String id, String name, String description, URI baseUrl, JavadocIndexes javadocIndexes) {
-		if (!JAVADOC_SEARCH_ID_PATTERN.matcher(id).matches())
-			throw new IllegalArgumentException("id must match: " + JAVADOC_SEARCH_ID_PATTERN.pattern());
+		if (!LIBRARY_ID_PATTERN.matcher(id).matches())
+			throw new IllegalArgumentException("id must match: " + LIBRARY_ID_PATTERN_STRING);
 		if (name.isBlank())
 			throw new IllegalArgumentException("name must not be empty");
 		this.id = id;

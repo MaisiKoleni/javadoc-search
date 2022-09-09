@@ -18,7 +18,8 @@ public final class Constants {
 
 	public static final String LOG_SEARCH_THRESHOLD_NANOS_DEFAULT = "" + 20_000_000;
 
-	public static final Pattern JAVADOC_SEARCH_ID_PATTERN = Pattern.compile("[\\p{Alnum}_-]{2,50}");
+	public static final String LIBRARY_ID_PATTERN_STRING = "[\\p{Alnum}_-]{2,13}";
+	public static final Pattern LIBRARY_ID_PATTERN = Pattern.compile(LIBRARY_ID_PATTERN_STRING);
 
 	public static final String LIBRARY_ID_PARAMETER = "libraryId";
 
