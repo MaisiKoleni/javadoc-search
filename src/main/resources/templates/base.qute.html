@@ -11,12 +11,12 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
 		integrity="sha256-7ZWbZUAi97rkirk4DcEp4GWDPkWpRMcNaEyXGsNXjLg=" crossorigin="anonymous">
 	<link rel="stylesheet" href="/javadoc-search-style.css"
-		integrity="sha256-KiUaq/WO27DBDCqG2dTIdQoBMrgO7G6Kf2vKdJznNXo=" crossorigin="anonymous">
+		integrity="sha256-i2M3A8zdv2z5PpZVuhrVANZukna//oGZxwUGnKdGqQ4=" crossorigin="anonymous">
 	{#insert head}{/}
 </head>
 
 <body class="bg-light p-sm-3">
-	<div class="container-fluid bg-body p-2 p-sm-3 w-md-50">{#insert}No body!{/}</div>
+	<div id="content" class="container-fluid bg-body p-2 p-sm-3 w-md-50">{#insert}No body!{/}</div>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.min.js"
 		integrity="sha256-DOneOY3n5+xj6Da3AJBkPHxaPynqSlGaZ9790gbBOsE=" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/htmx.org@1.8.0/dist/htmx.min.js"
@@ -25,14 +25,16 @@
 <nav class="navbar fixed-bottom bg-light">
 	<div class="container-fluid">
 		<div class="text-center">
-    		<a class="text-dark" href="/libraries/">Show Available Javadoc Libraries</a>
+			<a class="text-dark" href="/libraries/">Show Available Javadoc Libraries</a>
 		</div>
 		<div class="text-center">
-    		<img id="search-duke" src="/search-duke.svg" alt="Icon showing the Java duke figure shaped like a magnifier" height="24px">
-    		<a class="text-dark" href="https://github.com/MaisiKoleni/javadoc-search">javadoc-search</a>
-    		by
-    		<a class="text-dark" href="https://github.com/MaisiKoleni">Christian Femers</a>
+			<img id="search-duke" src="/search-duke.svg" alt="Icon showing the Java duke figure shaped like a magnifier"
+				height="24px">
+			<a class="text-dark" href="https://github.com/MaisiKoleni/javadoc-search">javadoc-search</a>
+			by
+			<a class="text-dark" href="https://github.com/MaisiKoleni">Christian Femers</a>
 		</div>
 	</div>
 </nav>
+
 </html>

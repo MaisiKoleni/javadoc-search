@@ -10,3 +10,6 @@
 #search-duke:hover {
 	transform: rotate(225deg);
 }
+#content {
+	margin-bottom: 56px;
+}
