@@ -110,4 +110,11 @@ class SearchResourceTest {
 				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
 				.body(emptyString());
 	}
+
+	@Test
+	void testSuggestionsQueryWithUndefinedChar() {
+		given().when().get(ROUTE_PREFIX + "suggestions?query=\u0378").then() //
+				.statusCode(Status.BAD_REQUEST.getStatusCode()) //
+				.body(emptyString());
+	}
 }
