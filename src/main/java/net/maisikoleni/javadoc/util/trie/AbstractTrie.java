@@ -268,7 +268,7 @@ public abstract class AbstractTrie<T, N extends AbstractTrie.AbstractNode<T, N>>
 
 	@Override
 	public Stream<T> search(CharSequence key) {
-		return findNode(key, false).switchOnSuccess(N::valueStream, Stream::of);
+		return findNode(key, false).switchOnSuccess(N::valueStream, () -> Stream.of());
 	}
 
 	@Override

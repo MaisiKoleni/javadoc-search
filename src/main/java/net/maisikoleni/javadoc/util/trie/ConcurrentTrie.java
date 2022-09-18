@@ -207,7 +207,7 @@ public final class ConcurrentTrie<T> extends AbstractTrie<T, ConcurrentTrie.Node
 	@Override
 	public Stream<T> search(CharSequence key) {
 		try (var nodeMatch = findNode(key, false)) {
-			return nodeMatch.switchOnSuccess(Node<T>::valueStream, Stream::of);
+			return nodeMatch.switchOnSuccess(Node<T>::valueStream, () -> Stream.of());
 		}
 	}
 
