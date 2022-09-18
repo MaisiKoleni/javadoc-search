@@ -33,9 +33,9 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-		<quarkus.platform.version>2.12.1.Final</quarkus.platform.version>
+		<quarkus.platform.version>2.12.2.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
-		<microstream.version>07.00.00-MS-GA</microstream.version>
+		<microstream.version>07.01.00-MS-GA</microstream.version>
 		<assertj.version>3.23.1</assertj.version>
 	</properties>
 	<dependencyManagement>
@@ -120,6 +120,11 @@
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jacoco</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
