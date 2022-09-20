@@ -24,9 +24,11 @@ public final class JdkUrlGeneration {
 		var urlPrefix = "";
 		if (se instanceof JsonModule m) {
 			return m.l() + SLASH;
-		} else if (se instanceof JsonPackage p && p.m() != null) {
+		}
+		if (se instanceof JsonPackage p && p.m() != null) {
 			return p.m() + SLASH;
-		} else if (se instanceof JsonSearchablePackagedEntity t) {
+		}
+		if (se instanceof JsonSearchablePackagedEntity t) {
 			if (t.m() != null) {
 				urlPrefix = t.m() + SLASH;
 			} else {

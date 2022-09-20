@@ -7,31 +7,31 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public interface Cache<T> {
 
-	public int size();
+	int size();
 
-	public boolean isEmpty();
+	boolean isEmpty();
 
-	public boolean contains(T value);
+	boolean contains(T value);
 
-	public T put(T value);
+	T put(T value);
 
-	public T getCached(T value);
+	T getCached(T value);
 
-	public T getOrCache(T value);
+	T getOrCache(T value);
 
-	public T remove(T value);
+	T remove(T value);
 
-	public void clear();
+	void clear();
 
-	public static <T> Cache<T> newDefault() {
+	static <T> Cache<T> newDefault() {
 		return new DelegateMapCache<>(new HashMap<>());
 	}
 
-	public static <T> Cache<T> newConcurrent() {
+	static <T> Cache<T> newConcurrent() {
 		return new DelegateMapCache<>(new ConcurrentHashMap<>());
 	}
 
-	public static <T> Cache<T> newMapBased(Map<T, T> map) {
+	static <T> Cache<T> newMapBased(Map<T, T> map) {
 		return new DelegateMapCache<>(map);
 	}
 

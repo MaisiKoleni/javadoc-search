@@ -25,7 +25,7 @@ public class DBManager {
 
 	private static final AtomicBoolean active = new AtomicBoolean();
 
-	private PersistedJavadocIndexes javadocIndexes = new PersistedJavadocIndexes();
+	private final PersistedJavadocIndexes javadocIndexes = new PersistedJavadocIndexes();
 
 	private EmbeddedStorageManager storageManager;
 	private Storer lazyStorer;

@@ -9,7 +9,7 @@ import net.maisikoleni.javadoc.entities.JavadocIndex;
 
 public final class TestJavadocIndexes implements JavadocIndexes {
 
-	private Map<URI, JavadocIndex> indexesByUri = new ConcurrentHashMap<>();
+	private final Map<URI, JavadocIndex> indexesByUri = new ConcurrentHashMap<>();
 
 	@Override
 	public JavadocIndex getIndexByBaseUrl(URI baseUrl, Supplier<JavadocIndex> alternativeSource) {

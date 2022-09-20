@@ -61,10 +61,8 @@ public final class PrimitiveReentrantReadWriteLock<T> {
 		if (value) {
 			if (!intLock.compareAndSet(holder, LOCK_UNUSED, LOCK_INACTIVE))
 				throw new IllegalStateException("cannot set lock inactive while in use");
-		} else {
-			if (!intLock.compareAndSet(holder, LOCK_INACTIVE, LOCK_UNUSED))
-				throw new IllegalStateException("lock already active");
-		}
+		} else if (!intLock.compareAndSet(holder, LOCK_INACTIVE, LOCK_UNUSED))
+			throw new IllegalStateException("lock already active");
 	}
 
 	public void startRead(T holder) {

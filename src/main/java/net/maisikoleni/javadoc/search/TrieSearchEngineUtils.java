@@ -51,14 +51,14 @@ public final class TrieSearchEngineUtils {
 			new CharClass(c -> Character.isAlphabetic(c) || Character.isDigit(c), "[\\p{Alnum}]"),
 			new Star(CharClass.ANY));
 
-	private static final char[] SPEPARATOR_CHARS = new char[] { '.', ',', '(', ')', '<', '>', '/', '[', ']' };
+	private static final char[] SPEPARATOR_CHARS = { '.', ',', '(', ')', '<', '>', '/', '[', ']' };
 
 	private TrieSearchEngineUtils() {
 	}
 
 	static boolean isSeparator(char c) {
-		for (int i = 0; i < SPEPARATOR_CHARS.length; i++)
-			if (c == SPEPARATOR_CHARS[i])
+		for (char element : SPEPARATOR_CHARS)
+			if (c == element)
 				return true;
 		return false;
 	}
