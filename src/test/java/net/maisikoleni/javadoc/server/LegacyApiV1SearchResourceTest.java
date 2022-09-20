@@ -21,7 +21,7 @@ class LegacyApiV1SearchResourceTest {
 				.body(is("")) //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
 				.header(HttpHeaders.LOCATION,
-						"https://docs.oracle.com/en/java/javase/18/docs/api/java.base/java/util/stream/Collector.html");
+						"https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/stream/Collector.html");
 	}
 
 	@Test

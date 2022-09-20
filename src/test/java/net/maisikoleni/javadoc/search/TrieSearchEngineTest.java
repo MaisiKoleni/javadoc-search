@@ -40,7 +40,7 @@ class TrieSearchEngineTest {
 						"java.base/java.util.BitSet.BitSet()", //
 						"java.base/java.util.EnumMap.keySet()", //
 						"jdk.jfr/jdk.jfr.Recording.getSettings()") //
-				.hasSize(727);
+				.hasSize(733);
 		assertThat(result.tags()).isEmpty();
 	}
 }

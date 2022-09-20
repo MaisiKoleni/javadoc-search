@@ -15,7 +15,7 @@ import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
 
 @QuarkusTest
-class Jdk18SearchSerivceTest {
+class Jdk19SearchSerivceTest {
 
 	@Inject
 	@FixLibraryId
@@ -24,7 +24,7 @@ class Jdk18SearchSerivceTest {
 	@Test
 	void testBaseUrl() {
 		assertThat(searchService.javadoc().baseUrl())
-				.isEqualTo(URI.create("https://docs.oracle.com/en/java/javase/18/docs/api/"));
+				.isEqualTo(URI.create("https://docs.oracle.com/en/java/javase/19/docs/api/"));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ class Jdk18SearchSerivceTest {
 				java.base/java.util.TreeSet
 				java.sql.rowset/javax.sql.rowset.WebRowSet
 				"""));
-		assertThat(results).hasLineCount(798);
+		assertThat(results).hasLineCount(804);
 	}
 
 	@Test
@@ -174,7 +174,7 @@ class Jdk18SearchSerivceTest {
 
 	@Test
 	void testSearchLowersDotAttributeSetTildes() {
-		var results = searchAsList(".a~set");
+		var results = searchAsList(".at~set");
 		assertThat(results).isEqualTo(expectedSearchResults("""
 				java.desktop/javax.print.attribute.AttributeSet
 				java.desktop/javax.swing.text.AttributeSet

@@ -57,7 +57,7 @@ class RegexSearchEngineTest {
 						"java.compiler/javax.annotation.processing.RoundEnvironment.getElementsAnnotatedWithAny(Set<Class<? extends Annotation>>)", //
 						"java.base/java.lang.StackWalker.getInstance(Set<StackWalker.Option>)", //
 						"java.base/java.lang.StackWalker.getInstance(Set<StackWalker.Option>, int)") //
-				.hasSize(727);
+				.hasSize(733);
 		assertThat(result.tags()).isEmpty();
 	}
 }
