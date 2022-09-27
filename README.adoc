@@ -210,3 +210,15 @@ as they are then fetched from the official site and cached in `database/javadoc-
 
 To run outside Maven, `--add-exports java.base/jdk.internal.misc=ALL-UNNAMED` is required
 as MicroStream requires Unsafe at the moment.
+
+== License
+
+Javadoc Search was created by Christian Femers in 2022
+and the program and the accompanying materials are made available
+under the terms of the
+https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12[European Union Public License 1.2]
+(see the https://github.com/MaisiKoleni/javadoc-search/blob/main/LICENSE["LICENSE" file],
+`SPDX-License-Identifier: EUPL-1.2-or-later`)
+with the following exceptions:
+
+- `src/test/java/net/maisikoleni/javadoc/parser/JdkUrlGeneration.java` (`GPL-2.0-with-classpath-exception`)
