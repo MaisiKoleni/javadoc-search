@@ -1,20 +1,12 @@
 package net.maisikoleni.javadoc.config;
 
-import static net.maisikoleni.javadoc.Constants.DB_PATH_DEFAULT;
-import static net.maisikoleni.javadoc.Constants.LOG_SEARCH_THRESHOLD_NANOS_DEFAULT;
-import static net.maisikoleni.javadoc.Constants.PACKAGE;
-import static net.maisikoleni.javadoc.Constants.QUERY_LENGHT_LIMIT_DEFAULT;
-import static net.maisikoleni.javadoc.Constants.SUGGESTION_COUNT_DEFAULT;
-import static net.maisikoleni.javadoc.Constants.SUGGESTION_COUNT_LIMIT_DEFAULT;
+import static net.maisikoleni.javadoc.Constants.*;
 
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Map;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.*;
 
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
@@ -57,10 +49,6 @@ public interface Configuration {
 		}
 	}
 
-	/**
-	 * FIXME: Requires fix in
-	 * io.smallrye.config.validator.BeanValidationConfigValidator
-	 */
 	@ExactlyOneDefault
 	@ValidLibraryId
 	Map<String, LibraryConfigValue> libraries();
