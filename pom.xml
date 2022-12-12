@@ -35,7 +35,7 @@
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
 		<quarkus.platform.version>2.15.0.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
-		<microstream.version>07.01.00-MS-GA</microstream.version>
+		<microstream.version>08.00.00-MS-EA1</microstream.version>
 		<assertj.version>3.23.1</assertj.version>
 	</properties>
 	<dependencyManagement>
