@@ -22,21 +22,21 @@ class SearchResourceTest {
 				.body(is("")) //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
 				.header(HttpHeaders.LOCATION,
-						"https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/stream/Collector.html");
+						"https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/stream/Collector.html");
 	}
 
 	@Test
 	void testSearchAndRedirectNotFound() {
 		given().redirects().follow(false).when().get(ROUTE_PREFIX + "redirect?query=xxx").then() //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
-				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/19/docs/api/");
+				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/20/docs/api/");
 	}
 
 	@Test
 	void testSearchAndRedirectEmpty() {
 		given().redirects().follow(false).when().get(ROUTE_PREFIX + "redirect?query=").then() //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
-				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/19/docs/api/");
+				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/20/docs/api/");
 	}
 
 	@Test

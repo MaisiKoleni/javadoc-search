@@ -19,9 +19,9 @@ net:
       search:
         libraries:
           jdk-latest:
-            name: JDK 19
+            name: JDK 20
             description: Latest JDK Release
-            base-url: https://docs.oracle.com/en/java/javase/19/docs/api/
+            base-url: https://docs.oracle.com/en/java/javase/20/docs/api/
             default: true
           junit5-latest:
             name: JUnit 5

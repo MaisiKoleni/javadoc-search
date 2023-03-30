@@ -1,4 +1,4 @@
-package net.maisikoleni.javadoc.service.jdk18;
+package net.maisikoleni.javadoc.service.jdk20;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,13 +9,14 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
 
+import io.quarkus.test.junit.QuarkusTest;
+
 @QuarkusTest
-class Jdk19SearchSerivceTest {
+class Jdk20SearchSerivceTest {
 
 	@Inject
 	@FixLibraryId
@@ -24,7 +25,7 @@ class Jdk19SearchSerivceTest {
 	@Test
 	void testBaseUrl() {
 		assertThat(searchService.javadoc().baseUrl())
-				.isEqualTo(URI.create("https://docs.oracle.com/en/java/javase/19/docs/api/"));
+				.isEqualTo(URI.create("https://docs.oracle.com/en/java/javase/20/docs/api/"));
 	}
 
 	@Test

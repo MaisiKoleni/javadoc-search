@@ -20,10 +20,10 @@ class LibraryResourceTest {
 				.statusCode(Status.OK.getStatusCode()) //
 				.body(is("""
 						[{\
-						"name":"JDK 19",\
+						"name":"JDK 20",\
 						"id":"jdk-latest",\
 						"description":"Latest JDK Release",\
-						"baseUrl":"https://docs.oracle.com/en/java/javase/19/docs/api/"\
+						"baseUrl":"https://docs.oracle.com/en/java/javase/20/docs/api/"\
 						},{\
 						"name":"JUnit 5",\
 						"id":"junit5-latest",\
