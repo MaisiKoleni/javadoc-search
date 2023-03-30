@@ -151,7 +151,7 @@ All of that allows for the following search syntax:
    * ...
 
 The search engine implementation is _mostly_ compliant with the
-https://docs.oracle.com/en/java/javase/19/docs/specs/javadoc/javadoc-search-spec.html[Javadoc Search Specification]
+https://docs.oracle.com/en/java/javase/20/docs/specs/javadoc/javadoc-search-spec.html[Javadoc Search Specification]
 but since major changes got introduced with JDK 19
 (search terms can be separated by spaces),
 I felt free to include custom behavior.
