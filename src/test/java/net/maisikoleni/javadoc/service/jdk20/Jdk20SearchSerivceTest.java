@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.net.URI;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 

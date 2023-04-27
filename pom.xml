@@ -9,33 +9,30 @@
 		<license>
 			<name>MIT</name>
 			<url>https://opensource.org/licenses/MIT</url>
-			<comments>See https://github.com/ls1intum/Ares/blob/master/LICENSE</comments>
 		</license>
 	</licenses>
 	<developers>
 		<developer>
 			<name>Christian Femers</name>
 			<email>christian.femers@tum.de</email>
-			<organization>Technical University of Munich</organization>
-			<organizationUrl>https://www.tum.de</organizationUrl>
 		</developer>
 	</developers>
 
 	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>20</maven.compiler.source>
+		<maven.compiler.target>20</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<compiler-plugin.version>3.11.0</compiler-plugin.version>
 		<failsafe.useModulePath>false</failsafe.useModulePath>
-		<maven.compiler.release>17</maven.compiler.release>
+		<maven.compiler.release>20</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-		<quarkus.platform.version>2.16.5.Final</quarkus.platform.version>
+		<quarkus.platform.version>3.0.1.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0</surefire-plugin.version>
-		<microstream.version>08.00.00-MS-EA2</microstream.version>
+		<microstream.version>08.00.00-MS-GA</microstream.version>
 		<assertj.version>3.24.2</assertj.version>
 	</properties>
 	<dependencyManagement>

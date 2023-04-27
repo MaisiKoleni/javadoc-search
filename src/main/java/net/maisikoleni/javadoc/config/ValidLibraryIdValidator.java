@@ -5,8 +5,8 @@ import static net.maisikoleni.javadoc.Constants.LIBRARY_ID_PATTERN;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ValidLibraryIdValidator implements ConstraintValidator<ValidLibraryId, Map<String, ?>> {
 

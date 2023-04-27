@@ -3,10 +3,10 @@ package net.maisikoleni.javadoc.server;
 import java.util.List;
 import java.util.OptionalInt;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import net.maisikoleni.javadoc.Constants;
 import net.maisikoleni.javadoc.entities.SearchableEntity;

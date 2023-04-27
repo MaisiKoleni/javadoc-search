@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import io.quarkus.runtime.Startup;
 import net.maisikoleni.javadoc.config.Configuration;

@@ -2,7 +2,7 @@ package net.maisikoleni.javadoc.service;
 
 import java.net.URI;
 
-import javax.ws.rs.NotFoundException;
+import jakarta.ws.rs.NotFoundException;
 
 import org.slf4j.LoggerFactory;
 

@@ -2,8 +2,8 @@ package net.maisikoleni.javadoc.config;
 
 import java.util.Map;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import net.maisikoleni.javadoc.config.Configuration.LibraryConfigValue;
 

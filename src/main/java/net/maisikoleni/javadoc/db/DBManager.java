@@ -3,10 +3,10 @@ package net.maisikoleni.javadoc.db;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.PreDestroy;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

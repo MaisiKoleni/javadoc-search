@@ -6,7 +6,7 @@ import static net.maisikoleni.javadoc.Constants.LIBRARY_ID_PATTERN_STRING;
 import java.net.URI;
 import java.util.Objects;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

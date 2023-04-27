@@ -3,7 +3,7 @@ package net.maisikoleni.javadoc.server;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 

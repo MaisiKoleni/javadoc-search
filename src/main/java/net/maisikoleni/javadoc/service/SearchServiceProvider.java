@@ -6,15 +6,15 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.util.Objects;
 
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.Nonbinding;
-import javax.inject.Inject;
-import javax.inject.Qualifier;
-import javax.inject.Singleton;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.UriInfo;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.util.Nonbinding;
+import jakarta.inject.Inject;
+import jakarta.inject.Qualifier;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.UriInfo;
 
 import org.jboss.resteasy.spi.InternalServerErrorException;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;

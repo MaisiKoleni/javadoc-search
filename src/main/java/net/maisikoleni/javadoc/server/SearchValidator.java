@@ -1,8 +1,8 @@
 package net.maisikoleni.javadoc.server;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.BadRequestException;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.BadRequestException;
 
 import net.maisikoleni.javadoc.config.Configuration;
 

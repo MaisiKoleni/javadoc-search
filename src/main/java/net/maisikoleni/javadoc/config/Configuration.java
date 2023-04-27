@@ -6,7 +6,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.Map;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
