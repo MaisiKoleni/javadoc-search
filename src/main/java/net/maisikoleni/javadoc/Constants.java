@@ -23,6 +23,8 @@ public final class Constants {
 
 	public static final String LIBRARY_ID_PARAMETER = "libraryId";
 
+	public static final int HTTP_CACHE_MAX_AGE = 60;
+
 	private Constants() {
 	}
 }

@@ -4,23 +4,8 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Optional;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import jakarta.ws.rs.FormParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
+import org.jboss.resteasy.annotations.cache.Cache;
 
-import io.quarkus.qute.CheckedTemplate;
-import io.quarkus.qute.TemplateInstance;
 import net.maisikoleni.javadoc.Constants;
 import net.maisikoleni.javadoc.config.Configuration;
 import net.maisikoleni.javadoc.config.Configuration.ServerConfig.HtmlConfig;
@@ -31,7 +16,18 @@ import net.maisikoleni.javadoc.server.html.util.HtmxHeaders;
 import net.maisikoleni.javadoc.service.Javadoc;
 import net.maisikoleni.javadoc.service.SearchService;
 
+import io.quarkus.qute.CheckedTemplate;
+import io.quarkus.qute.TemplateInstance;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+
 @Named()
+@Cache(maxAge = Constants.HTTP_CACHE_MAX_AGE)
 @Path("/libraries/{" + Constants.LIBRARY_ID_PARAMETER + "}/")
 @RequestScoped
 public final class JavadocSearchPage {

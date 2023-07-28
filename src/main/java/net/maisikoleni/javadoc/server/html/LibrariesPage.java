@@ -1,21 +1,22 @@
 package net.maisikoleni.javadoc.server.html;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
 
+import org.jboss.resteasy.annotations.cache.Cache;
+
+import net.maisikoleni.javadoc.Constants;
+import net.maisikoleni.javadoc.service.Javadoc;
+import net.maisikoleni.javadoc.service.JavadocSearchEngines;
+
+import io.quarkus.qute.CheckedTemplate;
+import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-import io.quarkus.qute.CheckedTemplate;
-import io.quarkus.qute.TemplateInstance;
-import net.maisikoleni.javadoc.service.Javadoc;
-import net.maisikoleni.javadoc.service.JavadocSearchEngines;
-
+@Cache(maxAge = Constants.HTTP_CACHE_MAX_AGE)
 @Path("/libraries/")
 public class LibrariesPage {
 

@@ -2,6 +2,11 @@ package net.maisikoleni.javadoc.server.html;
 
 import java.util.Optional;
 
+import org.jboss.resteasy.annotations.cache.Cache;
+
+import net.maisikoleni.javadoc.Constants;
+import net.maisikoleni.javadoc.service.JavadocSearchEngines;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -10,9 +15,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
-import net.maisikoleni.javadoc.Constants;
-import net.maisikoleni.javadoc.service.JavadocSearchEngines;
-
+@Cache(maxAge = Constants.HTTP_CACHE_MAX_AGE)
 @ApplicationScoped
 @Path("/")
 public final class MainPage {
