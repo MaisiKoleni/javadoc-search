@@ -5,10 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.random.RandomGeneratorFactory;
 import java.util.stream.IntStream;
@@ -20,15 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.*;
 
 @QuarkusTest
 class PerformanceTest {
@@ -63,14 +55,13 @@ class PerformanceTest {
 	void testSearchSuggestionPerformance() {
 		var queries = generateRandomQueries();
 
-		@SuppressWarnings("rawtypes") // needs to be raw type, sadly
-		var futureResponses = queries.stream().<Future>map(q -> {
+		var futureResponses = queries.stream().map(q -> {
 			String requestURI = "/api/v2/libraries/jdk-latest/search/suggestions?query="
 					+ URLEncoder.encode(q, StandardCharsets.UTF_8);
 			return client.request(HttpMethod.GET, requestURI).compose(req -> handleRequest(req, q));
 		}).toList();
 		// wait for requests to complete
-		CompositeFuture.join(futureResponses).toCompletionStage().toCompletableFuture().join();
+		Future.join(futureResponses).toCompletionStage().toCompletableFuture().join();
 		// create a summary statistic
 		var stats = timings.values().stream().flatMap(List::stream).mapToLong(x -> x).summaryStatistics();
 		LOG.info("Performance statistics: {}", stats);
