@@ -4,12 +4,11 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.emptyString;
 
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.Status;
 
 @QuarkusTest
 class SearchResourceTest {
@@ -22,21 +21,21 @@ class SearchResourceTest {
 				.body(is("")) //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
 				.header(HttpHeaders.LOCATION,
-						"https://docs.oracle.com/en/java/javase/20/docs/api/java.base/java/util/stream/Collector.html");
+						"https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Collector.html");
 	}
 
 	@Test
 	void testSearchAndRedirectNotFound() {
 		given().redirects().follow(false).when().get(ROUTE_PREFIX + "redirect?query=xxx").then() //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
-				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/20/docs/api/");
+				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/21/docs/api/");
 	}
 
 	@Test
 	void testSearchAndRedirectEmpty() {
 		given().redirects().follow(false).when().get(ROUTE_PREFIX + "redirect?query=").then() //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
-				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/20/docs/api/");
+				.header(HttpHeaders.LOCATION, "https://docs.oracle.com/en/java/javase/21/docs/api/");
 	}
 
 	@Test

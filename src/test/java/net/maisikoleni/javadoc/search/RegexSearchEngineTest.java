@@ -2,14 +2,14 @@ package net.maisikoleni.javadoc.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
+
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 class RegexSearchEngineTest {
@@ -42,7 +42,7 @@ class RegexSearchEngineTest {
 						"java.desktop/javax.imageio.plugins.tiff.BaselineTIFFTagSet", //
 						"java.sql.rowset/javax.sql.rowset.BaseRowSet", //
 						"java.base/java.util.BitSet") //
-				.hasSize(71);
+				.hasSize(72);
 		assertThat(result.members().map(SearchableEntity::qualifiedName).toList()) //
 				.startsWith( //
 						"java.base/java.nio.file.attribute.PosixFilePermissions.asFileAttribute(Set<PosixFilePermission>)", //
@@ -57,7 +57,31 @@ class RegexSearchEngineTest {
 						"java.compiler/javax.annotation.processing.RoundEnvironment.getElementsAnnotatedWithAny(Set<Class<? extends Annotation>>)", //
 						"java.base/java.lang.StackWalker.getInstance(Set<StackWalker.Option>)", //
 						"java.base/java.lang.StackWalker.getInstance(Set<StackWalker.Option>, int)") //
-				.hasSize(733);
-		assertThat(result.tags()).isEmpty();
+				.hasSize(736);
+		assertThat(result.tags().map(SearchableEntity::qualifiedName).toList()).containsExactly(
+				"Setting a Security Manager", //
+				"Setting Initial Permissions", //
+				"Setting the ACL when creating a file", //
+				"1.0 Creating a CachedRowSet Object", //
+				"2.0 Creating a JdbcRowSet Object", //
+				"2.0 How a RowSet Object Gets Its Provider", //
+				"2.0 Retrieving Data from a CachedRowSet Object", //
+				"2.0 Setting Properties", //
+				"2.0 Standard RowSet Definitions", //
+				"2.0 Using a JoinRowSet Object for Creating a JOIN", //
+				"2.0 WebRowSet States", //
+				"2.1 Retrieving RowSetMetaData", //
+				"2.1 State 1 - Outputting a WebRowSet Object to XML", //
+				"3.0 Setting the Command and Its Parameters", //
+				"3.0 Updating a CachedRowSet Object", //
+				"4.0 JoinRowSet Methods", //
+				"4.0 Updating a FilteredRowSet Object", //
+				"9.0 Setting Properties", //
+				"Attribute Sets", //
+				"Character Sets", //
+				"Character Sets", //
+				"Class AccessibleStateSet", //
+				"Getting and Setting Calendar Field Values", //
+				"Unmodifiable Sets");
 	}
 }

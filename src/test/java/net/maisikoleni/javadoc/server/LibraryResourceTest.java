@@ -3,11 +3,10 @@ package net.maisikoleni.javadoc.server;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.Response.Status;
 
 @QuarkusTest
 class LibraryResourceTest {
@@ -20,10 +19,10 @@ class LibraryResourceTest {
 				.statusCode(Status.OK.getStatusCode()) //
 				.body(is("""
 						[{\
-						"name":"JDK 20",\
+						"name":"JDK 21",\
 						"id":"jdk-latest",\
 						"description":"Latest JDK Release",\
-						"baseUrl":"https://docs.oracle.com/en/java/javase/20/docs/api/"\
+						"baseUrl":"https://docs.oracle.com/en/java/javase/21/docs/api/"\
 						},{\
 						"name":"JUnit 5",\
 						"id":"junit5-latest",\

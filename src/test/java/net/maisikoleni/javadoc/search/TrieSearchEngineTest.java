@@ -2,14 +2,14 @@ package net.maisikoleni.javadoc.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
+
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 class TrieSearchEngineTest {
@@ -32,7 +32,7 @@ class TrieSearchEngineTest {
 						"java.base/java.util.EnumSet", //
 						"java.sql/java.sql.ResultSet", //
 						"jdk.jfr/jdk.jfr.SettingControl") //
-				.hasSize(71);
+				.hasSize(72);
 		assertThat(result.members().map(SearchableEntity::qualifiedName).toList()) //
 				.contains( //
 						"java.base/java.util.Calendar.isSet", //
@@ -40,7 +40,30 @@ class TrieSearchEngineTest {
 						"java.base/java.util.BitSet.BitSet()", //
 						"java.base/java.util.EnumMap.keySet()", //
 						"jdk.jfr/jdk.jfr.Recording.getSettings()") //
-				.hasSize(733);
-		assertThat(result.tags()).isEmpty();
+				.hasSize(736);
+		assertThat(result.tags().map(SearchableEntity::qualifiedName).toList()).containsExactly(
+				"Class AccessibleStateSet", //
+				"2.0 Standard RowSet Definitions", //
+				"4.0 JoinRowSet Methods", //
+				"1.0 Creating a CachedRowSet Object", //
+				"4.0 Updating a FilteredRowSet Object", //
+				"2.0 Creating a JdbcRowSet Object", //
+				"3.0 Updating a CachedRowSet Object", //
+				"2.0 Retrieving Data from a CachedRowSet Object", //
+				"2.0 How a RowSet Object Gets Its Provider", //
+				"2.0 Using a JoinRowSet Object for Creating a JOIN", //
+				"2.1 State 1 - Outputting a WebRowSet Object to XML", //
+				"2.0 WebRowSet States", //
+				"2.1 Retrieving RowSetMetaData", //
+				"Character Sets", // TODO one gets overidden because of equal qualified name
+				"Attribute Sets", //
+				"Unmodifiable Sets", //
+				"Getting and Setting Calendar Field Values", //
+				"Setting Initial Permissions", //
+				"2.0 Setting Properties", //
+				"9.0 Setting Properties", //
+				"Setting a Security Manager", //
+				"Setting the ACL when creating a file", //
+				"3.0 Setting the Command and Its Parameters");
 	}
 }

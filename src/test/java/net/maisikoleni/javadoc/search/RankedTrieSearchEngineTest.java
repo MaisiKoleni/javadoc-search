@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.stream.Stream;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.Test;
 
 import net.maisikoleni.javadoc.entities.SearchableEntity;
@@ -17,6 +15,7 @@ import net.maisikoleni.javadoc.util.trie.RankedTrie.RankedSimpleTrie;
 import net.maisikoleni.javadoc.util.trie.Trie;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 class RankedTrieSearchEngineTest {
@@ -24,7 +23,7 @@ class RankedTrieSearchEngineTest {
 	/**
 	 * This is expected to be stable on the premise that String.hashCode unchanged.
 	 */
-	private static final int EXPECTED_HASH_CODE = 1185782772;
+	private static final int EXPECTED_HASH_CODE = 1190824069;
 
 	@Inject
 	@FixLibraryId

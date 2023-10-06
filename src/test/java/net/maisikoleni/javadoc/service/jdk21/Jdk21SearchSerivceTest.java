@@ -1,11 +1,9 @@
-package net.maisikoleni.javadoc.service.jdk20;
+package net.maisikoleni.javadoc.service.jdk21;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
 import java.util.stream.Collectors;
-
-import jakarta.inject.Inject;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,9 +12,10 @@ import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
 
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 
 @QuarkusTest
-class Jdk20SearchSerivceTest {
+class Jdk21SearchSerivceTest {
 
 	@Inject
 	@FixLibraryId
@@ -25,7 +24,7 @@ class Jdk20SearchSerivceTest {
 	@Test
 	void testBaseUrl() {
 		assertThat(searchService.javadoc().baseUrl())
-				.isEqualTo(URI.create("https://docs.oracle.com/en/java/javase/20/docs/api/"));
+				.isEqualTo(URI.create("https://docs.oracle.com/en/java/javase/21/docs/api/"));
 	}
 
 	@Test
@@ -33,6 +32,9 @@ class Jdk20SearchSerivceTest {
 		var results = searchAsList("Set");
 		assertThat(results.lines().limit(62).collect(Collectors.joining("\n"))).isEqualTo(expectedSearchResults("""
 				java.base/java.util.Set
+				Setting a Security Manager
+				Setting Initial Permissions
+				Setting the ACL when creating a file
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int)
 				java.desktop/javax.print.attribute.SetOfIntegerSyntax.SetOfIntegerSyntax(int, int)
@@ -54,6 +56,7 @@ class Jdk20SearchSerivceTest {
 				java.base/java.util.BitSet
 				java.sql.rowset/javax.sql.rowset.CachedRowSet
 				java.base/java.lang.constant.ConstantDescs.CD_Set
+				Class AccessibleStateSet
 				java.base/java.util.concurrent.ConcurrentSkipListSet
 				java.base/java.util.concurrent.CopyOnWriteArraySet
 				java.desktop/javax.print.attribute.DocAttributeSet
@@ -85,17 +88,13 @@ class Jdk20SearchSerivceTest {
 				java.desktop/javax.print.attribute.PrintServiceAttributeSet
 				java.sql/java.sql.ResultSet
 				java.sql/javax.sql.RowSet
+				java.base/java.util.SequencedSet
 				java.desktop/javax.swing.text.SimpleAttributeSet
 				java.base/java.util.SortedSet
 				java.desktop/javax.swing.text.StyleContext.SmallAttributeSet
 				java.desktop/javax.swing.text.StyleConstants.TabSet
-				java.desktop/javax.swing.text.TabSet
-				java.desktop/javax.imageio.plugins.tiff.TIFFTagSet
-				java.desktop/javax.imageio.ImageWriteParam.tilingSet
-				java.base/java.util.TreeSet
-				java.sql.rowset/javax.sql.rowset.WebRowSet
 				"""));
-		assertThat(results).hasLineCount(804);
+		assertThat(results).hasLineCount(831);
 	}
 
 	@Test
