@@ -19,18 +19,18 @@
 	</developers>
 
 	<properties>
-		<maven.compiler.source>20</maven.compiler.source>
-		<maven.compiler.target>20</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<compiler-plugin.version>3.11.0</compiler-plugin.version>
 		<failsafe.useModulePath>false</failsafe.useModulePath>
-		<maven.compiler.release>20</maven.compiler.release>
+		<maven.compiler.release>21</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-		<quarkus.platform.version>3.4.1</quarkus.platform.version>
+		<quarkus.platform.version>3.4.3</quarkus.platform.version>
 		<surefire-plugin.version>3.1.2</surefire-plugin.version>
 		<microstream.version>08.01.01-MS-GA</microstream.version>
 		<assertj.version>3.24.2</assertj.version>

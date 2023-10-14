@@ -33,6 +33,7 @@ public final class WeakCommonPool {
 		return forkJoinPool;
 	}
 
+	@SuppressWarnings("resource")
 	public static synchronized WeakCommonPool get() {
 		var cachedPool = forkJoinPoolReference.get();
 		if (cachedPool != null)

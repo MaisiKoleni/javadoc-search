@@ -1,7 +1,6 @@
 package net.maisikoleni.javadoc.search;
 
-import static net.maisikoleni.javadoc.search.TrieSearchEngineUtils.SEPARATOR_CHAR_CLASS;
-import static net.maisikoleni.javadoc.search.TrieSearchEngineUtils.isSeparator;
+import static net.maisikoleni.javadoc.search.TrieSearchEngineUtils.*;
 
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -59,6 +58,7 @@ public class TrieGenerator {
 			throw new IllegalArgumentException("index stream must not be parallel for non-parallel TrieGenerator");
 		Supplier<T> createTrie = () -> generateTrieDirectly(index, trieSupplier, converter);
 		if (parallel) {
+			@SuppressWarnings("resource")
 			var trieTask = pool.forkJoinPool().submit(createTrie::get);
 			return trieTask.join();
 		}

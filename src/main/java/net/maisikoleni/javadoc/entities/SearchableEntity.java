@@ -7,9 +7,8 @@ import java.net.URI;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@SuppressWarnings("rawtypes") // Current eclipse compiler bug
-public abstract sealed class SearchableEntity
-		implements Comparable<SearchableEntity>permits Module, NestedSearchableEntity, Tag {
+public abstract sealed class SearchableEntity implements Comparable<SearchableEntity>
+		permits Module, NestedSearchableEntity, Tag {
 
 	protected static final String DOT = ".";
 	protected static final String HASHTAG = "#";
