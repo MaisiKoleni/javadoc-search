@@ -78,6 +78,9 @@ public abstract sealed class SearchableEntity implements Comparable<SearchableEn
 		var nameComparison = name.compareToIgnoreCase(o.name);
 		if (nameComparison != 0)
 			return nameComparison;
-		return CharSequence.compare(qualifiedName(), o.qualifiedName());
+		var qualifiedNameComparison = CharSequence.compare(qualifiedName(), o.qualifiedName());
+		if (qualifiedNameComparison != 0)
+			return qualifiedNameComparison;
+		return url().compareTo(o.url());
 	}
 }
