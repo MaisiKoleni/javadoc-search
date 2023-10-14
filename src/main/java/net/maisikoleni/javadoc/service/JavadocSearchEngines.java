@@ -14,6 +14,7 @@ import net.maisikoleni.javadoc.search.RankedTrieSearchEngine;
 import net.maisikoleni.javadoc.search.SearchEngine;
 
 import io.quarkus.runtime.Startup;
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -37,6 +38,17 @@ public class JavadocSearchEngines {
 				.map(javadoc -> new IndexWithBaseUrl(javadoc.baseUrl(), javadoc.index())).distinct()
 				.collect(Collectors.toMap(IndexWithBaseUrl::baseUrl,
 						indexWithBaseUrl -> new RankedTrieSearchEngine(indexWithBaseUrl.index(), commonGenerator)));
+	}
+
+	@PostConstruct
+	@SuppressWarnings("static-method")
+	void cleanUpAfterInitialization() {
+		/*
+		 * It makes sense to suggest a JVM GC run here because many intermediate objects
+		 * from the search engine generation can be reclaimed, this reduces heap size
+		 * after startup to about 15 %.
+		 */
+		System.gc(); // $NOSONAR$
 	}
 
 	public Collection<Javadoc> allJavadocs() {
