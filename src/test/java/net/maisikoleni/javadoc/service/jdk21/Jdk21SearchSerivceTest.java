@@ -94,7 +94,7 @@ class Jdk21SearchSerivceTest {
 				java.desktop/javax.swing.text.StyleContext.SmallAttributeSet
 				java.desktop/javax.swing.text.StyleConstants.TabSet
 				"""));
-		assertThat(results).hasLineCount(831);
+		assertThat(results).hasLineCount(832);
 	}
 
 	@Test

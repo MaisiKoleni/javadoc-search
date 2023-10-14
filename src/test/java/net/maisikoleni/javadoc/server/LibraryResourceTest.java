@@ -19,15 +19,20 @@ class LibraryResourceTest {
 				.statusCode(Status.OK.getStatusCode()) //
 				.body(is("""
 						[{\
-						"name":"JDK 21",\
+						"name":"latest JDK (21)",\
 						"id":"jdk-latest",\
-						"description":"Latest JDK Release",\
+						"description":"Latest JDK Release API",\
 						"baseUrl":"https://docs.oracle.com/en/java/javase/21/docs/api/"\
 						},{\
 						"name":"JUnit 5",\
 						"id":"junit5-latest",\
-						"description":"Current JUnit 5",\
+						"description":"Current JUnit 5 API",\
 						"baseUrl":"https://junit.org/junit5/docs/current/api/"\
+						},{\
+						"name":"JDK 21",\
+						"id":"jdk-21",\
+						"description":"JDK 21",\
+						"baseUrl":"https://docs.oracle.com/en/java/javase/21/docs/api/"\
 						}]\
 						"""));
 	}
