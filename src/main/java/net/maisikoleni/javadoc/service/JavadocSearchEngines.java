@@ -1,19 +1,21 @@
 package net.maisikoleni.javadoc.service;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-
-import io.quarkus.runtime.Startup;
 import net.maisikoleni.javadoc.config.Configuration;
 import net.maisikoleni.javadoc.config.Configuration.LibraryConfigValue;
 import net.maisikoleni.javadoc.db.JavadocIndexes;
+import net.maisikoleni.javadoc.entities.JavadocIndex;
 import net.maisikoleni.javadoc.search.RankedTrieSearchEngine;
 import net.maisikoleni.javadoc.search.SearchEngine;
+
+import io.quarkus.runtime.Startup;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Startup
 @Singleton
@@ -21,7 +23,7 @@ public class JavadocSearchEngines {
 
 	private final String defaultLibraryId;
 	private final Map<String, Javadoc> installedJavadocs;
-	private final Map<String, SearchEngine> searchEngines;
+	private final Map<URI, SearchEngine> searchEngines;
 
 	@Inject
 	public JavadocSearchEngines(Configuration configuration, JavadocIndexes javadocIndexes) {
@@ -30,8 +32,11 @@ public class JavadocSearchEngines {
 		installedJavadocs = libraries.entrySet().stream()
 				.collect(Collectors.toMap(Entry::getKey, entry -> entryToJavadoc(entry, javadocIndexes)));
 		var commonGenerator = RankedTrieSearchEngine.RankedConcurrentTrieGenerator.of();
-		searchEngines = installedJavadocs.values().stream().collect(
-				Collectors.toMap(Javadoc::id, javadoc -> new RankedTrieSearchEngine(javadoc.index(), commonGenerator)));
+		record IndexWithBaseUrl(URI baseUrl, JavadocIndex index) {}
+		searchEngines = installedJavadocs.values().stream()
+				.map(javadoc -> new IndexWithBaseUrl(javadoc.baseUrl(), javadoc.index())).distinct()
+				.collect(Collectors.toMap(IndexWithBaseUrl::baseUrl,
+						indexWithBaseUrl -> new RankedTrieSearchEngine(indexWithBaseUrl.index(), commonGenerator)));
 	}
 
 	public Collection<Javadoc> allJavadocs() {
@@ -47,7 +52,7 @@ public class JavadocSearchEngines {
 	}
 
 	public SearchEngine getSearchEngine(String id) {
-		return searchEngines.get(id);
+		return searchEngines.get(getJavadoc(id).baseUrl());
 	}
 
 	private static String extractDefaultLibraryId(Map<String, LibraryConfigValue> map) {
