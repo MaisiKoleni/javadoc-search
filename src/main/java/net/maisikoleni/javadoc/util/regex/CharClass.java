@@ -21,9 +21,4 @@ public record CharClass(CharPredicate predicate, String pattern) implements Rege
 	public String toString() {
 		return pattern;
 	}
-
-	@Override
-	public <R> R accept(RegexVisitor<R> visitor) {
-		return visitor.visit(this);
-	}
 }

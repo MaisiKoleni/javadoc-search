@@ -1,12 +1,11 @@
 package net.maisikoleni.javadoc.util.regex;
 
-import static java.lang.Long.rotateLeft;
-import static java.lang.Long.rotateRight;
+import static java.lang.Long.*;
 
 import java.util.HexFormat;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -39,18 +38,19 @@ public final class CompiledRegex implements GradingLongStepMatcher {
 	public static final long NO_MATCH = -1L;
 
 	private final int[] instructions;
-	private final CharPredicate[] charClasses;
+	private final CharPredicate[] charPredicates;
 	private final boolean caseInsensitive;
 	private final int matchEnd;
 	private final int starCount;
 
-	private CompiledRegex(CharPredicate[] charClasses, int[] instructions, boolean caseInsensitive) {
+	private CompiledRegex(CharPredicate[] charPredicates, int[] instructions, boolean caseInsensitive) {
 		this.instructions = instructions;
 		this.caseInsensitive = caseInsensitive;
 		if (caseInsensitive)
-			this.charClasses = Stream.of(charClasses).map(CharPredicate::ignoreCase).toArray(CharPredicate[]::new);
+			this.charPredicates = Stream.of(charPredicates).map(CharPredicate::ignoreCase)
+					.toArray(CharPredicate[]::new);
 		else
-			this.charClasses = charClasses;
+			this.charPredicates = charPredicates;
 		int tempMatchEnd = instructions.length;
 		while (tempMatchEnd > 0 && isStar(instructions[tempMatchEnd - 1]))
 			tempMatchEnd--;
@@ -92,12 +92,12 @@ public final class CompiledRegex implements GradingLongStepMatcher {
 					return NO_MATCH;
 				}
 				case STAR_CHAR_CLASS_OC -> {
-					if (charClasses[argument].test(c))
+					if (charPredicates[argument].test(c))
 						return newState(currentState, 0, 1);
 					currentState = continueAfterStar(currentState);
 				}
 				case CHAR_CLASS_OC -> {
-					if (charClasses[argument].test(c))
+					if (charPredicates[argument].test(c))
 						return newState(currentState, 1, 0);
 					return NO_MATCH;
 				}
@@ -174,159 +174,75 @@ public final class CompiledRegex implements GradingLongStepMatcher {
 				+ ((state >>> STAR_MATCHED_OFFSET) & 1));
 	}
 
+	@Override
+	public String toString() {
+		return IntStream.of(instructions).mapToObj(HexFormat.of()::toHexDigits)
+				.collect(Collectors.joining(",\n  ", "CompiledRegex[\n  ", "]"));
+	}
+
 	public static CompiledRegex compile(Regex simpleRegex) {
 		return compile(simpleRegex, false);
 	}
 
 	public static CompiledRegex compile(Regex simpleRegex, boolean caseInsensitive) {
 		Objects.requireNonNull(simpleRegex);
-		boolean compilable = isCompatible(simpleRegex);
-		if (!compilable)
+		if (!isCompatible(simpleRegex))
 			throw new IllegalArgumentException("cannot compile regex structure");
 
-		int instructionCount = countInstructions(simpleRegex);
-		var charPredicateMap = collectAndIndexCharPredicates(simpleRegex);
-		var instructions = new int[instructionCount];
-		var charClasses = charPredicateMap.keySet().toArray(CharPredicate[]::new);
-		int addedInstructions = composeInstructionArray(instructions, simpleRegex, charPredicateMap);
-		if (addedInstructions != instructions.length)
-			throw new IllegalStateException();
-		return new CompiledRegex(charClasses, instructions, caseInsensitive);
+		var charPredicates = collectCharPredicates(simpleRegex).distinct().toArray(CharPredicate[]::new);
+		var charPredicateMap = createCharPredicateIndexMap(charPredicates);
+		var instructions = composeInstructionArray(simpleRegex, charPredicateMap);
+		return new CompiledRegex(charPredicates, instructions, caseInsensitive);
 	}
 
-	private static Integer composeInstructionArray(int[] instructions, Regex simpleRegex,
-			Map<CharPredicate, Integer> charPredicateMap) {
-		return simpleRegex.accept(new RegexVisitor<>() {
-
-			int nextIndex;
-
-			@Override
-			public Integer visit(Concatenation concatenation) {
-				for (var regex : concatenation.parts())
-					regex.accept(this);
-				return nextIndex;
-			}
-
-			@Override
-			public Integer visit(Literal literal) {
-				literal.chars().chars().forEach(c -> addInstruction(LITERAL, c));
-				return nextIndex;
-			}
-
-			@Override
-			public Integer visit(Star star) {
-				var regex = star.regex();
-				if (regex instanceof Literal l)
-					addInstruction(STAR_LITERAL, l.chars().charAt(0));
-				else if (regex instanceof CharClass cc)
-					addInstruction(STAR_CHAR_CLASS, charPredicateMap.get(cc.predicate()));
-				else
-					throw new IllegalArgumentException();
-				return nextIndex;
-			}
-
-			@Override
-			public Integer visit(CharClass charClass) {
-				addInstruction(CHAR_CLASS, charPredicateMap.get(charClass.predicate()));
-				return nextIndex;
-			}
-
-			private int addInstruction(int opCode, int arg) {
-				if ((opCode & ARG_MASK) != 0 || (arg & OPCODE_MASK) != 0)
-					throw new IllegalArgumentException();
-				instructions[nextIndex] = opCode | arg;
-				return nextIndex++;
-			}
-		});
+	private static int[] composeInstructionArray(Regex simpleRegex, Map<CharPredicate, Integer> charPredicateMap) {
+		return instructionStreamFor(simpleRegex, charPredicateMap).toArray();
 	}
 
-	private static Map<CharPredicate, Integer> collectAndIndexCharPredicates(Regex simpleRegex) {
-		return simpleRegex.accept(new RegexVisitor<Map<CharPredicate, Integer>>() {
-			int nextIndex;
-			Map<CharPredicate, Integer> map = new LinkedHashMap<>();
-
-			@Override
-			public Map<CharPredicate, Integer> visit(Concatenation concatenation) {
-				for (var regex : concatenation.parts())
-					regex.accept(this);
-				return map;
-			}
-
-			@Override
-			public Map<CharPredicate, Integer> visit(Literal literal) {
-				return map;
-			}
-
-			@Override
-			public Map<CharPredicate, Integer> visit(Star star) {
-				return star.regex().accept(this);
-			}
-
-			@Override
-			public Map<CharPredicate, Integer> visit(CharClass charClass) {
-				map.computeIfAbsent(charClass.predicate(), predicate -> nextIndex++);
-				return map;
-			}
-		});
+	private static IntStream instructionStreamFor(Regex simpleRegex, Map<CharPredicate, Integer> charPredicateMap) {
+		return switch (simpleRegex) {
+			case Literal(var charSequence) -> charSequence.chars().map(c -> composeInstruction(LITERAL, c));
+			case CharClass(var predicate, var __) -> IntStream
+					.of(composeInstruction(CHAR_CLASS, charPredicateMap.get(predicate)));
+			case Star(var innerRegex) -> switch (innerRegex) {
+				case Literal(var chars) when chars.length() == 1 -> IntStream
+						.of(composeInstruction(STAR_LITERAL, chars.charAt(0)));
+				case CharClass(var predicate, var __) -> IntStream
+						.of(composeInstruction(STAR_CHAR_CLASS, charPredicateMap.get(predicate)));
+				default -> throw new IllegalArgumentException();
+			};
+			case Concatenation(var parts) -> parts.stream()
+					.flatMapToInt(part -> instructionStreamFor(part, charPredicateMap));
+		};
 	}
 
-	private static Integer countInstructions(Regex simpleRegex) {
-		return simpleRegex.accept(new RegexVisitor<>() {
-			@Override
-			public Integer visit(Concatenation concatenation) {
-				return concatenation.parts().stream().mapToInt(r -> r.accept(this)).sum();
-			}
-
-			@Override
-			public Integer visit(Literal literal) {
-				return literal.chars().length();
-			}
-
-			@Override
-			public Integer visit(Star star) {
-				return 1;
-			}
-
-			@Override
-			public Integer visit(CharClass charClass) {
-				return 1;
-			}
-		});
+	private static int composeInstruction(int opCode, int arg) {
+		if ((opCode & ARG_MASK) != 0 || (arg & OPCODE_MASK) != 0)
+			throw new IllegalArgumentException();
+		return opCode | arg;
 	}
 
-	private static Boolean isCompatible(Regex simpleRegex) {
-		return simpleRegex.accept(new RegexVisitor<>() {
-			@Override
-			public Boolean visit(Concatenation concatenation) {
-				for (var part : concatenation.parts())
-					if (!part.accept(this).booleanValue())
-						return false;
-				return true;
-			}
-
-			@Override
-			public Boolean visit(Literal literal) {
-				return true;
-			}
-
-			@Override
-			public Boolean visit(Star star) {
-				var regex = star.regex();
-				if (regex instanceof Literal l)
-					return l.chars().length() == 1;
-				return regex instanceof CharClass;
-			}
-
-			@Override
-			public Boolean visit(CharClass charClass) {
-				return true;
-			}
-		});
+	private static Map<CharPredicate, Integer> createCharPredicateIndexMap(CharPredicate[] charPredicates) {
+		return IntStream.range(0, charPredicates.length).boxed()
+				.collect(Collectors.toUnmodifiableMap(i -> charPredicates[i], Function.identity()));
 	}
 
-	@Override
-	public String toString() {
-		return IntStream.of(instructions).mapToObj(HexFormat.of()::toHexDigits)
-				.collect(Collectors.joining(",\n  ", "CompiledRegex[\n  ", "]"));
+	private static Stream<CharPredicate> collectCharPredicates(Regex simpleRegex) {
+		return switch (simpleRegex) {
+			case Literal __ -> Stream.of();
+			case CharClass(var predicate, var __) -> Stream.of(predicate);
+			case Star(var innerRegex) -> collectCharPredicates(innerRegex);
+			case Concatenation(var parts) -> parts.stream().flatMap(CompiledRegex::collectCharPredicates);
+		};
+	}
+
+	private static boolean isCompatible(Regex simpleRegex) {
+		return switch (simpleRegex) {
+			case Literal __ -> true;
+			case CharClass __ -> true;
+			case Star(var innerRegex) -> (innerRegex instanceof Literal l && l.chars().length() == 1)
+					|| innerRegex instanceof CharClass;
+			case Concatenation(var parts) -> parts.stream().allMatch(CompiledRegex::isCompatible);
+		};
 	}
 }

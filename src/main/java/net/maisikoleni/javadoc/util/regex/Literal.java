@@ -24,9 +24,4 @@ public record Literal(CharSequence chars) implements Regex {
 	public String toString() {
 		return Pattern.quote(chars.toString());
 	}
-
-	@Override
-	public <R> R accept(RegexVisitor<R> visitor) {
-		return visitor.visit(this);
-	}
 }

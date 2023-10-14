@@ -22,9 +22,4 @@ public record Star(Regex regex) implements Regex {
 	public String toString() {
 		return "(" + regex + ")*+";
 	}
-
-	@Override
-	public <R> R accept(RegexVisitor<R> visitor) {
-		return visitor.visit(this);
-	}
 }

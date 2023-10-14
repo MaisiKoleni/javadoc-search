@@ -1,16 +1,7 @@
 package net.maisikoleni.javadoc.util.regex;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,11 +30,6 @@ public record Concatenation(List<Regex> parts) implements Regex {
 	@Override
 	public String toString() {
 		return parts.stream().map(Regex::toString).collect(Collectors.joining());
-	}
-
-	@Override
-	public <R> R accept(RegexVisitor<R> visitor) {
-		return visitor.visit(this);
 	}
 
 	@Override

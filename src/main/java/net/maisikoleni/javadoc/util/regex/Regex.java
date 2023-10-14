@@ -19,8 +19,6 @@ public sealed interface Regex permits Concatenation, Literal, CharClass, Star {
 
 	int matches(CharSequence s, int start);
 
-	<R> R accept(RegexVisitor<R> visitor);
-
 	default Stream<Regex> stream() {
 		return Stream.of(this);
 	}
