@@ -3,7 +3,13 @@
 <h2>Available Javadoc Search Libraries</h2>
 <ul>
 	{#for library in libraries}
-	<li><a href="{library.id}/">{library.name}</a></li>
+	<li>
+		<p><a href="{library.id}/">{library.name}</a>
+			{#if library.name != library.description}
+			<br>{library.description}
+			{/if}
+		</p>
+	</li>
 	{/for}
 </ul>
 {/include}
