@@ -2,7 +2,7 @@ package net.maisikoleni.javadoc.entities;
 
 import static java.util.Objects.requireNonNull;
 
-public final class Tag extends SearchableEntity { // $NOSONAR - hashCode/equals final
+public final class Tag extends SearchableEntity {
 
 	private final String host;
 	private final String description;
