@@ -55,16 +55,16 @@ public abstract sealed class SearchableEntity implements Comparable<SearchableEn
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj instanceof SearchableEntity se)
+		if (obj instanceof SearchableEntity se && getClass().equals(se.getClass()))
 			return qualifiedName().equals(se.qualifiedName());
 		return false;
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		return qualifiedName().hashCode();
 	}
 

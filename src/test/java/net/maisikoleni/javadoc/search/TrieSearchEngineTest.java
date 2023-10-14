@@ -45,23 +45,24 @@ class TrieSearchEngineTest {
 				"Class AccessibleStateSet", //
 				"2.0 Standard RowSet Definitions", //
 				"4.0 JoinRowSet Methods", //
+				"3.0 Updating a CachedRowSet Object", //
 				"1.0 Creating a CachedRowSet Object", //
+				"2.0 Retrieving Data from a CachedRowSet Object", //
 				"4.0 Updating a FilteredRowSet Object", //
 				"2.0 Creating a JdbcRowSet Object", //
-				"3.0 Updating a CachedRowSet Object", //
-				"2.0 Retrieving Data from a CachedRowSet Object", //
 				"2.0 How a RowSet Object Gets Its Provider", //
 				"2.0 Using a JoinRowSet Object for Creating a JOIN", //
 				"2.1 State 1 - Outputting a WebRowSet Object to XML", //
 				"2.0 WebRowSet States", //
 				"2.1 Retrieving RowSetMetaData", //
-				"Character Sets", // TODO one gets overidden because of equal qualified name
-				"Attribute Sets", //
+				"Character Sets", //
+				"Character Sets", //
 				"Unmodifiable Sets", //
+				"Attribute Sets", //
 				"Getting and Setting Calendar Field Values", //
 				"Setting Initial Permissions", //
-				"2.0 Setting Properties", //
 				"9.0 Setting Properties", //
+				"2.0 Setting Properties", //
 				"Setting a Security Manager", //
 				"Setting the ACL when creating a file", //
 				"3.0 Setting the Command and Its Parameters");

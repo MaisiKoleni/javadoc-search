@@ -27,4 +27,18 @@ public final class Tag extends SearchableEntity { // $NOSONAR - hashCode/equals 
 	public String url() {
 		return url;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj instanceof Tag tag)
+			return url().equals(tag.url());
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return url().hashCode();
+	}
 }
