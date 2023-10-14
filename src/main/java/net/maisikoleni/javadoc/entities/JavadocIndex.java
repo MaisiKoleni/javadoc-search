@@ -1,14 +1,14 @@
 package net.maisikoleni.javadoc.entities;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import net.maisikoleni.javadoc.parser.JavaScriptIndexParser;
@@ -37,34 +37,25 @@ public record JavadocIndex(List<Module> modules, List<Package> packages, List<Ty
 	}
 
 	public static JavadocIndex loadFromInputStreams(IndexResourceResolver resolver) {
-		ExecutorService executor = Executors.newFixedThreadPool(5);
-		var moduleSearchIndex = executor.submit(() -> getIndexAsString(resolver, MODULE_SEARCH_INDEX));
-		var packageSearchIndex = executor.submit(() -> getIndexAsString(resolver, PACKAGE_SEARCH_INDEX));
-		var typeSearchIndex = executor.submit(() -> getIndexAsString(resolver, TYPE_SEARCH_INDEX));
-		var memberSearchIndex = executor.submit(() -> getIndexAsString(resolver, MEMBER_SEARCH_INDEX));
-		var tagSearchIndex = executor.submit(() -> getIndexAsString(resolver, TAG_SEARCH_INDEX));
-		try {
+		try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+			var moduleSearchIndex = executor.submit(() -> getIndexAsString(resolver, MODULE_SEARCH_INDEX));
+			var packageSearchIndex = executor.submit(() -> getIndexAsString(resolver, PACKAGE_SEARCH_INDEX));
+			var typeSearchIndex = executor.submit(() -> getIndexAsString(resolver, TYPE_SEARCH_INDEX));
+			var memberSearchIndex = executor.submit(() -> getIndexAsString(resolver, MEMBER_SEARCH_INDEX));
+			var tagSearchIndex = executor.submit(() -> getIndexAsString(resolver, TAG_SEARCH_INDEX));
 			executor.shutdown();
-			if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+			if (!executor.awaitTermination(10, SECONDS)) {
+				executor.shutdownNow();
 				throw new JavadocIndexLoadException("JavadocIndex loading/reading timed out");
+			}
 			var jsonIndex = JavaScriptIndexParser.parseJavaScriptIndexes(moduleSearchIndex.get(),
 					packageSearchIndex.get(), typeSearchIndex.get(), memberSearchIndex.get(), tagSearchIndex.get());
 			return jsonIndex.toJavadocIndex();
-		} catch (JavadocIndexLoadException jole) {
-			throw jole;
-		} catch (RuntimeException e) {
-			throw new JavadocIndexLoadException(e);
-		} catch (ExecutionException e) {
-			if (e.getCause() instanceof JavadocIndexLoadException jole)
-				throw jole;
-			throw new JavadocIndexLoadException(e.getCause());
+		} catch (RuntimeException | ExecutionException e) {
+			throw JavadocIndexLoadException.from(e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new JavadocIndexLoadException("JavadocIndex load interrupted", e);
-		} finally {
-			// if we exit exceptionally and the executor is running, interrupt it
-			if (!executor.isTerminated())
-				executor.shutdownNow();
 		}
 	}
 
@@ -95,6 +86,14 @@ public record JavadocIndex(List<Module> modules, List<Package> packages, List<Ty
 
 		JavadocIndexLoadException(Throwable cause) {
 			super(cause);
+		}
+
+		static JavadocIndexLoadException from(Throwable cause) {
+			if (cause instanceof ExecutionException ee)
+				return from(ee.getCause());
+			if (cause instanceof JavadocIndexLoadException jole)
+				throw jole;
+			throw new JavadocIndexLoadException(cause);
 		}
 	}
 }
