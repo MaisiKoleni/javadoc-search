@@ -33,7 +33,7 @@
 		<quarkus.platform.version>3.6.4</quarkus.platform.version>
 		<surefire-plugin.version>3.2.3</surefire-plugin.version>
 		<microstream.version>08.01.01-MS-GA</microstream.version>
-		<assertj.version>3.24.2</assertj.version>
+		<assertj.version>3.25.1</assertj.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
