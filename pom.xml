@@ -32,7 +32,7 @@
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
 		<quarkus.platform.version>3.6.8</quarkus.platform.version>
 		<surefire-plugin.version>3.2.5</surefire-plugin.version>
-		<microstream.version>08.01.01-MS-GA</microstream.version>
+		<eclipsestore.version>1.1.0</eclipsestore.version>
 		<assertj.version>3.25.2</assertj.version>
 	</properties>
 	<dependencyManagement>
@@ -47,28 +47,17 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
-		<!-- Microstream -->
+		<!-- MicroStream / EclipseStore -->
 		<dependency>
-			<groupId>one.microstream</groupId>
-			<artifactId>microstream-storage-embedded</artifactId>
-			<version>${microstream.version}</version>
+			<groupId>org.eclipse.store</groupId>
+			<artifactId>storage-embedded</artifactId>
+			<version>${eclipsestore.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>one.microstream</groupId>
-			<artifactId>microstream-storage-embedded-configuration</artifactId>
-			<version>${microstream.version}</version>
+			<groupId>org.eclipse.store</groupId>
+			<artifactId>storage-embedded-configuration</artifactId>
+			<version>${eclipsestore.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>one.microstream</groupId>
-			<artifactId>microstream-persistence-binary</artifactId>
-			<version>${microstream.version}</version>
-		</dependency>
-		<!--
-		<dependency>
-			<groupId>one.microstream</groupId>
-			<artifactId>microstream-storage-restservice-sparkjava</artifactId>
-			<version>${microstream.version}</version>
-		</dependency> -->
 		<!-- Quarkus-->
 		<dependency>
 			<groupId>io.quarkus</groupId>

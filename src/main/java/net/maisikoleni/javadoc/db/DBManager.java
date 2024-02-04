@@ -3,20 +3,21 @@ package net.maisikoleni.javadoc.db;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.eclipse.serializer.persistence.types.PersistenceLegacyTypeMappingResultor;
+import org.eclipse.serializer.persistence.types.Storer;
+import org.eclipse.serializer.reflect.ClassLoaderProvider;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorage;
+import org.eclipse.store.storage.embedded.types.EmbeddedStorageManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.maisikoleni.javadoc.config.Configuration;
+
 import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import net.maisikoleni.javadoc.config.Configuration;
-import one.microstream.persistence.types.PersistenceLegacyTypeMappingResultor;
-import one.microstream.persistence.types.Storer;
-import one.microstream.reflect.ClassLoaderProvider;
-import one.microstream.storage.embedded.types.EmbeddedStorage;
-import one.microstream.storage.embedded.types.EmbeddedStorageManager;
 
 @Singleton
 public class DBManager {

@@ -1,18 +1,15 @@
 package net.maisikoleni.javadoc.db;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
+import org.eclipse.serializer.persistence.types.Persister;
+import org.eclipse.serializer.reference.Lazy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.maisikoleni.javadoc.entities.JavadocIndex;
-import one.microstream.persistence.types.Persister;
-import one.microstream.reference.Lazy;
 
 public final class PersistedJavadocIndexes implements JavadocIndexes {
 
