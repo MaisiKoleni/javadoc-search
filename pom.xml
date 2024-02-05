@@ -33,7 +33,7 @@
 		<quarkus.platform.version>3.7.1</quarkus.platform.version>
 		<surefire-plugin.version>3.2.5</surefire-plugin.version>
 		<eclipsestore.version>1.1.0</eclipsestore.version>
-		<assertj.version>3.25.2</assertj.version>
+		<assertj.version>3.25.3</assertj.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
