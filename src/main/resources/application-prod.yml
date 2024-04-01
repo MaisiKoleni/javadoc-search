@@ -36,9 +36,9 @@ net:
             description: JDK 21
             base-url: https://docs.oracle.com/en/java/javase/21/docs/api/
           jdk-latest:
-            name: latest JDK (21)
+            name: latest JDK (22)
             description: Latest JDK Release API
-            base-url: https://docs.oracle.com/en/java/javase/21/docs/api/
+            base-url: https://docs.oracle.com/en/java/javase/22/docs/api/
             default: true
           junit5-latest:
             name: JUnit 5
