@@ -1,18 +1,16 @@
 package net.maisikoleni.javadoc.service.jdk21;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
+import net.maisikoleni.javadoc.entities.SearchableEntity;
+import net.maisikoleni.javadoc.service.SearchService;
+import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;
-
-import net.maisikoleni.javadoc.entities.SearchableEntity;
-import net.maisikoleni.javadoc.service.SearchService;
-import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
-
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 class Jdk21SearchSerivceTest {
@@ -23,8 +21,8 @@ class Jdk21SearchSerivceTest {
 
 	@Test
 	void testBaseUrl() {
-		assertThat(searchService.javadoc().baseUrl())
-				.isEqualTo(URI.create("https://docs.oracle.com/en/java/javase/21/docs/api/"));
+		assertThat(searchService.javadoc().baseUrl()).isEqualTo(
+				URI.create("https://docs.oracle.com/en/java/javase/23/docs/api/"));
 	}
 
 	@Test
@@ -94,7 +92,7 @@ class Jdk21SearchSerivceTest {
 				java.desktop/javax.swing.text.StyleContext.SmallAttributeSet
 				java.desktop/javax.swing.text.StyleConstants.TabSet
 				"""));
-		assertThat(results).hasLineCount(832);
+		assertThat(results).hasLineCount(833);
 	}
 
 	@Test

@@ -1,15 +1,13 @@
 package net.maisikoleni.javadoc.search;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
+import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 class TrieSearchEngineTest {
@@ -40,7 +38,7 @@ class TrieSearchEngineTest {
 						"java.base/java.util.BitSet.BitSet()", //
 						"java.base/java.util.EnumMap.keySet()", //
 						"jdk.jfr/jdk.jfr.Recording.getSettings()") //
-				.hasSize(736);
+				.hasSize(737);
 		assertThat(result.tags().map(SearchableEntity::qualifiedName).toList()).containsExactly(
 				"Class AccessibleStateSet", //
 				"2.0 Standard RowSet Definitions", //

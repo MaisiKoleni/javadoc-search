@@ -1,13 +1,12 @@
 package net.maisikoleni.javadoc.server;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
-
-import org.junit.jupiter.api.Test;
-
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
 
 @QuarkusTest
 class LegacyApiV1SearchResourceTest {
@@ -20,7 +19,7 @@ class LegacyApiV1SearchResourceTest {
 				.body(is("")) //
 				.statusCode(Status.SEE_OTHER.getStatusCode()) //
 				.header(HttpHeaders.LOCATION,
-						"https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/Collector.html");
+						"https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/stream/Collector.html");
 	}
 
 	@Test

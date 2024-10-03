@@ -1,15 +1,13 @@
 package net.maisikoleni.javadoc.search;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
+import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 class RegexSearchEngineTest {
@@ -57,7 +55,7 @@ class RegexSearchEngineTest {
 						"java.compiler/javax.annotation.processing.RoundEnvironment.getElementsAnnotatedWithAny(Set<Class<? extends Annotation>>)", //
 						"java.base/java.lang.StackWalker.getInstance(Set<StackWalker.Option>)", //
 						"java.base/java.lang.StackWalker.getInstance(Set<StackWalker.Option>, int)") //
-				.hasSize(736);
+				.hasSize(737);
 		assertThat(result.tags().map(SearchableEntity::qualifiedName).toList()).containsExactly(
 				"Setting a Security Manager", //
 				"Setting Initial Permissions", //

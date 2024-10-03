@@ -1,20 +1,19 @@
 package net.maisikoleni.javadoc.util.regex;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.IntStream;
-
+import io.quarkus.test.junit.QuarkusTest;
+import net.maisikoleni.javadoc.entities.SearchableEntity;
+import net.maisikoleni.javadoc.service.SearchService;
+import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestReporter;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
-import io.quarkus.test.junit.QuarkusTest;
-import net.maisikoleni.javadoc.entities.SearchableEntity;
-import net.maisikoleni.javadoc.service.SearchService;
-import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.IntStream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 class RegexTest {

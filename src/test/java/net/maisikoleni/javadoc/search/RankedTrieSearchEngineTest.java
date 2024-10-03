@@ -1,21 +1,20 @@
 package net.maisikoleni.javadoc.search;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.stream.Stream;
-
-import org.junit.jupiter.api.Test;
-
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import net.maisikoleni.javadoc.entities.SearchableEntity;
 import net.maisikoleni.javadoc.search.RankedTrieSearchEngine.RankedEntry;
 import net.maisikoleni.javadoc.service.SearchService;
 import net.maisikoleni.javadoc.service.SearchServiceProvider.FixLibraryId;
 import net.maisikoleni.javadoc.util.trie.RankedTrie.RankedSimpleTrie;
 import net.maisikoleni.javadoc.util.trie.Trie;
+import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @QuarkusTest
 class RankedTrieSearchEngineTest {
@@ -23,7 +22,7 @@ class RankedTrieSearchEngineTest {
 	/**
 	 * This is expected to be stable on the premise that String.hashCode unchanged.
 	 */
-	private static final int EXPECTED_HASH_CODE = 858631228;
+	private static final int EXPECTED_HASH_CODE = 311246567;
 
 	@Inject
 	@FixLibraryId
