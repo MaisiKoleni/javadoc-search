@@ -32,7 +32,7 @@
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
 		<quarkus.platform.version>3.16.4</quarkus.platform.version>
 		<surefire-plugin.version>3.5.2</surefire-plugin.version>
-		<eclipsestore.version>2.0.0</eclipsestore.version>
+		<eclipsestore.version>2.1.0</eclipsestore.version>
 		<assertj.version>3.26.3</assertj.version>
 	</properties>
 	<dependencyManagement>
